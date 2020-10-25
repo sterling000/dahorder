@@ -26,7 +26,7 @@
             <label for="phone">Phone:</label>
             <input 
                 v-model.trim="phone" 
-                placeholder="16045551234" 
+                placeholder="+16045551234" 
                 name="phone" 
                 @blur="$v.phone.$touch()"
             />
@@ -37,7 +37,7 @@
                 name="email" 
                 @blur="$v.email.$touch()"
             />
-            <label for="password">Password (Must be 8 or more characters):</label>
+            <label for="password">Password <span class="hint">(Must be 8 or more characters)</span>:</label>
             <input 
                 v-model.trim="password"
                 name="password" 
@@ -74,7 +74,9 @@
 <script>
 import axios from 'axios';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
-import { required, minLength,  email, sameAs, numeric } from 'vuelidate/lib/validators';
+import { required, minLength,  email, sameAs } from 'vuelidate/lib/validators';
+
+import validPhone from '../validators/validators'
 
 export default {
     data(){
@@ -92,7 +94,10 @@ export default {
     },
     methods: {
         register: function(e){
-            
+            this.$v.touch();
+            if(this.$v.$anyDirty){
+                return;
+            }
             const params = {
                 'email': this.email,
                 'password': this.password,
@@ -131,7 +136,7 @@ export default {
         password: { required, minLength: minLength(8) },
         confirm: { sameAsPassword: sameAs('password')},
         condo: { required },
-        phone: { required, numeric },
+        phone: { required, validPhone },
         role: { required }
     },
     computed: {
@@ -172,7 +177,7 @@ export default {
             const errors = [];
             if(!this.$v.phone.$dirty) return errors;
             !this.$v.phone.required && errors.push('Phone Number is required.');
-            !this.$v.phone.numeric && errors.push('Phone Number must be numeric.');
+            !this.$v.phone.validPhone && errors.push('Phone number is invalid.');
             
             return errors;
         },
@@ -208,10 +213,15 @@ export default {
         input, select{
             display: block;
             width: 250px;
+            height: 2em;
             margin: 0 0 1em;
         }
         .error{
             color: #f00;
+        }
+        .hint{
+            font-style: italic;
+            font-size: 12px;
         }
     }
     .forgot-password{
