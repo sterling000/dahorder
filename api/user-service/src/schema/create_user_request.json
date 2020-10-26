@@ -35,12 +35,6 @@
             "minLength": 3,
             "maxLength": 50
         },
-        "apartment": {
-            "type": "string",
-            "title": "Apartment",
-            "minLength": 3,
-            "maxLength": 50
-        },
         "phone": {
             "type": "string",
             "title": "Phone",

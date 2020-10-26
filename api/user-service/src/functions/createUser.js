@@ -1,6 +1,7 @@
 'use strict';
 const AWS = require('aws-sdk')
 const bcrypt = require('bcryptjs')
+const parsePhoneNumber = require('libphonenumber-js');
 
 module.exports.createUser = async event => {
   const body = JSON.parse(event.body);
@@ -10,6 +11,18 @@ module.exports.createUser = async event => {
   const name = body.name;
   const apartment = body.apartment;
   const phone = body.phone;
+  const phoneNumber = parsePhoneNumber(phone);
+  if(!phoneNumber.isValid()){
+    return {
+      statusCode: 203,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+        'Access-Control-Allow-Headers': 'Authorization'
+      },
+      body: 'Did not give a valid phone number.'
+    }
+  }
   const role = body.role;
   const newUserParams = {
     TableName: process.env.DYNAMODB_USER_TABLE,
@@ -45,7 +58,8 @@ module.exports.createUser = async event => {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Credentials': true,
           'Access-Control-Allow-Headers': 'Authorization'
-        }
+        },
+        body: 'Did not give a valid phone number.'
       }
     }
     console.log('There was an error putting a new user');

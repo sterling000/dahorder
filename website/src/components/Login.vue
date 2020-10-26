@@ -48,9 +48,9 @@ export default {
     },
     methods:{
         signin: function(e) {
-            this.$v.touch();
-
-            if(this.$v.$dirty){
+            e.preventDefault();
+            this.$v.$touch();
+            if(this.$v.$anyError){
                 return;
             }
             const params = {
@@ -76,7 +76,6 @@ export default {
             .finally(() => {
                 // console.log('Do this always... or else...');
             });
-            e.preventDefault();
         },
         register: function() {
             console.log('Register clicked');

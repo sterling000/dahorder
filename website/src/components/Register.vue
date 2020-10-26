@@ -9,7 +9,11 @@
                 name="name" 
                 @blur="$v.name.$touch()"
             />
-            <p v-if="nameErrors.length > 0">{{nameErrors}}</p>
+            <ul>
+                <li v-for="error in nameErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="condo">Condominium / Apartment Name:</label>
             <input 
                 v-model.trim="condo"
@@ -17,6 +21,11 @@
                 placeholder="Petaling Jaya" 
                 @blur="$v.condo.$touch()"
             />
+            <ul>
+                <li v-for="error in condoErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="apartment">Apartment:</label>
             <input 
                 v-model.trim="apartment" 
@@ -24,12 +33,19 @@
                 name="apartment" 
             />
             <label for="phone">Phone:</label>
+            <p class="countrycode">+6</p>
             <input 
+                class='phone'
                 v-model.trim="phone" 
-                placeholder="+16045551234" 
+                placeholder="0123911525" 
                 name="phone" 
                 @blur="$v.phone.$touch()"
             />
+            <ul>
+                <li v-for="error in phoneErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="email">Email:</label>
             <input 
                 v-model.trim="email" 
@@ -37,6 +53,11 @@
                 name="email" 
                 @blur="$v.email.$touch()"
             />
+            <ul>
+                <li v-for="error in emailErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="password">Password <span class="hint">(Must be 8 or more characters)</span>:</label>
             <input 
                 v-model.trim="password"
@@ -44,6 +65,11 @@
                 type="password" 
                 @blur="$v.password.$touch()"
             />
+            <ul>
+                <li v-for="error in passwordErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="confirm">Confirm Password:</label>
             <input 
                 v-model.trim="confirm" 
@@ -52,6 +78,11 @@
                 type="password" 
                 @blur="$v.confirm.$touch()"
             />
+            <ul>
+                <li v-for="error in confirmErrors" :key="error">
+                    <p class="error">{{error}}</p>
+                </li>
+            </ul>
             <label for="role">Select a Role:</label>
             <select 
                 id="role" 
@@ -67,7 +98,11 @@
 
             <input type="submit" value="Sign Up"/>
         </form>
-        <p class="error">{{ errorMessages }}</p>
+        <ul>
+            <li v-for="errors in errorMessages" :key="errors[0]">
+                {{errors}}
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -94,8 +129,9 @@ export default {
     },
     methods: {
         register: function(e){
-            this.$v.touch();
-            if(this.$v.$anyDirty){
+            e.preventDefault();
+            this.$v.$touch();
+            if(this.$v.$anyError){
                 return;
             }
             const params = {
@@ -104,7 +140,7 @@ export default {
                 'name': this.name,
                 'condo': this.condo,
                 'apartment': this.apartment,
-                'phone': this.phone,
+                'phone': "+6" + this.phone,
                 'role': this.role
             }
             
@@ -127,7 +163,6 @@ export default {
             .finally(() => {
                 // console.log('Do this always... or else...');
             });
-            e.preventDefault();
         }
     },
     validations: {
@@ -188,7 +223,7 @@ export default {
             return errors;
         },
         errorMessages() {
-            return this.nameErrors + this.emailErrors + this.passwordErrors + this.confirmErrors + this.condoErrors + this.phoneErrors + this.roleErrors;
+            return [...this.nameErrors, this.emailErrors, this.condoErrors, this.passwordErrors, this.confirmErrors, this.phoneErrors, this.roleErrors]
         }
     }
 }
@@ -206,7 +241,7 @@ export default {
     form{
         margin: auto 0;
         label{
-            display: inline-block;
+            display: block;
             width: 250px;
             margin: 0 0 0.5em;
         }
@@ -218,10 +253,21 @@ export default {
         }
         .error{
             color: #f00;
+            margin: 0 0 0.5em;
+            font-weight: 600;
         }
         .hint{
             font-style: italic;
             font-size: 12px;
+        }
+        .countrycode{
+            display: inline-block;
+            width: 40px;
+            color: #aaa
+        }
+        input.phone{
+            display: inline-block;
+            width: 200px;
         }
     }
     .forgot-password{
