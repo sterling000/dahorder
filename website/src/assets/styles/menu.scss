@@ -1,9 +1,9 @@
 // Menu Button
 .menu-btn {
-    position: absolute;
+    background-color: $secondary-color;
+    padding: 1em;
+    margin: 0.25em;
     z-index: 3;
-    right: 35px;
-    top: 35px;
     cursor: pointer;
     @include easeOut;
 
@@ -11,7 +11,7 @@
         width: 28px;
         height: 3px;
         margin: 0 0 5px 0;
-        background: #000;//set-text-color($primary-color);
+        background: $primary-color;//set-text-color($primary-color);
         @include easeOut;
     }
 
@@ -22,7 +22,7 @@
         .btn-line {
         // Line 1 - Rotate
         &:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
+            transform: rotate(45deg) translate(8px, 8px);
         }
 
         // Line 2 - Hide
@@ -32,7 +32,7 @@
 
         // Line 3 - Rotate
         &:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
+            transform: rotate(-45deg) translate(4px, -4px);
         }
         }
     }
@@ -64,7 +64,7 @@
     &-nav {
         margin: 0;
         padding: 0;
-        background: darken($primary-color, 5);
+        background: darken(#000, 5);
         list-style: none;
         transform: translate3d(0, -100%, 0);
         @include easeOut;
@@ -78,7 +78,7 @@
     .nav-item {
         transform: translate3d(600px, 0, 0);
         @include easeOut;
-
+        
         &.show {
         // Slide in from right
         transform: translate3d(0, 0, 0);
@@ -90,13 +90,13 @@
     }
 
     .nav-link {
-        display: inline-block;
+        display: block;
         position: relative;
         font-size: 30px;
         text-transform: uppercase;
         padding: 1rem 0;
         font-weight: 300;
-        color: set-text-color($primary-color);
+        color: $primary-color;
         text-decoration: none;
         @include easeOut;
 

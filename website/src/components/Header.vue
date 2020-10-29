@@ -1,19 +1,23 @@
 <template>
     <header>
-        <h1 class="logo">Dah Order</h1>
-        <!-- <div class="menu-btn" v-on:click='toggleMenu'>
-            <div class="btn-line"></div>
-            <div class="btn-line"></div>
-            <div class="btn-line"></div>
-        </div>
+            <h1 class="logo">DAH ORDER</h1>
+            <div class="menu-btn" v-on:click='toggleMenu'>
+                <div class="btn-line"></div>
+                <div class="btn-line"></div>
+                <div class="btn-line"></div>
+            </div>
 
         <nav class="menu">
             <ul class="menu-nav">
                 <li id="Home" class="nav-item">
                     <router-link to="/" class="nav-link">Home</router-link>
+                    <router-link to="/account" class="nav-link">My Account</router-link>
+                    <router-link to="/orders" class="nav-link">My Orders</router-link>
+                    <router-link to="/shops" class="nav-link">My Shops</router-link>
+                    <router-link to="/logout" class="nav-link">Log out</router-link>
                 </li>
             </ul>
-        </nav> -->
+        </nav>
     </header>
 </template>
     
@@ -81,7 +85,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/styles/config.scss";
 @import "../assets/styles/menu.scss";
 
@@ -90,11 +94,22 @@ export default {
 }
 
 header {
+    background-color: $primary-color;
+    min-height: 5vh;
+    display: flex;
+    justify-content: space-between;
+    
+    margin: 0 auto;
+    max-width: 1200px;
+    min-width: 375px;
     .logo{
         font-weight: bold;
         text-transform: uppercase;
+        font-size: 18px;
+        padding: 1em;
+        display: inline-flex;
+        max-width: 155px;
     }
-    // display: flex;
-    // justify-content: space-between;
+    
 }
 </style>
