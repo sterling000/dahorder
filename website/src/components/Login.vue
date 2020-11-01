@@ -1,6 +1,5 @@
 <template>
     <div class="login">
-        <h1 class="logo">Dah Order</h1>
         <form @submit="signin" method="POST">
             <ul>
                 <li>
@@ -26,7 +25,7 @@
                 </li>
             </ul>
             
-            <input type="submit" value="Sign in" :disabled="$v.$invalid"/>
+            <input id="submit" type="submit" value="Sign in" :disabled="$v.$invalid"/>
             <button @click.stop.prevent="register()">Register</button>
             <a href="#" class="forgot-password">Forgot Password?</a>
         </form>
@@ -105,6 +104,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/styles/config.scss";
 .login {
     max-width: 1200px;
     top: 50%;
@@ -114,24 +114,39 @@ export default {
     overflow: hidden;
     position: fixed;
     form{
-        margin: auto 0;
+        li{
+            margin: 1em 0;
+        }
+        padding: 5em 1em;
         label{
-            display: inline-block;
-            width: 75px;
+            width: 275px;
             margin: 0 0 0.5em;
+            font-weight: 600;
         }
         input{
-            display: block;
-            width: 250px;
-            margin: 0 0 0.5em;
+            width: 275px;
+            height: 3em;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 5%;
+            border: solid 1px $primary-color;
+            &#submit{
+                background-color: $primary-color;
+                color: $secondary-color;
+                font-size: 36px;
+                font-weight: 600;
+            }
         }
         button {
-            width: 250px;
-            margin: 0 0 0.5em;
+            width: 100%;
+            height: 3em;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 5%;
+            border: solid 1px $primary-color;
+            margin: 1em 0;
         }
         .error{
-        color: #f00;
-    }
+            color: #f00;
+        }
     }
     .forgot-password{
         display: block;

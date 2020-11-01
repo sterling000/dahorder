@@ -96,7 +96,7 @@
                 <option value="both">Both</option>
             </select>
 
-            <input type="submit" value="Sign Up"/>
+            <input id="submit" type="submit" value="Sign Up"/>
         </form>
         <ul>
             <li v-for="errors in errorMessages" :key="errors[0]">
@@ -230,26 +230,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/styles/config.scss";
 .register{
-    max-width: 1200px;
-    top: 50%;
-    left: 50%;
-    margin: 0 auto;
-    transform: translate(-50%, -50%);
-    overflow: hidden;
-    position: fixed;
+    overflow: auto;
     form{
-        margin: auto 0;
+        li{
+            margin: 1em 0;
+        }
+        padding: 2em;
         label{
-            display: block;
-            width: 250px;
+            width: 275px;
             margin: 0 0 0.5em;
+            font-weight: 600;
         }
         input, select{
             display: block;
-            width: 250px;
+            width: 275px;
             height: 2em;
             margin: 0 0 1em;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 5%;
+            border: solid 1px $primary-color;
+            &#submit{
+                background-color: $primary-color;
+                color: $secondary-color;
+                font-size: 36px;
+                font-weight: 600;
+            }
         }
         .error{
             color: #f00;

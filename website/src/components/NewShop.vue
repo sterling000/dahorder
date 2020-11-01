@@ -30,11 +30,12 @@
                 </li>
                 <li>
                     <label for="description">Description</label>
-                    <input
+                    <textarea
                         id="description"
                         v-model="description"
                         name="description"
                         @blur="$v.description.$touch()"
+                        placeholder="Enter a description here..."
                     />
                     <p v-if="$v.description.$dirty && $v.description.$invalid">{{ descriptionErrors }}</p>
                 </li>
@@ -60,7 +61,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import MegaPixImage from '../utils/mega-pix-image.js';
+import MegaPixImage from '../utils/MegaPixImage';
 
 export default {
     data(){
@@ -165,7 +166,6 @@ export default {
                 margin: 0 0 0.5em;
                 font-weight: 600;
                 .custom-file-upload {
-                    
                     margin: 0.25em 0.5em 0 0;
                     height: 3em;
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -198,15 +198,24 @@ export default {
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 5%;
                 border: solid 1px $primary-color;
-                &#description{
-                    height: 8em;
-                }
+                
                 &#thumbnail{
                     text-align: center;
                     display:none;
                 }
             }
-            
+            textarea{
+                resize: none;
+                height: 8em;
+                padding: 0.5em;
+                text-align: left;
+                margin-top: 0;
+                width: 100%;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                border-radius: 5%;
+                border: solid 1px $primary-color;
+                overflow: auto;
+            }
         }
     }
 
@@ -230,4 +239,4 @@ export default {
     }
 }
 
-</style>
+</style>-->

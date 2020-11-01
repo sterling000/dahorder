@@ -92,7 +92,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import MegaPixImage from '../utils/mega-pix-image.js';
+import MegaPixImage from '../utils/MegaPixImage';
 
 export default {
     data(){
@@ -262,4 +262,4 @@ export default {
     }
 }
 
-</style>
+</style>-->

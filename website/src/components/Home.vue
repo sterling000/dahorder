@@ -3,7 +3,7 @@
         <div class="category">
             <h2>Recent</h2>
             <div class="carousel">
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
+                <div class="store" @click="selectStore"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
                 <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
             </div>
         </div>
@@ -39,6 +39,12 @@ export default {
         stores.forEach(el => {
             el.style.setProperty('--total', 2);
         })
+    },
+    methods:{
+        selectStore:function(e) {
+            console.log(e);
+            this.$router.push('/store'); // todo: set up routing for /:id
+        }
     }
 }
 </script>
@@ -78,6 +84,7 @@ export default {
         h2 {
             font-size: 18px;
         }
+        cursor: pointer;
     }
 }
     

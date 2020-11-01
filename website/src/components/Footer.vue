@@ -4,7 +4,7 @@
             <li id="orders" class="shortcut" @click="shortcutClicked('/orders')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','list']" /><p>ORDERS</p>
             </li>
-            <li id="buy" class="shortcut" @click="shortcutClicked('/buy')">
+            <li id="buy" class="shortcut current" @click="shortcutClicked('/buy')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','utensils']" /><p>BUY</p>
             </li>
             <li id="sell" class="shortcut" @click="shortcutClicked('/sell')">
