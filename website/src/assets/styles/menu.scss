@@ -45,7 +45,7 @@
     width: 100%;
     opacity: 0.9;
     visibility: hidden;
-
+    z-index: 2;
     &.show {
         visibility: visible;
     }
@@ -72,6 +72,10 @@
         &.show {
             // Slide in from top
             transform: translate3d(0, 0, 0);
+        }
+
+        :last-child{
+            margin-bottom: 4em;
         }
     }
 

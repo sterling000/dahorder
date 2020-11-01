@@ -4,10 +4,10 @@ import router from './router'
 import store from './store'
 import Vuelidate from 'vuelidate'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faList, faUtensils, faMoneyBillWave, faShoppingCart } from '@fortawesome/free-solid-svg-icons'
+import { faList, faUtensils, faMoneyBillWave, faShoppingCart, faPlus, faFileUpload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faList, faUtensils, faMoneyBillWave, faShoppingCart)
+library.add(faList, faUtensils, faMoneyBillWave, faShoppingCart, faPlus, faFileUpload)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false

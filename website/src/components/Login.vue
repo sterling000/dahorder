@@ -58,7 +58,7 @@ export default {
                 'password': this.password
             }
             
-            axios.post('https://7g2ixxqv2k.execute-api.us-east-1.amazonaws.com/dev/v1/user/login',
+            axios.post('https://7g2ixxqv2k.execute-api.us-east-1.amazonaws.com/dev/v1/user/login', // todo: move the url to config
             params)
             .then((res) => {
                 if(res.status === 404)

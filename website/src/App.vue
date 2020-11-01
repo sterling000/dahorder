@@ -31,7 +31,7 @@ body{
   font-size: 16px;
   min-height: 100vh;
   max-height: 100vh;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 a {

@@ -11,6 +11,26 @@ const routes = [
     component: Home
   },
   {
+    path: '/shops',
+    name: 'Shops',
+    component: () => import('../components/Shops.vue')
+  },
+  {
+    path: '/products',
+    name: 'Products',
+    component: () => import('../components/Products.vue')
+  },
+  {
+    path: '/newshop',
+    name: 'New Shop',
+    component: () => import('../components/NewShop.vue')
+  },
+  {
+    path: '/newproduct',
+    name: 'New Product',
+    component: () => import('../components/NewProduct.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('../components/Login.vue')

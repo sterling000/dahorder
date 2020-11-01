@@ -1,0 +1,67 @@
+<template>
+    <div class="products">
+        <div class="category">
+            <h2>Products</h2>
+            <div class="product"><img src='../assets/images/test.jpg'/><h2>Nasi Goreng</h2></div>
+            <div class="product"><img src='../assets/images/test.jpg'/><h2>Pad Thai</h2></div>
+            <div class="new" @click="newProduct"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    methods: {
+        newProduct: function(){
+            this.$router.push('/newproduct');
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+@import "../assets/styles/config.scss";
+.products{
+    overflow-y: auto;
+    padding: 10vh 5vh 15vh;
+    
+    .category{
+        margin: 1em;
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: repeat(1fr);
+        .product{
+            padding: 0.5em 0;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            width: 260px;
+            height: 167px;
+            border-radius: 5%;
+            background-color: $primary-color;
+            h2 {
+                font-size: 18px;
+            }
+        }
+
+        .new{
+            padding: 0.5em 0;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            width: 260px;
+            height: 167px;
+            border-radius: 5%;
+            background-color: $primary-color;
+            color: $secondary-color;
+            h2 {
+                font-size: 36px;
+                margin: 0;
+                text-align: center;
+            }
+            .shortcut-icon{
+                font-size: 64px;
+                text-align: center;
+                margin: 0.7em 1.6em 0;
+            }
+        }
+        
+    }
+}
+</style>

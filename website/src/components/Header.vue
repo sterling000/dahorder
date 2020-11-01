@@ -1,7 +1,7 @@
 <template>
     <header>
             <h1 class="logo">DAH ORDER</h1>
-            <div class="menu-btn" v-on:click='toggleMenu'>
+            <div class="menu-btn" @click='toggleMenu'>
                 <div class="btn-line"></div>
                 <div class="btn-line"></div>
                 <div class="btn-line"></div>
@@ -98,7 +98,7 @@ header {
     min-height: 5vh;
     display: flex;
     justify-content: space-between;
-    
+    position: fixed;
     margin: 0 auto;
     max-width: 1200px;
     min-width: 375px;
