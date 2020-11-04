@@ -12,40 +12,60 @@
                     />
                     <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
                 </li>
-                <li>
-                    <label for="price">Price</label>
-                    <input
-                        v-model="price"
-                        name="price"
-                        @blur="$v.price.$touch()"
-                    />
-                    <p v-if="$v.price.$dirty && $v.price.$invalid">{{ priceErrors }}</p>
+                <li class="price">
+                    <div class="wrapper">
+                        <label for="price">Price</label>
+                        <input
+                            v-model="price"
+                            name="price"
+                            class="price"
+                            @blur="$v.price.$touch()"
+                        />RM
+                    </div>
+                    <p class="error" v-if="$v.price.$dirty && $v.price.$invalid">{{ priceErrors }}</p>
                 </li>
-                <li>
-                    <label for="quantity">Quantity</label>
-                    <input
-                        v-model="quantity"
-                        name="quantity"
-                        @blur="$v.quantity.$touch()"
-                    />
+                <li class="quantity">
+                    <div class="wrapper">
+                        <label for="quantity">Quantity</label>
+                        <input
+                            v-model="quantity"
+                            name="quantity"
+                            class="quantity"
+                            @blur="$v.quantity.$touch()"
+                        />
+                    </div>
                     <p v-if="$v.quantity.$dirty && $v.quantity.$invalid">{{ quantityErrors }}</p>
-                </li>
+                </li><!-- Add option for On-Demand -->
                 <li>
                     <label for="description">Description</label>
-                    <input
+                    <textarea
                         id="description"
                         v-model="description"
                         name="description"
                         @blur="$v.description.$touch()"
+                        placeholder="Enter a description here..."
                     />
                     <p v-if="$v.description.$dirty && $v.description.$invalid">{{ descriptionErrors }}</p>
                 </li>
                 <li>
-                    <label for="thumbnail">Thumbnail
-                        <div class="custom-file-upload" v-if="this.thumbnail === ''"><font-awesome-icon :icon="['fas', 'file-upload']"/><p>Upload</p></div>
+                    <label for="thumbnail" id="thumbnailLabel"><p class="thumbnail">Photo</p>
+                        <div class="wrapper">
+                            <div class="camera" v-if="this.thumbnail === ''"><font-awesome-icon :icon="['fas', 'camera']"/><p>Camera</p></div>
+                            <p class="or" v-if="this.thumbnail === ''">Or</p>
+                            <div class="custom-file-upload" v-if="this.thumbnail === ''"><font-awesome-icon :icon="['fas', 'file-upload']"/><p>Upload</p></div>
+                        </div>
                         <canvas id='resultCanvas1'/>
                     </label>
 
+                    <input 
+                        id="camera" 
+                        name="camera" 
+                        type="file" 
+                        accept="image/*" 
+                        capture="camera" 
+                        @change="thumbnailChanged"
+                        @blur="$v.thumbnail.$touch()"
+                    />
                     <input
                         id="thumbnail"
                         type="file"
@@ -59,11 +79,13 @@
                     <label for="date">Date Available</label>
                     <input
                         v-model="date"
+                        type="date"
                         name="date"
                         @blur="$v.date.$touch()"
                     />
                     <p v-if="$v.date.$dirty && $v.date.$invalid">{{ dateErrors }}</p>
                 </li>
+                <!-- Preset Delivery Time -->
                 <li>
                     <label for="delivery">Pick Up / Delivery</label>
                     <select
@@ -88,7 +110,6 @@
 
 <script>
 import axios from 'axios';
-axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 import { required, minLength } from 'vuelidate/lib/validators';
 
@@ -99,35 +120,30 @@ export default {
         return {
             name: '',
             description: '',
-            condo: '',
-            thumbnail: ''
+            date: '',
+            thumbnail: '',
+            price: 0,
+            quantity: 0,
+            croppedImage: {},
+            presignedURL: '',
+            photoFilename: '',
+            delivery: 'Delivery'
         }
     },
     methods:{
         submit: function(e) {
             e.preventDefault();
+            e.submitter.disabled = true;
             this.$v.$touch();
             if(this.$v.$anyError){
                 return;
             }
-            const params = {
-                'name': this.name,
-                'description': this.description,
-                'condo': this.condo,
-                'thumbnail': this.thumbnail
-            }
-            
-            axios.post('https://jsonplaceholder.typicode.com/photos/1', // todo: move this to configuration
-            params)
-            .then((res) => {
-                if(res.status === 404)
-                {
-                    console.log('That email/password combination does not match our records.');
-                    this.errorMessages = 'That email/password combination does not match our records.';
-                } else {
-                    this.error = '';
-                    console.log('Success!' , res.data.token);
-                }
+
+            let presignedURL = '';
+            axios.get('https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url')
+            .then((res) =>{
+                presignedURL = res.data.uploadURL;
+                this.uploadImage(presignedURL);
             })
             .catch((error) => {
                 console.log('Oh No! An Error!', error);
@@ -136,8 +152,71 @@ export default {
                 // console.log('Do this always... or else...');
             });
         },
+        uploadImage: function(presignedURL) {
+            console.log('Uploading: ', this.croppedImage);
+            let binary = atob(this.croppedImage.split(',')[1]);
+
+            let array = [];
+            for(var i = 0; i < binary.length; i++){
+                array.push(binary.charCodeAt(i));
+            }
+            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+            console.log('Uploading to: ', presignedURL);
+            console.log("blobData", blobData);
+            var options = { headers: { 'Content-Type': 'image/jpeg', 'x-amz-acl': 'public-read' } };
+            axios.put(presignedURL, blobData, options)
+            .then((res) => {
+                console.log('Upload Response... ', res);
+            })
+            .catch((error) => {
+                console.log('Upload Error...', error);
+            })
+            .finally(() => {
+                console.log('Upload Complete');
+            })
+
+            // const params = {
+            //     'name': this.name,
+            //     'description': this.description,
+            
+            //     'thumbnail': this.thumbnail
+            // }
+            
+            // axios.post('', // todo: move this to configuration
+            // params)
+            // .then((res) => {
+            //     if(res.status === 404)
+            //     {
+            //         console.log('That email/password combination does not match our records.');
+            //         this.errorMessages = 'That email/password combination does not match our records.';
+            //     } else {
+            //         this.error = '';
+            //         console.log('Success!' , res.data.token);
+            //     }
+            // })
+            // .catch((error) => {
+            //     console.log('Oh No! An Error!', error);
+            // })
+            // .finally(() => {
+            //     // console.log('Do this always... or else...');
+            // });
+        },
         thumbnailChanged: function(e){
             this.thumbnail = e.target.files[0];
+
+            const MAX_IMAGE_SIZE = 30000000;
+            let reader = new FileReader()
+            reader.onload = (e) => {
+                console.log('length: ', e.target.result.includes('data:image/jpeg'))
+                if (!e.target.result.includes('data:image/jpeg')) {
+                return alert('Wrong file type - JPG only.')
+                }
+                if (e.target.result.length > MAX_IMAGE_SIZE) {
+                return alert('Image is loo large - 1Mb maximum')
+                }
+                this.croppedImage = e.target.result
+            }
+            reader.readAsDataURL(this.thumbnail);
 
             const mpImg = new MegaPixImage(this.thumbnail);
 
@@ -146,13 +225,20 @@ export default {
             
             resCanvas1.classList.add('show');
             mpImg.render(resCanvas1, { maxWidth: 325, maxHeight: 180 });
+            // const dataURL = resCanvas1.toDataURL('image/jpeg');
+            // console.log(dataURL);
+            // this.croppedImage = dataURL;
+            // console.log('croppedImage', this.croppedImage);
         }
     },
     validations: {
         name: { required },
         description: {required, minLength: minLength(8)},
-        condo: { required },
-        thumbnail: { required }
+        thumbnail: { required },
+        price: { required }, // todo: needs validation
+        quantity: { required }, // todo: needs validation
+        date: { required }, // todo: needs validation
+        delivery: { required } // todo: needs validation
     },
     computed: {
         nameErrors() {
@@ -168,10 +254,22 @@ export default {
             !this.$v.description.minLength && errors.push('Description must be at least 8 characters long.');
             return errors;
         },
-        condoErrors() {
+        priceErrors() {
             const errors = [];
-            if(!this.$v.condo.$dirty && !this.$v.condo.$dirty) return errors;
-            !this.$v.condo.required && errors.push('Condo is required.');
+            if(!this.$v.price.$dirty && !this.$v.price.$dirty) return errors;
+            !this.$v.price.required && errors.push('Price is required.');
+            return errors;
+        },
+        quantityErrors() {
+            const errors = [];
+            if(!this.$v.quantity.$dirty && !this.$v.quantity.$dirty) return errors;
+            !this.$v.quantity.required && errors.push('Quantity is required.');
+            return errors;
+        },
+        dateErrors() {
+            const errors = [];
+            if(!this.$v.date.$dirty && !this.$v.date.$dirty) return errors;
+            !this.$v.date.required && errors.push('Date is required.');
             return errors;
         },
         thumbnailErrors() {
@@ -186,19 +284,51 @@ export default {
 
 <style lang="scss">
 @import "../assets/styles/config.scss";
-.add-shop{
+.add-product{
     padding: 5em 1em;
     ul{
         li{
             margin: 1em 0;
+            .wrapper{
+                    display: flex;
+                    font-weight: 600;
+                }
             label{
                 display: inline-block;
                 width: 350px;
                 margin: 0 0 0.5em;
                 font-weight: 600;
+                
+                .or{
+                    margin: 5em 1em;
+                }
+                .price, .quantity{
+                    width: 175px;
+                }
                 .custom-file-upload {
                     
-                    margin: 0.25em 0.5em 0 0;
+                    width: 100px;
+                    margin: 0.75em 0.5em 0 0;
+                    height: 2em;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                    border-radius: 5%;
+                    border: solid 1px $primary-color;
+                    cursor: pointer;
+                    text-align: center;
+                    font-size: 48px;
+                    padding: 0.2em 0;
+                    p{
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                    font-awesome-icon{
+                        font-weight: 600;
+                    }
+                    
+                }
+                .camera {
+                    width: 175px;
+                    margin: 0.25em 0 0 0;
                     height: 3em;
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                     border-radius: 5%;
@@ -214,7 +344,6 @@ export default {
                     font-awesome-icon{
                         font-weight: 600;
                     }
-                    
                 }
                 canvas{
                     display: none;
@@ -230,15 +359,43 @@ export default {
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 5%;
                 border: solid 1px $primary-color;
-                &#description{
-                    height: 8em;
-                }
+                text-indent: 1em;
                 &#thumbnail{
                     text-align: center;
                     display:none;
                 }
+                &#camera{
+                    text-align: center;
+                    display:none;
+                }
+                .price, .quantity{
+                    width: 50%;
+                }
+            }
+            .price, .quantity{
+                text-align: right;
+                font-size: 24px;
+                height: 1em;
+                width: 50%;
+                margin-right: 0.5em;
+                .error{
+                    display: inline-block;
+                }
+                
             }
             
+            textarea{
+                resize: none;
+                height: 8em;
+                padding: 0.5em;
+                text-align: left;
+                margin-top: 0;
+                width: 100%;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                border-radius: 5%;
+                border: solid 1px $primary-color;
+                overflow: auto;
+            }
         }
     }
 

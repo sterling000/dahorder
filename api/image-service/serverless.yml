@@ -1,0 +1,43 @@
+service: image-service
+app: dah-order
+org: sterling000
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  httpApi:
+    cors: true
+  
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+        - "s3:PutObjectAcl"
+      Resource:
+        - arn:aws:s3:::imagesq323dsad/*
+
+  environment:
+    UPLOAD_BUCKET: imagesq323dsad
+
+functions:
+  getUploadURL:
+    handler: src/functions/getUploadURL.handler
+    events:
+      - http:
+          path: /v1/image/url
+          method: get
+          cors: true
+      - s3: imagesq323dsad
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-mocha
+
+custom:
+  serverless-mocha-plugin:
+    testTemplate: ../templates/test-template.ejs
+    functionTemplate: ../templates/function-template.ejs

@@ -10,7 +10,7 @@
                 @blur="$v.name.$touch()"
             />
             <ul>
-                <li v-for="error in nameErrors" :key="error">
+                <li class='error' v-for="error in nameErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -22,7 +22,7 @@
                 @blur="$v.condo.$touch()"
             />
             <ul>
-                <li v-for="error in condoErrors" :key="error">
+                <li class='error' v-for="error in condoErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -42,7 +42,7 @@
                 @blur="$v.phone.$touch()"
             />
             <ul>
-                <li v-for="error in phoneErrors" :key="error">
+                <li class='error' v-for="error in phoneErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -54,7 +54,7 @@
                 @blur="$v.email.$touch()"
             />
             <ul>
-                <li v-for="error in emailErrors" :key="error">
+                <li class='error' v-for="error in emailErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -66,7 +66,7 @@
                 @blur="$v.password.$touch()"
             />
             <ul>
-                <li v-for="error in passwordErrors" :key="error">
+                <li class='error' v-for="error in passwordErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -79,7 +79,7 @@
                 @blur="$v.confirm.$touch()"
             />
             <ul>
-                <li v-for="error in confirmErrors" :key="error">
+                <li class='error' v-for="error in confirmErrors" :key="error">
                     <p class="error">{{error}}</p>
                 </li>
             </ul>
@@ -98,11 +98,11 @@
 
             <input id="submit" type="submit" value="Sign Up"/>
         </form>
-        <ul>
+        <!-- <ul>
             <li v-for="errors in errorMessages" :key="errors[0]">
                 {{errors}}
             </li>
-        </ul>
+        </ul> -->
     </div>
 </template>
 
@@ -235,9 +235,11 @@ export default {
     overflow: auto;
     form{
         li{
-            margin: 1em 0;
+            .error{
+                margin: 0;
+            }
         }
-        padding: 2em;
+        padding: 2em 2.5em 5em;
         label{
             width: 275px;
             margin: 0 0 0.5em;
@@ -247,20 +249,18 @@ export default {
             display: block;
             width: 275px;
             height: 2em;
-            margin: 0 0 1em;
+            margin: 0 0 0.5em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
             border: solid 1px $primary-color;
             &#submit{
-                background-color: $primary-color;
-                color: $secondary-color;
                 font-size: 36px;
                 font-weight: 600;
             }
         }
         .error{
             color: #f00;
-            margin: 0 0 0.5em;
+            margin: 0;
             font-weight: 600;
         }
         .hint{
@@ -270,11 +270,12 @@ export default {
         .countrycode{
             display: inline-block;
             width: 40px;
-            color: #aaa
+            color: #aaa;
+            padding: 0 0.5em;
         }
         input.phone{
             display: inline-block;
-            width: 200px;
+            width: 175px;
         }
     }
     .forgot-password{
