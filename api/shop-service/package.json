@@ -2,7 +2,9 @@
   "name": "template",
   "description": "",
   "version": "0.1.0",
-  "dependencies": {},
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  },
   "devDependencies": {
     "aws-sdk": "^2.777.0",
     "aws-sdk-mock": "^5.1.0",

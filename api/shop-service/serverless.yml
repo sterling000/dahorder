@@ -20,6 +20,7 @@ provider:
       Action:
         - "dynamodb:Query"
         - "dynamodb:PutItem"
+        - "dynamodb:Scan"
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/pk
@@ -29,6 +30,17 @@ provider:
     JWT_SECRET: ${param:JWT_SECRET}
 
 functions:
+  getShops:
+    handler: src/functions/getShops.handler
+    events:
+      - http:
+          path: /shops
+          method: get
+          cors: true
+
+  authorizer:
+    handler: src/functions/authorizer.handler
+
   addShop:
     handler: src/functions/addShop.handler
     events:
@@ -36,6 +48,7 @@ functions:
           path: /shop
           method: post
           cors: true
+          authorizer: authorizer
 
 resources:
   Resources:
