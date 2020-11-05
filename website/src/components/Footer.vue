@@ -39,7 +39,7 @@ export default {
 <style lang="scss">
 @import "../assets/styles/config.scss";
     footer{
-        background-color: $primary-color;
+        background-color: $color-primary-0;
         min-height: 10vh;
         position: fixed;
         bottom: 0;
@@ -50,10 +50,10 @@ export default {
             justify-content: space-around;
             .shortcut{
                 &.current{
-                    background-color: $secondary-color;
+                    background-color: $color-primary-3;
                 }
                 &:hover{
-                    background-color: $secondary-color;
+                    background-color: $color-primary-3;
                 }
                 cursor: pointer;
                 width: 22vw; 
@@ -64,7 +64,7 @@ export default {
                 padding: 1.5em 0;
                 font-size: 12px;
                 font-weight: 600;
-                border: 1px solid $secondary-color;
+                border: 1px solid $color-primary-3;
                 .shortcut-icon{
                     font-size: 24px;
                     margin-bottom: 5px;

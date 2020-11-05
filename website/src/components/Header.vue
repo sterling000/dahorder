@@ -90,11 +90,11 @@ export default {
 @import "../assets/styles/menu.scss";
 
 .text-secondary{
-    color: $secondary-color;
+    color: $color-primary-3;
 }
 
 header {
-    background-color: $primary-color;
+    background-color: $color-primary-0;
     min-height: 5vh;
     display: flex;
     justify-content: space-between;

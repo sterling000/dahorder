@@ -39,7 +39,7 @@ export default {
             width: 260px;
             height: 167px;
             border-radius: 5%;
-            background-color: $primary-color;
+            background-color: $color-primary-0;
             h2 {
                 font-size: 18px;
             }
@@ -51,8 +51,8 @@ export default {
             width: 260px;
             height: 167px;
             border-radius: 5%;
-            background-color: $primary-color;
-            color: $secondary-color;
+            background-color: $color-primary-0;
+            color: $color-primary-3;
             h2 {
                 font-size: 36px;
                 margin: 0;

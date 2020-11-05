@@ -1,6 +1,6 @@
 // Menu Button
 .menu-btn {
-    background-color: $secondary-color;
+    background-color: $color-primary-3;
     padding: 1em;
     margin: 0.25em;
     z-index: 3;
@@ -11,7 +11,7 @@
         width: 28px;
         height: 3px;
         margin: 0 0 5px 0;
-        background: $primary-color;//set-text-color($primary-color);
+        background: #fff;//set-text-color($color-primary-0);
         @include easeOut;
     }
 
@@ -89,7 +89,7 @@
         }
 
         &.current > a {
-        color: $secondary-color;
+        color: $color-primary-3;
         }
     }
 
@@ -100,12 +100,12 @@
         text-transform: uppercase;
         padding: 1rem 0;
         font-weight: 300;
-        color: $primary-color;
+        color: $color-primary-0;
         text-decoration: none;
         @include easeOut;
 
         &:hover {
-        color: $secondary-color;
+        color: $color-primary-3;
         }
     }
 }

@@ -122,7 +122,7 @@ export default {
             height: 3em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
-            border: solid 1px $primary-color;
+            border: solid 1px $color-primary-0;
             &#submit{
                 font-size: 36px;
                 font-weight: 600;
@@ -133,7 +133,7 @@ export default {
             height: 3em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
-            border: solid 1px $primary-color;
+            border: solid 1px $color-primary-0;
             margin: 1em 0;
         }
         .error{

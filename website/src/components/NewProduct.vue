@@ -312,7 +312,7 @@ export default {
                     height: 2em;
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                     border-radius: 5%;
-                    border: solid 1px $primary-color;
+                    border: solid 1px $color-primary-0;
                     cursor: pointer;
                     text-align: center;
                     font-size: 48px;
@@ -332,7 +332,7 @@ export default {
                     height: 3em;
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                     border-radius: 5%;
-                    border: solid 1px $primary-color;
+                    border: solid 1px $color-primary-0;
                     cursor: pointer;
                     text-align: center;
                     font-size: 48px;
@@ -358,7 +358,7 @@ export default {
                 height: 3em;
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 5%;
-                border: solid 1px $primary-color;
+                border: solid 1px $color-primary-0;
                 text-indent: 1em;
                 &#thumbnail{
                     text-align: center;
@@ -393,7 +393,7 @@ export default {
                 width: 100%;
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 5%;
-                border: solid 1px $primary-color;
+                border: solid 1px $color-primary-0;
                 overflow: auto;
             }
         }
@@ -401,13 +401,13 @@ export default {
 
     input#submit{
         display: block;
-        background-color: $primary-color;
-        color: $secondary-color;
+        background-color: $color-primary-0;
+        color: $color-primary-3;
         width: 100%;
         height: 2em;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 5%;
-        border: solid 1px $primary-color;
+        border: solid 1px $color-primary-0;
         font-size: 40px;
         font-weight: 600;
         margin-bottom: 1em;

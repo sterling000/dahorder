@@ -19,6 +19,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "./assets/styles/config.scss";
 *{
   margin: 0;
   padding: 0;
@@ -26,11 +27,12 @@ export default {
 }
 
 body{
-  color: #000;
+  color: #fff;
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   min-height: 100vh;
   max-height: 100vh;
+  background-color: $color-primary-1;
   // overflow: hidden;
 }
 
