@@ -15,6 +15,11 @@ export default {
         newProduct: function(){
             this.$router.push('/newproduct');
         }
+    },
+    mounted(){
+        if(this.$store.state.account.token === null){
+            this.$router.push('/login');
+        }
     }
 }
 </script>

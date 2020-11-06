@@ -18,6 +18,11 @@ export default {
         openShop: function(){
             this.$router.push('/shop');
         }
+    },
+    mounted(){
+        if(this.$store.state.account.token === null){
+            this.$router.push('/login');
+        }
     }
 }
 </script>

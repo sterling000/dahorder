@@ -278,6 +278,11 @@ export default {
             !this.$v.thumbnail.required && errors.push('Thumbnail is required.');
             return errors;
         }
+    },
+    mounted(){
+        if(this.$store.state.account.token === null){
+            this.$router.push('/login');
+        }
     }
 }
 </script>
