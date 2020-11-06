@@ -103,6 +103,12 @@ export default {
             return errors;
         },
         ...mapState('account', ['token'])
+    },
+    mounted(){
+        if(this.$store.state.account.token !== null)
+        {
+            this.$router.push('/');
+        }
     }
 }
 </script>
