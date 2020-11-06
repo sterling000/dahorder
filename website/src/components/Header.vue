@@ -11,10 +11,12 @@
             <ul class="menu-nav">
                 <li id="Home" class="nav-item">
                     <router-link to="/" class="nav-link">Home</router-link>
-                    <router-link to="/account" class="nav-link">My Account</router-link>
-                    <router-link to="/orders" class="nav-link">My Orders</router-link>
-                    <router-link to="/shops" class="nav-link">My Shops</router-link>
-                    <router-link to="/logout" class="nav-link">Log out</router-link>
+                    <router-link v-show="signedIn" to="/account" class="nav-link">My Account</router-link>
+                    <router-link v-show="signedIn" to="/orders" class="nav-link">My Orders</router-link>
+                    <router-link v-show="signedIn" to="/shops" class="nav-link">My Shops</router-link>
+                    <router-link v-show="signedIn" to="/logout" class="nav-link">Log out</router-link>
+                    <router-link v-show="!signedIn" to="/login" class="nav-link">Log In</router-link>
+                    <router-link v-show="!signedIn" to="/orders" class="nav-link">Register</router-link>
                 </li>
             </ul>
         </nav>
@@ -60,6 +62,9 @@ export default {
         navItems(){
             return document.querySelectorAll('.nav-item');
         },
+        signedIn(){
+            return this.$store.state.account.token !== null; // check the token is valid next time?
+        }
     },
     watch: {
         $route(to, from){
@@ -79,8 +84,6 @@ export default {
                 }
             });
         }
-    },
-    mounted(){
     }
 }
 </script>
@@ -88,10 +91,6 @@ export default {
 <style lang="scss">
 @import "../assets/styles/config.scss";
 @import "../assets/styles/menu.scss";
-
-.text-secondary{
-    color: $color-primary-3;
-}
 
 header {
     background-color: $color-primary-0;
@@ -109,7 +108,9 @@ header {
         padding: 1em;
         display: inline-flex;
         max-width: 155px;
+        color: set-text-color($color-primary-0)
     }
     
 }
 </style>
+

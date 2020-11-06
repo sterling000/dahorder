@@ -36,6 +36,7 @@
 <script>
 import axios from 'axios';
 import { required, email } from 'vuelidate/lib/validators';
+import { mapState } from 'vuex';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 export default {
     data(){
@@ -67,6 +68,8 @@ export default {
                 } else {
                     this.error = '';
                     console.log('Success!' , res.data.token);
+                    this.$store.commit('account/login', res.data.token);
+                    this.$router.push('/');
                 }
             })
             .catch((error) => {
@@ -98,7 +101,8 @@ export default {
             if(!this.$v.password.$dirty) return errors;
             !this.$v.password.required && errors.push('Password is required.');
             return errors;
-        }
+        },
+        ...mapState('account', ['token'])
     }
 }
 </script>
@@ -122,10 +126,11 @@ export default {
             height: 3em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
-            border: solid 1px $color-primary-0;
+            border: none;
             &#submit{
                 font-size: 36px;
                 font-weight: 600;
+                border: none;
             }
         }
         button {
@@ -133,7 +138,7 @@ export default {
             height: 3em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
-            border: solid 1px $color-primary-0;
+            border: none;
             margin: 1em 0;
         }
         .error{

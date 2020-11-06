@@ -27,7 +27,7 @@ export default {
 }
 
 body{
-  color: #fff;
+  color: #000;
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   min-height: 100vh;

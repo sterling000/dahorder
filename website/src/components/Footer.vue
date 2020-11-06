@@ -1,26 +1,34 @@
 <template>
     <footer>
         <ul>
-            <li id="orders" class="shortcut" @click="shortcutClicked('/orders')">
+            <li v-show="signedIn" id="orders" class="shortcut" @click="shortcut('/orders')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','list']" /><p>ORDERS</p>
             </li>
-            <li id="buy" class="shortcut current" @click="shortcutClicked('/buy')">
+            <li v-show="signedIn" id="buy" class="shortcut current" @click="shortcut('/buy')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','utensils']" /><p>BUY</p>
             </li>
-            <li id="sell" class="shortcut" @click="shortcutClicked('/sell')">
+            <li v-show="signedIn" id="sell" class="shortcut" @click="shortcut('/sell')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','money-bill-wave']" /><p>SELL</p>
             </li>
-            <li id="cart" class="shortcut" @click="shortcutClicked('/cart')">
+            <li v-show="signedIn" id="cart" class="shortcut" @click="shortcut('/cart')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','shopping-cart']" /><p>CART</p>
             </li>
+
+            <li v-show="!signedIn" id="login" class="cta" @click="signIn">
+                <div>Sign In</div>
+            </li>
+            <li v-show="!signedIn" id="register" class="cta" @click="register">
+                <div>Register</div>
+            </li>
         </ul>
+        
     </footer>
 </template>
 
 <script>
 export default {
     methods: {
-        shortcutClicked: function(route){
+        shortcut: function(route){
             if(route === this.$router.history.current.path){
                 return;
             }
@@ -31,6 +39,17 @@ export default {
             const shortcut = document.querySelector("#" + id);
             shortcut.classList.add('current');
             this.$router.push(route);
+        },
+        signIn(){
+            this.$router.push('/login');
+        },
+        register(){
+            this.$router.push('/register');
+        }
+    },
+    computed:{
+        signedIn(){
+            return this.$store.state.account.token !== null; // check the token is valid next time?
         }
     }
 }
@@ -44,10 +63,12 @@ export default {
         position: fixed;
         bottom: 0;
         min-width: 100vw;
+        justify-content: space;
         ul {
             display: flex;
             width: 100vw;
             justify-content: space-around;
+            color: set-text-color($color-primary-0);
             .shortcut{
                 &.current{
                     background-color: $color-primary-3;
@@ -71,7 +92,22 @@ export default {
                     padding: auto auto 1.5em;
                 }
             }
-            
+            .cta{
+                text-align: center;
+                
+                padding: 1em 3em;
+                border: 1px solid $color-primary-3;
+                font-weight: 600;
+                font-size: 18px;
+            }
         }
+        
+        #signIn{
+            color: set-text-color($color-primary-0);
+            cursor: pointer;
+            display: flex;
+        }
+        
     }
 </style>
+

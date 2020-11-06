@@ -2,6 +2,7 @@
 const AWS = require('aws-sdk')
 
 module.exports.handler = async event => {
+  console.log('event', event);
   const params = {
     TableName: process.env.DYNAMODB_SHOP_TABLE,
   };

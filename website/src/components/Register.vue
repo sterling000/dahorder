@@ -96,7 +96,7 @@
                 <option value="both">Both</option>
             </select>
 
-            <input id="submit" type="submit" value="Sign Up"/>
+            <input id="submit" type="submit" value="Sign Up" :disabled="$v.$invalid"/>
         </form>
         <!-- <ul>
             <li v-for="errors in errorMessages" :key="errors[0]">
@@ -154,7 +154,7 @@ export default {
                 } else {
                     this.error = '';
                     console.log('Success! User Created!', res);
-                    this.$router.push('/login');
+                    this.$router.push('/');
                 }
             })
             .catch((error) => {
@@ -252,7 +252,7 @@ export default {
             margin: 0 0 0.5em;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 5%;
-            border: solid 1px $color-primary-0;
+            border: none;
             &#submit{
                 font-size: 36px;
                 font-weight: 600;
