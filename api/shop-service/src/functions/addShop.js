@@ -1,24 +1,38 @@
-'use strict';
-const AWS = require('aws-sdk')
+"use strict";
+const AWS = require("aws-sdk");
+const jwt = require("jsonwebtoken");
+const { v5: uuidv5 } = require("uuid");
 
-module.exports.handler = async event => {
+module.exports.handler = async (event) => {
+  console.log(event);
+  const authorizerToken = event.headers.Authorization;
+  const authorizerArr = authorizerToken.split(" ");
+  const token = authorizerArr[1];
+  let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
+
   const body = JSON.parse(event.body);
-  
-  const condo = body.condo;
+  const owner = decodedJwt.phone;
   const name = body.name;
+  const id = uuidv5(
+    `${process.env.DYNAMODB_SHOP_TABLE}-${owner}-${name}`,
+    uuidv5.URL
+  );
+  const condo = body.condo;
   const description = body.description;
   const thumbnail = body.thumbnail;
 
   const newShopParams = {
     TableName: process.env.DYNAMODB_SHOP_TABLE,
     Item: {
-      pk: name,
+      pk: owner,
+      id: id,
+      name: name,
       condo: condo,
       description: description,
-      thumbnail: thumbnail
+      thumbnail: thumbnail,
     },
-    ConditionExpression: 'attribute_not_exists(pk)',
-  }
+    ConditionExpression: "attribute_not_exists(pk)",
+  };
 
   try {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -26,15 +40,15 @@ module.exports.handler = async event => {
     return {
       statusCode: 201,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true,
-        'Access-Control-Allow-Headers': 'Authorization'
-      }
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
     };
-  } catch(putError) {
-    console.log('There was an error putting a new shop');
-    console.log('putError', putError);
-    console.log('newShopParams', newShopParams);
-    return new Error('There was an error putting the new shop');
+  } catch (putError) {
+    console.log("There was an error putting a new shop");
+    console.log("putError", putError);
+    console.log("newShopParams", newShopParams);
+    return new Error("There was an error putting the new shop");
   }
 };

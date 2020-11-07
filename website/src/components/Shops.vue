@@ -2,27 +2,51 @@
     <div class="shops">
         <div class="category">
             <h2>Shops</h2>
-            <div class="store" @click="openShop(this)"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-            <div class="store" @click="openShop(this)"><img src='../assets/images/test.jpg'/><h2>Amy's Laundry Service</h2></div>
-            <div class="new" @click="newShop"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+            <ul>
+                <li v-for='shop in shops.data.shops' :key='shop.id'>
+                    <store v-bind:store="shop" @click="selectStore"></store>
+                </li>
+                <li>
+                    <div class="new" @click="newShop"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
+    data(){
+        return {
+            shops: []
+        }
+    },
     methods: {
         newShop: function(){
             this.$router.push('/newshop');
         },
         openShop: function(){
             this.$router.push('/shop');
+        },
+        getShops: async function() {
+            const options = {
+                headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+            }
+
+            this.shops = await axios.get(`https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/myshops`, options);
+        },
+        selectStore: function() {
+            console.log('selectStore');
         }
     },
     mounted(){
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
+            return;
         }
+        this.getShops();
+        
     }
 }
 </script>

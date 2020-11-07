@@ -37,7 +37,7 @@
             <input 
                 class='phone'
                 v-model.trim="phone" 
-                placeholder="0123911525" 
+                placeholder="0123456789"
                 name="phone" 
                 @blur="$v.phone.$touch()"
             />
@@ -144,7 +144,7 @@ export default {
                 'role': this.role
             }
             
-            axios.post('https://7g2ixxqv2k.execute-api.us-east-1.amazonaws.com/dev/v1/user',
+            axios.post('https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/v1/user',
             params)
             .then((res) => {
                 if(res.status === 202)

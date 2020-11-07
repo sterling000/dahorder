@@ -2,16 +2,20 @@
     <div class="login">
         <form @submit="signin" method="POST">
             <ul>
-                <li>
-                    <label for="email">Email:</label>
-                    <input 
-                        v-model="email" 
-                        placeholder="john.doe@email.com" 
-                        name="email"
-                        @blur="$v.email.$touch()"
-                    />
-                    <p v-if="$v.email.$dirty && $v.email.$invalid">{{ emailErrors }}</p>
+                <label for="phone">Phone:</label>
+                <p class="countrycode">+6</p>
+                <input 
+                    class='phone'
+                    v-model.trim="phone" 
+                    placeholder="0123456789"
+                    name="phone" 
+                    @blur="$v.phone.$touch()"
+                />
+                <ul>
+                <li class='error' v-for="error in phoneErrors" :key="error">
+                    <p class="error">{{error}}</p>
                 </li>
+            </ul>
                 <li>
                     <label for="password">Password:</label>
                     <input 
@@ -35,13 +39,14 @@
 
 <script>
 import axios from 'axios';
-import { required, email } from 'vuelidate/lib/validators';
+import { required } from 'vuelidate/lib/validators';
+import validPhone from '../validators/validators'
 import { mapState } from 'vuex';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 export default {
     data(){
         return {
-            email: '',
+            phone: '',
             password: '',
             errors: ''
         }
@@ -54,17 +59,17 @@ export default {
                 return;
             }
             const params = {
-                'email': this.email,
+                'phone': this.phone,
                 'password': this.password
             }
             
-            axios.post('https://7g2ixxqv2k.execute-api.us-east-1.amazonaws.com/dev/v1/user/login', // todo: move the url to config
+            axios.post('https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/v1/user/login', // todo: move the url to config
             params)
             .then((res) => {
                 if(res.status === 404)
                 {
-                    console.log('That email/password combination does not match our records.');
-                    this.errorMessages = 'That email/password combination does not match our records.';
+                    console.log('That phone/password combination does not match our records.');
+                    this.errorMessages = 'That phone/password combination does not match our records.';
                 } else {
                     this.error = '';
                     console.log('Success!' , res.data.token);
@@ -85,15 +90,15 @@ export default {
         }
     },
     validations: {
-        email: { required, email },
+        phone: { required, validPhone },
         password: {required}
     },
     computed: {
-        emailErrors() {
+        phoneErrors() {
             const errors = [];
-            if(!this.$v.email.$dirty && !this.$v.password.$dirty) return errors;
-            !this.$v.email.required && errors.push('Email is required.');
-            !this.$v.email.email && errors.push('Email is not valid.');
+            if(!this.$v.phone.$dirty && !this.$v.password.$dirty) return errors;
+            !this.$v.phone.required && errors.push('Phone is required.');
+            !this.$v.phone.validPhone && errors.push('Phone is not valid.');
             return errors;
         },
         passwordErrors() {
@@ -155,10 +160,16 @@ export default {
         display: block;
         justify-content: space-around;
     }
-    .logo{
-        font-weight: bold;
-        text-transform: uppercase;
-    }
     
+    .countrycode{
+        display: inline-block;
+        width: 40px;
+        color: #aaa;
+        padding: 0 0.5em;
+    }
+    input.phone{
+        display: inline-block;
+        width: 175px;
+    }
 }
 </style>

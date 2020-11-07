@@ -1,51 +1,44 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "title": "Create User Schema",
-    "required": [
-        "email",
-        "password",
-        "name",
-        "condo",
-        "phone",
-        "role"
-    ],
-    "properties": {
-        "email": {
-            "type": "string",
-            "title": "Email",
-            "minLength": 3,
-            "maxLength": 50
-        },
-        "password": {
-            "title": "Password",
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 50
-        },
-        "name": {
-            "type": "string",
-            "title": "Name",
-            "minLength": 3,
-            "maxLength": 50
-        },
-        "condo": {
-            "type": "string",
-            "title": "Condo",
-            "minLength": 3,
-            "maxLength": 50
-        },
-        "phone": {
-            "type": "string",
-            "title": "Phone",
-            "minLength": 7,
-            "maxLength": 12
-        },
-        "role": {
-            "type": "string",
-            "title": "Role",
-            "minLength": 3,
-            "maxLength": 20
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Create User Schema",
+  "required": ["email", "password", "name", "condo", "phone", "role"],
+  "properties": {
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "password": {
+      "title": "Password",
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 50
+    },
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "condo": {
+      "type": "string",
+      "title": "Condo",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone",
+      "minLength": 7,
+      "maxLength": 12
+    },
+    "role": {
+      "type": "string",
+      "title": "Role",
+      "minLength": 3,
+      "maxLength": 20
     }
+  }
 }

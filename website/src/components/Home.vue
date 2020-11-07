@@ -56,7 +56,7 @@ export default {
             this.$router.push('/store'); // todo: set up routing for /:id
         },
         getShops: async function() {
-            this.shops = await axios.get('https://0tc960hqu1.execute-api.us-east-1.amazonaws.com/dev/shops');
+            this.shops = await axios.get('https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/listshops');
         }
     }
 }

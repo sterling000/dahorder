@@ -1,5 +1,5 @@
 <template>
-    <div class="store"><div id="store-thumbnail" ref="thumbnail"></div><h2>{{store.pk}}</h2></div>
+    <div class="store"><div id="store-thumbnail" ref="thumbnail"></div><h2>{{store.name}}</h2></div>
 </template>
 
 <script>

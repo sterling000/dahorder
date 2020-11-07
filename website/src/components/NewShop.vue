@@ -89,7 +89,7 @@ export default {
     methods:{
         submit: function(e) {
             e.preventDefault();
-            e.submitter.disabled = true;
+            // e.submitter.disabled = true;
             this.$v.$touch();
             if(this.$v.$anyError){
                 return;
@@ -107,12 +107,13 @@ export default {
                     condo: this.condo
                 }
                 console.log('Adding Shop: ', params);
-                axios.post('https://0tc960hqu1.execute-api.us-east-1.amazonaws.com/dev/shop', params, {
-                    'Content-Type': 'application/json'
-                })
+                const options = {
+                    headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+                }
+                axios.post('https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/shop', params, options)
                 .then((res) => {
                     console.log(res);
-                    // todo: push router to shop page
+                    this.$router.push('/shops');
                 })
                 .catch((error) => {
                     console.log('Oh No! An Error!', error);
@@ -184,7 +185,6 @@ export default {
             const MAX_IMAGE_SIZE = 30000000;
             let reader = new FileReader()
             reader.onload = (e) => {
-                console.log('length: ', e.target.result.includes('data:image/jpeg'))
                 if (!e.target.result.includes('data:image/jpeg')) {
                 return alert('Wrong file type - JPG only.')
                 }

@@ -1,23 +1,20 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "title": "Login User Schema",
-    "required": [
-        "email",
-        "password"
-    ],
-    "properties": {
-        "email": {
-            "type": "string",
-            "title": "Email",
-            "minLength": 3,
-            "maxLength": 50
-        },
-        "password": {
-            "title": "Password",
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 50
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Login User Schema",
+  "required": ["phone", "password"],
+  "properties": {
+    "phone": {
+      "type": "string",
+      "title": "Phone",
+      "minLength": 8,
+      "maxLength": 15
+    },
+    "password": {
+      "title": "Password",
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 50
     }
+  }
 }
