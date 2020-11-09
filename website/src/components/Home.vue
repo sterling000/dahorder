@@ -4,33 +4,12 @@
             <h2>Recent</h2>
             <div class="carousel">
                 <ul>
-                    <li v-for='shop in shops.data' :key='shop.pk'>
+                    <li v-for='shop in shops.data' :key='shop.id'>
                         <store v-bind:store="shop" @click="selectStore"></store>
                     </li>
                 </ul>
             </div>
         </div>
-        <!-- <div class="category">
-            <h2>Food</h2>
-            <div class="carousel">
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-            </div>
-        </div>
-        <div class="category">
-            <h2>Services</h2>
-            <div class="carousel">
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-            </div>
-        </div>
-        <div class="category">
-            <h2>Services</h2>
-            <div class="carousel">
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-                <div class="store"><img src='../assets/images/test.jpg'/><h2>Amy's Home Cooking</h2></div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -43,11 +22,7 @@ export default {
         }
     },
     mounted() {
-        // const stores = document.querySelectorAll('.store');
-
-        // stores.forEach(el => {
-        //     el.style.setProperty('--total', 2);
-        // })
+        
         this.getShops();
     },
     methods:{
@@ -91,9 +66,6 @@ export default {
             width: 10px;
         }
     }
-    
-
-    
 }
     
 </style>
