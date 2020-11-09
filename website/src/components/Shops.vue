@@ -3,7 +3,7 @@
         <div class="category">
             <h2>Shops</h2>
             <ul>
-                <li v-for='shop in shops.data.shops' :key='shop.id'>
+                <li v-for='shop in shops' :key='shop.id'>
                     <store v-bind:store="shop" @click="selectStore"></store>
                 </li>
                 <li>
@@ -34,7 +34,8 @@ export default {
                 headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
             }
 
-            this.shops = await axios.get(`https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/myshops`, options);
+            const res = await axios.get(`https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/myshops`, options);
+            this.shops = res.data.shops;
         },
         selectStore: function() {
             console.log('selectStore');
@@ -46,7 +47,6 @@ export default {
             return;
         }
         this.getShops();
-        
     }
 }
 </script>

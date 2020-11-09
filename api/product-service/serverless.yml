@@ -1,0 +1,79 @@
+service: product-service
+# app and org for use with dashboard.serverless.com
+app: dah-order
+org: sterling000
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  httpApi:
+    cors: true
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:PutItem"
+        - "dynamodb:Scan"
+      Resource:
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}/index/pk
+
+  environment:
+    DYNAMODB_PRODUCT_TABLE: ${self:custom.dynamodb.productTable}
+    JWT_SECRET: ${param:JWT_SECRET}
+
+functions:
+  authorizer:
+    handler: src/functions/authorizer.validate
+  listProducts:
+    handler: src/functions/listProducts.handler
+    events:
+      - http:
+          path: /listproducts
+          method: get
+          cors: true
+  addProduct:
+    handler: src/functions/addProduct.handler
+    events:
+      - http:
+          path: /product
+          method: post
+          cors: true
+          authorizer: authorizer
+
+resources:
+  Resources:
+    shopTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:custom.dynamodb.productTable}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-mocha
+
+custom:
+  dynamodb:
+    productTable: product-${self:provider.stage}
+  serverless-mocha-plugin:
+    testTemplate: ../templates/test-template.ejs
+    functionTemplate: ../templates/function-template.ejs
