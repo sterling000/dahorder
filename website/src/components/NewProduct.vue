@@ -127,13 +127,14 @@ export default {
             croppedImage: {},
             presignedURL: '',
             photoFilename: '',
-            delivery: 'Delivery'
+            delivery: 'Delivery',
+            shop: ''
         }
     },
     methods:{
         submit: function(e) {
             e.preventDefault();
-            e.submitter.disabled = true;
+            // e.submitter.disabled = true;
             this.$v.$touch();
             if(this.$v.$anyError){
                 return;
@@ -144,6 +145,31 @@ export default {
             .then((res) =>{
                 presignedURL = res.data.uploadURL;
                 this.uploadImage(presignedURL);
+                const params = {
+                    name: this.name,
+                    description: this.description,
+                    thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
+                    price: this.price,
+                    quantity: this.quantity,
+                    available: this.date,
+                    delivery: this.delivery,
+                    shop: this.$route.params.id
+                }
+                console.log('Adding Product: ', params);
+                const options = {
+                    headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+                }
+                axios.post('https://f126sn9q00.execute-api.us-east-1.amazonaws.com/dev/product', params, options)
+                .then((res) => {
+                    console.log(res);
+                    this.$router.push(`/products/${this.shop}`);
+                })
+                .catch((error) => {
+                    console.log('Oh No! An Error!', error);
+                })
+                .finally(() => {
+
+                });
             })
             .catch((error) => {
                 console.log('Oh No! An Error!', error);
@@ -283,6 +309,7 @@ export default {
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
         }
+        this.shop = this.$route.params.id;
     }
 }
 </script>

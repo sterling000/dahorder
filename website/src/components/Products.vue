@@ -2,24 +2,52 @@
     <div class="products">
         <div class="category">
             <h2>Products</h2>
-            <div class="product"><img src='../assets/images/test.jpg'/><h2>Nasi Goreng</h2></div>
-            <div class="product"><img src='../assets/images/test.jpg'/><h2>Pad Thai</h2></div>
-            <div class="new" @click="newProduct"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+            <ul>
+                <li v-for='product in products' :key='product.id'>
+                    <product v-bind:product="product" @selected="selectProduct"></product>
+                </li>
+                <li>
+                    <div class="new" @click="newProduct"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
+    data(){
+        return {
+            products: []
+        }
+    },
     methods: {
         newProduct: function(){
-            this.$router.push('/newproduct');
+            this.$router.push(`/newproduct/${this.$route.params.id}`);
+        },
+        getProducts: async function() {
+            const options = {
+                headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+            }
+            const params = {
+                shop: this.$route.params.id
+            }
+            const res = await axios.get(`https://f126sn9q00.execute-api.us-east-1.amazonaws.com/dev/products`, params, options);
+            console.log(res);
+            this.products = res.data;
+        },
+        selectProduct: function(event) {
+            console.log('selectProduct', event);
+            this.$router.push(`/product/${event.id}`);
         }
     },
     mounted(){
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
+            return;
         }
+        this.getProducts();
     }
 }
 </script>

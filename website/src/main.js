@@ -1,22 +1,40 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import Vuelidate from 'vuelidate'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faList, faUtensils, faMoneyBillWave, faShoppingCart, faPlus, faFileUpload, faCamera } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import Store from './components/store.vue'
-library.add(faList, faUtensils, faMoneyBillWave, faShoppingCart, faPlus, faFileUpload, faCamera);
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.component('store', Store);
+import Vue from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import Vuelidate from "vuelidate";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faList,
+  faUtensils,
+  faMoneyBillWave,
+  faShoppingCart,
+  faPlus,
+  faFileUpload,
+  faCamera,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import Store from "./components/store.vue";
+import Product from "./components/product.vue";
+library.add(
+  faList,
+  faUtensils,
+  faMoneyBillWave,
+  faShoppingCart,
+  faPlus,
+  faFileUpload,
+  faCamera
+);
+Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("store", Store);
+Vue.component("product", Product);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 Vue.use(Vuelidate);
 
 new Vue({
   router,
   store,
-  render: h => h(App),
-}).$mount('#app')
+  render: (h) => h(App),
+}).$mount("#app");

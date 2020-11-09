@@ -4,7 +4,7 @@
             <h2>Shops</h2>
             <ul>
                 <li v-for='shop in shops' :key='shop.id'>
-                    <store v-bind:store="shop" @click="selectStore"></store>
+                    <store v-bind:store="shop" @selected="selectStore"></store>
                 </li>
                 <li>
                     <div class="new" @click="newShop"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
@@ -37,8 +37,9 @@ export default {
             const res = await axios.get(`https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/myshops`, options);
             this.shops = res.data.shops;
         },
-        selectStore: function() {
-            console.log('selectStore');
+        selectStore: function(event) {
+            console.log('selectStore', event);
+            this.$router.push(`/products/${event.id}`);
         }
     },
     mounted(){

@@ -14,7 +14,7 @@ module.exports.handler = async (event) => {
   const owner = decodedJwt.phone;
   const name = body.name;
   const id = uuidv5(
-    `${process.env.DYNAMODB_SHOP_TABLE}-${owner}-${name}`,
+    `${process.env.DYNAMODB_PRODUCT_TABLE}-${owner}-${name}`,
     uuidv5.URL
   );
   const description = body.description;
@@ -26,12 +26,11 @@ module.exports.handler = async (event) => {
   const shop = body.shop;
 
   const newProductParams = {
-    TableName: process.env.DYNAMODB_SHOP_TABLE,
+    TableName: process.env.DYNAMODB_PRODUCT_TABLE,
     Item: {
       pk: owner,
       id: id,
       name: name,
-      condo: condo,
       description: description,
       thumbnail: thumbnail,
       price: price,

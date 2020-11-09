@@ -28,7 +28,7 @@ export default {
     methods:{
         selectStore:function(e) {
             console.log(e);
-            this.$router.push('/store'); // todo: set up routing for /:id
+            this.$router.push('/products/:id'); // todo: set up routing for /:id
         },
         getShops: async function() {
             this.shops = await axios.get('https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/listshops');
