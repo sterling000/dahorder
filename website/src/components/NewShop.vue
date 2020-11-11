@@ -15,9 +15,9 @@
                 <li>
                     <label for="thumbnail" id="thumbnailLabel"><p class="thumbnail">Photo</p>
                         <div class="wrapper">
-                            <div class="camera" v-if="this.thumbnail === ''"><font-awesome-icon :icon="['fas', 'camera']"/><p>Camera</p></div>
-                            <p class="or" v-if="this.thumbnail === ''">Or</p>
-                            <div class="custom-file-upload" v-if="this.thumbnail === ''"><font-awesome-icon :icon="['fas', 'file-upload']"/><p>Upload</p></div>
+                            <div class="camera" v-if="this.canvasBlob === ''"><font-awesome-icon :icon="['fas', 'camera']"/><p>Camera</p></div>
+                            <p class="or" v-if="this.canvasBlob === ''">Or</p>
+                            <div class="custom-file-upload" v-if="this.canvasBlob === ''"><font-awesome-icon :icon="['fas', 'file-upload']"/><p>Upload</p></div>
                         </div>
                         <canvas id='resultCanvas1'/>
                     </label>
@@ -35,6 +35,7 @@
                         id="thumbnail"
                         type="file"
                         name="thumbnail"
+                        accept="image/*"
                         @change="thumbnailChanged"
                         @blur="$v.thumbnail.$touch()"
                     />
@@ -82,11 +83,26 @@ export default {
             condo: '',
             thumbnail: '',
             croppedImage: {},
+            canvasDataURL: '',
             presignedURL: '',
-            photoFilename: ''
+            photoFilename: '',
+            canvasBlob: '',
+            file: '',
+            readerResult: '',
+            resCanvas1: {}
         }
     },
     methods:{
+        renderCallback: function(){
+            console.log('renderCallback!');
+            this.canvasDataURL = this.resCanvas1.toDataURL();
+            console.log(this.resCanvas1);
+            console.log(this.resCanvas1.toDataURL());
+            console.log(this.resCanvas1.toBlob((blob) => {
+                console.log('canvasBlob: ', blob);
+                this.canvasBlob = blob;
+            }, 'image/jpeg', 0.9));
+        },
         submit: function(e) {
             e.preventDefault();
             // e.submitter.disabled = true;
@@ -99,7 +115,7 @@ export default {
             axios.get('https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url')
             .then((res) =>{
                 presignedURL = res.data.uploadURL;
-                this.uploadImage(presignedURL);
+                this.uploadImage(presignedURL, this.canvasDataURL);
                 const params = {
                     name: this.name,
                     description: this.description,
@@ -130,15 +146,16 @@ export default {
             });
             
         },
-        uploadImage: function(presignedURL) {
-            console.log('Uploading: ', this.croppedImage);
-            let binary = atob(this.croppedImage.split(',')[1]);
+        uploadImage: function(presignedURL, dataURL) {
+            console.log('Uploading: ', dataURL);
+            let binary = atob(dataURL.split(',')[1]);
 
             let array = [];
             for(var i = 0; i < binary.length; i++){
                 array.push(binary.charCodeAt(i));
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+            // let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+            let blobData = this.canvasBlob;
             console.log('Uploading to: ', presignedURL);
             console.log("blobData", blobData);
             var options = { headers: { 'Content-Type': 'image/jpeg', 'x-amz-acl': 'public-read' } };
@@ -152,36 +169,19 @@ export default {
             .finally(() => {
                 console.log('Upload Complete');
             })
-
-            // const params = {
-            //     'name': this.name,
-            //     'description': this.description,
-            //     'condo': this.condo,
-            //     'thumbnail': this.thumbnail
-            // }
-            
-            // axios.post('', // todo: move this to configuration
-            // params)
-            // .then((res) => {
-            //     if(res.status === 404)
-            //     {
-            //         console.log('That email/password combination does not match our records.');
-            //         this.errorMessages = 'That email/password combination does not match our records.';
-            //     } else {
-            //         this.error = '';
-            //         console.log('Success!' , res.data.token);
-            //     }
-            // })
-            // .catch((error) => {
-            //     console.log('Oh No! An Error!', error);
-            // })
-            // .finally(() => {
-            //     // console.log('Do this always... or else...');
-            // });
         },
         thumbnailChanged: function(e){
-            this.thumbnail = e.target.files[0];
+            console.log('thumbnail: ', e.target.files[0]);
+            this.file = e.target.files[0];
 
+            const mpImg = new MegaPixImage(this.file);
+
+            // Render resized image into canvas element.
+            const ctx = this.resCanvas1.getContext("2d");
+            ctx.fillStyle = "#000";
+            this.resCanvas1.classList.add('show');
+            mpImg.render(this.resCanvas1, { maxWidth: 325, maxHeight: 180 }, this.renderCallback);
+            
             const MAX_IMAGE_SIZE = 30000000;
             let reader = new FileReader()
             reader.onload = (e) => {
@@ -191,28 +191,18 @@ export default {
                 if (e.target.result.length > MAX_IMAGE_SIZE) {
                 return alert('Image is loo large - 1Mb maximum')
                 }
-                this.croppedImage = e.target.result
+                this.readerResult = e.target.result
+
+                
             }
-            reader.readAsDataURL(this.thumbnail);
-
-            const mpImg = new MegaPixImage(this.thumbnail);
-
-            // Render resized image into canvas element.
-            const resCanvas1 = document.getElementById('resultCanvas1');
-            
-            resCanvas1.classList.add('show');
-            mpImg.render(resCanvas1, { maxWidth: 325, maxHeight: 180 });
-            // const dataURL = resCanvas1.toDataURL('image/jpeg');
-            // console.log(dataURL);
-            // this.croppedImage = dataURL;
-            // console.log('croppedImage', this.croppedImage);
+            reader.readAsDataURL(this.file);
         }
     },
     validations: {
         name: { required },
         description: {required, minLength: minLength(8)},
         condo: { required },
-        thumbnail: { required }
+        thumbnail: {  }
     },
     computed: {
         nameErrors() {
@@ -242,6 +232,7 @@ export default {
         }
     },
     mounted(){
+        this.resCanvas1 = document.getElementById('resultCanvas1');
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
         }
@@ -307,8 +298,11 @@ export default {
                     }
                 }
                 canvas{
-                    display: none;
+                    position:absolute;
+                    top: 9999;
                     &.show{
+                        position:relative;
+                        top: 0;
                         display: block;
                     }
                 }
