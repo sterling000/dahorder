@@ -13,31 +13,10 @@
                     <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
                 </li>
                 <li>
-                    <label for="thumbnail" id="thumbnailLabel"><p class="thumbnail">Photo</p>
-                        <div class="wrapper">
-                            <div class="camera" v-if="this.canvasBlob === ''"><font-awesome-icon :icon="['fas', 'camera']"/><p>Camera</p></div>
-                            <p class="or" v-if="this.canvasBlob === ''">Or</p>
-                            <div class="custom-file-upload" v-if="this.canvasBlob === ''"><font-awesome-icon :icon="['fas', 'file-upload']"/><p>Upload</p></div>
-                        </div>
-                        <canvas id='resultCanvas1'/>
-                    </label>
-
-                    <input 
-                        id="camera" 
-                        name="camera" 
-                        type="file" 
-                        accept="image/*" 
-                        capture="camera" 
-                        @change="thumbnailChanged"
-                        @blur="$v.thumbnail.$touch()"
-                    />
-                    <input
-                        id="thumbnail"
-                        type="file"
-                        name="thumbnail"
-                        accept="image/*"
-                        @change="thumbnailChanged"
-                        @blur="$v.thumbnail.$touch()"
+                    <image-uploader 
+                        validation="$v.thumbnail" 
+                        @render="thumbnailRendered" 
+                        ref="imageUploader"
                     />
                     <p v-if="$v.thumbnail.$dirty && $v.thumbnail.$invalid">{{ thumbnailErrors }}</p>
                 </li>
@@ -73,7 +52,6 @@ import axios from 'axios';
 
 import { required, minLength } from 'vuelidate/lib/validators';
 
-import MegaPixImage from '../utils/MegaPixImage';
 
 export default {
     data(){
@@ -81,54 +59,35 @@ export default {
             name: '',
             description: '',
             condo: '',
-            thumbnail: '',
-            croppedImage: {},
-            canvasDataURL: '',
-            presignedURL: '',
-            photoFilename: '',
-            canvasBlob: '',
-            file: '',
-            readerResult: '',
-            resCanvas1: {}
+            thumbnail: ''
         }
     },
     methods:{
-        renderCallback: function(){
-            console.log('renderCallback!');
-            this.canvasDataURL = this.resCanvas1.toDataURL();
-            console.log(this.resCanvas1);
-            console.log(this.resCanvas1.toDataURL());
-            console.log(this.resCanvas1.toBlob((blob) => {
-                console.log('canvasBlob: ', blob);
-                this.canvasBlob = blob;
-            }, 'image/jpeg', 0.9));
+        thumbnailRendered: function(e) {
+            this.thumbnail = e;
         },
         submit: function(e) {
             e.preventDefault();
-            // e.submitter.disabled = true;
+            e.submitter.disabled = true;
             this.$v.$touch();
             if(this.$v.$anyError){
                 return;
             }
 
-            let presignedURL = '';
             axios.get('https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url')
             .then((res) =>{
-                presignedURL = res.data.uploadURL;
-                this.uploadImage(presignedURL, this.canvasDataURL);
+                this.$refs.imageUploader.uploadImage(res.data.uploadURL);
                 const params = {
                     name: this.name,
                     description: this.description,
                     thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
                     condo: this.condo
                 }
-                console.log('Adding Shop: ', params);
                 const options = {
                     headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
                 }
                 axios.post('https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/shop', params, options)
-                .then((res) => {
-                    console.log(res);
+                .then(() => {
                     this.$router.push('/shops');
                 })
                 .catch((error) => {
@@ -146,63 +105,12 @@ export default {
             });
             
         },
-        uploadImage: function(presignedURL, dataURL) {
-            console.log('Uploading: ', dataURL);
-            let binary = atob(dataURL.split(',')[1]);
-
-            let array = [];
-            for(var i = 0; i < binary.length; i++){
-                array.push(binary.charCodeAt(i));
-            }
-            // let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-            let blobData = this.canvasBlob;
-            console.log('Uploading to: ', presignedURL);
-            console.log("blobData", blobData);
-            var options = { headers: { 'Content-Type': 'image/jpeg', 'x-amz-acl': 'public-read' } };
-            axios.put(presignedURL, blobData, options)
-            .then((res) => {
-                console.log('Upload Response... ', res);
-            })
-            .catch((error) => {
-                console.log('Upload Error...', error);
-            })
-            .finally(() => {
-                console.log('Upload Complete');
-            })
-        },
-        thumbnailChanged: function(e){
-            console.log('thumbnail: ', e.target.files[0]);
-            this.file = e.target.files[0];
-
-            const mpImg = new MegaPixImage(this.file);
-
-            // Render resized image into canvas element.
-            const ctx = this.resCanvas1.getContext("2d");
-            ctx.fillStyle = "#000";
-            this.resCanvas1.classList.add('show');
-            mpImg.render(this.resCanvas1, { maxWidth: 325, maxHeight: 180 }, this.renderCallback);
-            
-            const MAX_IMAGE_SIZE = 30000000;
-            let reader = new FileReader()
-            reader.onload = (e) => {
-                if (!e.target.result.includes('data:image/jpeg')) {
-                return alert('Wrong file type - JPG only.')
-                }
-                if (e.target.result.length > MAX_IMAGE_SIZE) {
-                return alert('Image is loo large - 1Mb maximum')
-                }
-                this.readerResult = e.target.result
-
-                
-            }
-            reader.readAsDataURL(this.file);
-        }
     },
     validations: {
         name: { required },
         description: {required, minLength: minLength(8)},
         condo: { required },
-        thumbnail: {  }
+        thumbnail: { required }
     },
     computed: {
         nameErrors() {
@@ -226,13 +134,12 @@ export default {
         },
         thumbnailErrors() {
             const errors = [];
-            if(!this.$v.thumbnail.$dirty && !this.$v.thumbnail.$dirty) return errors;
-            !this.$v.thumbnail.required && errors.push('Thumbnail is required.');
+            if(!this.validation.$dirty && !this.validation.$dirty) return errors;
+            !this.validation.required && errors.push('Thumbnail is required.');
             return errors;
         }
     },
     mounted(){
-        this.resCanvas1 = document.getElementById('resultCanvas1');
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
         }
@@ -248,64 +155,9 @@ export default {
         li{
             margin: 1em 0;
             label{
-                
                 width: 350px;
                 margin: 0 0 0.5em;
                 font-weight: 600;
-                .wrapper{
-                    display: flex;
-                }
-                .or{
-                    margin: 5em 1em;
-                }
-                .custom-file-upload {
-                    width: 100px;
-                    margin: 0.75em 0.5em 0 0;
-                    height: 2em;
-                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                    border-radius: 5%;
-                    border: solid 1px $color-primary-0;
-                    cursor: pointer;
-                    text-align: center;
-                    font-size: 48px;
-                    padding: 0.2em 0;
-                    p{
-                        font-size: 18px;
-                        font-weight: 600;
-                    }
-                    font-awesome-icon{
-                        font-weight: 600;
-                    }
-                    
-                }
-                .camera {
-                    width: 175px;
-                    margin: 0.25em 0 0 0;
-                    height: 3em;
-                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                    border-radius: 5%;
-                    border: solid 1px $color-primary-0;
-                    cursor: pointer;
-                    text-align: center;
-                    font-size: 48px;
-                    padding: 0.5em 0;
-                    p{
-                        font-size: 24px;
-                        font-weight: 600;
-                    }
-                    font-awesome-icon{
-                        font-weight: 600;
-                    }
-                }
-                canvas{
-                    position:absolute;
-                    top: 9999;
-                    &.show{
-                        position:relative;
-                        top: 0;
-                        display: block;
-                    }
-                }
             }
             
             input{
@@ -315,15 +167,6 @@ export default {
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 5%;
                 border: solid 1px $color-primary-0;
-                
-                &#thumbnail{
-                    text-align: center;
-                    display:none;
-                }
-                &#camera{
-                    text-align: center;
-                    display:none;
-                }
             }
             textarea{
                 resize: none;

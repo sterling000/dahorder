@@ -26,9 +26,6 @@ export default {
         newShop: function(){
             this.$router.push('/newshop');
         },
-        openShop: function(){
-            this.$router.push('/shop');
-        },
         getShops: async function() {
             const options = {
                 headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}

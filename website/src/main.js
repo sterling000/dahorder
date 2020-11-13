@@ -16,6 +16,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Store from "./components/store.vue";
 import Product from "./components/product.vue";
+import ImageUploader from "./components/image-uploader.vue";
 library.add(
   faList,
   faUtensils,
@@ -28,6 +29,7 @@ library.add(
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("store", Store);
 Vue.component("product", Product);
+Vue.component("image-uploader", ImageUploader);
 
 Vue.config.productionTip = false;
 

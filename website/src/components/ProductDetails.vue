@@ -1,22 +1,56 @@
 <template>
-    <div class="add-product">
-        <h1>New Product</h1>
-        <form @submit="submit" method="POST">
-            <ul>
+  <div class="product">
+      
+      <div class="wrapper" v-show="!edit">
+          <div class="hero" ref="thumbnail">
+          <h2 class="name">{{details.name}}</h2>
+      </div>
+      <div class="description"><p>{{details.description}}</p></div>
+      <ul>
+          <li>
+              <h2>Price</h2>
+              <p>{{details.price}} RM</p>
+          </li>
+          <li>
+              <h2>Quantity</h2>
+              <p>{{details.quantity}}</p>
+          </li>
+          <li>
+              <h2>Date Available</h2>
+
+              <p>{{details.available}}</p>
+          </li>
+          <li>
+              <h2>Delivery</h2>
+              <div class="can-toggle">
+                <input type="checkbox" @click="log" id="delivery" v-model="details.delivery">
+                <label for="delivery">
+                    <div class="can-toggle__switch" data-checked="Delivery" data-unchecked="Pickup"></div>
+                </label>
+              </div>
+          </li>
+          <li>
+              <button class="edit" v-show="!this.edit" @click="toggleEdit">Edit</button>
+              
+          </li>
+      </ul>
+      </div>
+      <form action="submit" v-show="edit" class="editForm">
+           <ul>
                 <li>
                     <label for="name">Name</label>
                     <input
-                        v-model="name"
+                        v-model="details.name"
                         name="name"
                         @blur="$v.name.$touch()"
                     />
                     <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
                 </li>
                 <li class="price">
-                    <div class="wrapper">
+                    <div class="flex-wrapper">
                         <label for="price">Price</label>
                         <input
-                            v-model="price"
+                            v-model="details.price"
                             name="price"
                             class="price"
                             @blur="$v.price.$touch()"
@@ -28,7 +62,7 @@
                     <div class="wrapper">
                         <label for="quantity">Quantity</label>
                         <input
-                            v-model="quantity"
+                            v-model="details.quantity"
                             name="quantity"
                             class="quantity"
                             @blur="$v.quantity.$touch()"
@@ -40,7 +74,7 @@
                     <label for="description">Description</label>
                     <textarea
                         id="description"
-                        v-model="description"
+                        v-model="details.description"
                         name="description"
                         @blur="$v.description.$touch()"
                         placeholder="Enter a description here..."
@@ -58,7 +92,7 @@
                 <li>
                     <label for="date">Date Available</label>
                     <input
-                        v-model="date"
+                        v-model="details.date"
                         type="date"
                         name="date"
                         @blur="$v.date.$touch()"
@@ -70,7 +104,7 @@
                     <label for="delivery">Pick Up / Delivery</label>
                     <select
                         id="delivery"
-                        v-model="delivery"
+                        v-model="details.delivery"
                         name="delivery"
                         @change="$v.delivery.$touch()"
                         @blur="$v.delivery.$touch()"
@@ -82,38 +116,34 @@
                     <p v-if="$v.delivery.$dirty && $v.delivery.$invalid">{{ deliveryErrors }}</p>
                 </li>
             </ul>
-
-            <input id="submit" type="submit" value="ADD" :disabled="$v.$invalid"/>
-        </form>
-    </div>
+            <button class="save" v-show="this.edit" @click="save">Save</button>
+      </form>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-
 import { required, minLength } from 'vuelidate/lib/validators';
 
 export default {
     data(){
         return {
-            name: '',
-            description: '',
-            date: '',
-            thumbnail: '',
-            price: 0,
-            quantity: 0,
-            croppedImage: {},
-            presignedURL: '',
-            photoFilename: '',
-            delivery: 'Delivery',
-            shop: ''
+            details: {},
+            edit: false,
+            thumbnail: ''
         }
     },
     methods:{
         thumbnailRendered: function(e) {
             this.thumbnail = e;
         },
-        submit: function(e) {
+        log(){
+            console.log('clicked');
+        },
+        toggleEdit(){
+            this.edit = !this.edit;
+        },
+        save: function(e) {
             e.preventDefault();
             e.submitter.disabled = true;
             this.$v.$touch();
@@ -125,13 +155,13 @@ export default {
             .then((res) =>{
                 this.$refs.imageUploader.uploadImage(res.data.uploadURL);
                 const params = {
-                    name: this.name,
-                    description: this.description,
+                    name: this.details.name,
+                    description: this.details.description,
                     thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
-                    price: this.price,
-                    quantity: this.quantity,
-                    available: this.date,
-                    delivery: this.delivery,
+                    price: this.details.price,
+                    quantity: this.details.quantity,
+                    available: this.details.date,
+                    delivery: this.details.delivery,
                     shop: this.$route.params.id
                 }
                 const options = {
@@ -155,6 +185,25 @@ export default {
                 // console.log('Do this always... or else...');
             });
         },
+        getProduct: async function() {
+            console.log('fetching product...');
+            try{
+                const options = {
+                    headers: {'Authorization': `Bearer ${this.$store.state.account.token}`},
+                    params: {
+                        id: this.$route.params.id
+                    }
+                };
+                const res = await axios.get('https://f126sn9q00.execute-api.us-east-1.amazonaws.com/dev/product', options);
+                console.log(res);
+                this.details = res.data[0];
+                this.$refs["thumbnail"].style.setProperty('--thumbnail', `url(${this.details.thumbnail})`);
+            } catch(error){
+                console.log(error);
+            } finally{
+                console.log('getProduct finally...');
+            }
+        }
     },
     validations: {
         name: { required },
@@ -208,30 +257,83 @@ export default {
         if(this.$store.state.account.token === null){
             this.$router.push('/login');
         }
-        this.shop = this.$route.params.id;
+        this.getProduct();
     }
 }
 </script>
 
-<style lang="scss">
-@import "../assets/styles/config.scss";
-.add-product{
-    padding: 5em 1em;
-    ul{
-        li{
+<style lang='scss' scoped>
+@import '../assets/styles/config.scss';
+@import '../assets/styles/toggle.scss';
+
+.product{
+    .wrapper{
+        .hero{
+            padding: 4em 0;
+            background: var(--thumbnail);
+            background-size: cover;
+            min-width: 325px;
+            min-height: 25vh;
+            .name{
+                display: inline-flex;
+                min-width: 0;
+                min-height: 0;
+                color: #fff;
+                margin: 1em;
+                background-color: rgba($color-primary-4, 0.4);
+                border-radius: 5%;
+                border: none;
+                line-height: 0.8;
+            }
+        }
+        .description{
+            margin: 1em;
+        }
+
+        ul{
+            margin: 1em;
+        }
+
+        .edit{
             margin: 1em 0;
-            
-            label{
-                display: inline-block;
-                width: 350px;
-                margin: 0 0 0.5em;
-                font-weight: 600;
-                
-                
-                .price, .quantity{
-                    width: 175px;
+            min-width: 340px;
+            min-height: 2em;
+            background-color: $color-primary-1;
+            border-radius: 5%;
+            border: solid 1px $color-primary-0;
+            font-size: 24px;
+            color: $color-primary-0;
+        }
+        .save{
+            margin: 1em 0;
+            min-width: 340px;
+            min-height: 2em;
+            background-color: $color-primary-0;
+            border-radius: 5%;
+            border: solid 1px $color-primary-4;
+            color: $color-primary-1;
+            font-size: 24px;
+        }
+    }
+    .editForm{
+        padding: 5em 1em;
+        ul{
+            li{
+                margin: 1em 0;
+                .flex-wrapper{
+                    display: flex;
                 }
-                
+                label{
+                    display: inline-block;
+                    width: 350px;
+                    margin: 0 0 0.5em;
+                    font-weight: 600;
+                    
+                    .price, .quantity{
+                        width: 175px;
+                    }
+                    
+                }
             }
             input{
                 display: block;
@@ -241,7 +343,7 @@ export default {
                 border-radius: 5%;
                 border: solid 1px $color-primary-0;
                 text-indent: 1em;
-                
+
                 .price, .quantity{
                     width: 50%;
                 }

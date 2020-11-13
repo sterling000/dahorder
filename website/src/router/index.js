@@ -36,6 +36,11 @@ const routes = [
     component: () => import("../components/NewProduct.vue"),
   },
   {
+    path: "/product/:id",
+    name: "Product Details",
+    component: () => import("../components/ProductDetails.vue"),
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("../components/Login.vue"),

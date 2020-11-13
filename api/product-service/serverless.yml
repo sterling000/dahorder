@@ -47,6 +47,13 @@ functions:
           method: post
           cors: true
           authorizer: authorizer
+  getProduct:
+    handler: src/functions/getProduct.handler
+    events:
+      - http:
+          path: /product
+          method: get
+          cors: true
 
 resources:
   Resources:

@@ -7,7 +7,7 @@
                     <product v-bind:product="product" @selected="selectProduct"></product>
                 </li>
                 <li>
-                    <div class="new" @click="newProduct"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
+                    <div v-show="this.$store.state.account.token !== null" class="new" @click="newProduct"><font-awesome-icon class="shortcut-icon" :icon="['fas','plus']" /><h2>New</h2></div>
                 </li>
             </ul>
         </div>
@@ -43,10 +43,6 @@ export default {
         }
     },
     mounted(){
-        if(this.$store.state.account.token === null){
-            this.$router.push('/login');
-            return;
-        }
         this.getProducts();
     }
 }

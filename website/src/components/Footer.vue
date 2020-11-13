@@ -7,7 +7,7 @@
             <li v-show="signedIn" id="buy" class="shortcut current" @click="shortcut('/buy')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','utensils']" /><p>BUY</p>
             </li>
-            <li v-show="signedIn" id="sell" class="shortcut" @click="shortcut('/sell')">
+            <li v-show="signedIn" id="shops" class="shortcut" @click="shortcut('/shops')">
                 <font-awesome-icon class="shortcut-icon" :icon="['fas','money-bill-wave']" /><p>SELL</p>
             </li>
             <li v-show="signedIn" id="cart" class="shortcut" @click="shortcut('/cart')">
