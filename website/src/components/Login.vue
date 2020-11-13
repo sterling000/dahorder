@@ -74,7 +74,17 @@ export default {
                     this.error = '';
                     console.log('Success!' , res.data.token);
                     this.$store.commit('account/login', res.data.token);
-                    this.$router.push('/');
+                    const options = {
+                        headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+                    };
+                    axios.get('https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/user', options).then((res) =>{
+                        this.$store.commit('account/user', res.data);
+                        this.$router.push('/');
+                    })
+                    .catch((error) =>{
+                        console.log('Oh No! An Error!', error);
+                    })
+                    
                 }
             })
             .catch((error) => {

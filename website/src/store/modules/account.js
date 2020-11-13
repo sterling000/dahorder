@@ -1,5 +1,6 @@
 const state = {
   token: null,
+  user: null,
 };
 
 const mutations = {
@@ -8,6 +9,9 @@ const mutations = {
   },
   login(state, token) {
     state.token = token;
+  },
+  user(state, data) {
+    state.user = data;
   },
 };
 

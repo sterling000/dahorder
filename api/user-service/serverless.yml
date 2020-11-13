@@ -29,6 +29,14 @@ provider:
     JWT_SECRET: ${param:JWT_SECRET}
 
 functions:
+  getUser:
+    handler: src/functions/getUser.handler
+    events:
+      - http:
+          path: /user
+          method: get
+          cors: true
+          authorizer: validate
   validate:
     handler: src/functions/validate.validate
   login:

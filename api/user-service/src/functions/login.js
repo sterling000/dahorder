@@ -41,7 +41,6 @@ module.exports.login = async (event, context) => {
       let token = jwt.sign(
         {
           phone: userResult.Items[0].pk,
-          role: userResult.Items[0].role,
         },
         process.env.JWT_SECRET
       );

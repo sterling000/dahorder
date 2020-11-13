@@ -1,8 +1,9 @@
 "use strict";
 const jwt = require("jsonwebtoken");
-const AWS = require("aws-sdk");
 
 module.exports.validate = async (event, context) => {
+  console.log("event", event);
+  console.log("context", context);
   const authorizerToken = event.authorizationToken;
   const authorizerArr = authorizerToken.split(" ");
   const token = authorizerArr[1];
@@ -16,35 +17,9 @@ module.exports.validate = async (event, context) => {
   }
 
   let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
-
-  const queryUserParams = {
-    TableName: process.env.DYNAMODB_USER_TABLE,
-    KeyConditionExpression: "#id = :id",
-    ExpressionAttributeNames: {
-      "#id": "id",
-    },
-    ExpressionAttributeValues: {
-      ":id": decodedJwt.id,
-    },
-  };
-
-  let userResult = {};
-  try {
-    const dynamodb = new AWS.DynamoDB.DocumentClient();
-    userResult = await dynamodb.query(queryUserParams).promise();
-  } catch (queryError) {
-    console.log("There was an error attempting to retrieve the user.");
-    console.log("queryError", queryError);
-    console.log("queryUserParams", queryUserParams);
-    return new Error("There was an error retrieving the user");
-  }
-
-  if (
-    typeof decodedJwt.id !== "undefined" &&
-    typeof userResult.Items !== "undefined" &&
-    userResult.Items.length === 1
-  ) {
-    return generatePolicy(decodedJwt.id, "Allow", event.methodArn);
+  console.log(decodedJwt);
+  if (typeof decodedJwt.phone !== "undefined") {
+    return generatePolicy(decodedJwt.phone, "Allow", event.methodArn);
   }
   generatePolicy("undefined", "Deny", event.methodArn);
 };

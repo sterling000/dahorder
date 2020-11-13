@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 export default {
@@ -14,6 +15,22 @@ export default {
   components: {
     'app-header': Header,
     'app-footer': Footer
+  },
+  mounted(){
+    if(this.$store.state.account.token !== null){
+      const options = {
+          headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
+      };
+      axios.get('https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/user', options).then((res) =>{
+          this.$store.commit('account/user', res.data);
+          if(this.$route.name !== 'Home'){
+            this.$router.push('/');
+          }
+      })
+      .catch((error) =>{
+          console.log('Oh No! An Error!', error);
+      })
+    }
   }
 }
 </script>
