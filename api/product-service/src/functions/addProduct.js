@@ -28,7 +28,7 @@ module.exports.handler = async (event) => {
   const newProductParams = {
     TableName: process.env.DYNAMODB_PRODUCT_TABLE,
     Item: {
-      pk: owner,
+      owner: owner,
       id: id,
       name: name,
       description: description,

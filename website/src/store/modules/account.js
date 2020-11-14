@@ -6,6 +6,7 @@ const state = {
 const mutations = {
   logout(state) {
     state.token = null;
+    state.user = null;
   },
   login(state, token) {
     state.token = token;

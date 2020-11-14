@@ -1,8 +1,17 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
-
+import store from "../store/index";
 Vue.use(VueRouter);
+
+const boot = (to, from, next) => {
+  console.log("beforeEnter", to, from, next, store.state.account.user);
+  console.log("router", router);
+  if (store.state.account.token === null) {
+    router.push("/");
+  }
+  next();
+};
 
 const routes = [
   {
@@ -19,6 +28,7 @@ const routes = [
     path: "/shops",
     name: "Shops",
     component: () => import("../components/Shops.vue"),
+    beforeEnter: boot,
   },
   {
     path: "/products/:id",
@@ -29,16 +39,23 @@ const routes = [
     path: "/newshop",
     name: "New Shop",
     component: () => import("../components/NewShop.vue"),
+    beforeEnter: boot,
   },
   {
     path: "/newproduct/:id",
     name: "New Product",
     component: () => import("../components/NewProduct.vue"),
+    beforeEnter: boot,
   },
   {
     path: "/product/:id",
     name: "Product Details",
     component: () => import("../components/ProductDetails.vue"),
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: () => import("../components/Cart.vue"),
   },
   {
     path: "/login",

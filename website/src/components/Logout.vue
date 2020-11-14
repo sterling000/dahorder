@@ -4,9 +4,9 @@
 
 <script>
 export default {
-    mounted(){
-        this.$store.commit('account/logout');
-        this.$router.push('/');
-    }
-}
+  mounted() {
+    this.$store.commit("account/logout");
+    this.$router.push("/");
+  },
+};
 </script>

@@ -1,206 +1,213 @@
 <template>
-    <div class="add-shop">
-        <h1>New Shop</h1>
-        <form @submit="submit" method="POST">
-            <ul>
-                <li>
-                    <label for="name">Name</label>
-                    <input
-                        v-model="name"
-                        name="name"
-                        @blur="$v.name.$touch()"
-                    />
-                    <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
-                </li>
-                <li>
-                    <image-uploader 
-                        validation="$v.thumbnail" 
-                        @render="thumbnailRendered" 
-                        ref="imageUploader"
-                    />
-                    <p v-if="$v.thumbnail.$dirty && $v.thumbnail.$invalid">{{ thumbnailErrors }}</p>
-                </li>
-                <li>
-                    <label for="description">Description</label>
-                    <textarea
-                        id="description"
-                        v-model="description"
-                        name="description"
-                        @blur="$v.description.$touch()"
-                        placeholder="Enter a description here..."
-                    />
-                    <p v-if="$v.description.$dirty && $v.description.$invalid">{{ descriptionErrors }}</p>
-                </li>
-                <li>
-                    <label for="condo">Condo</label>
-                    <input
-                        v-model="condo"
-                        name="condo"
-                        @blur="$v.condo.$touch()"
-                    />
-                    <p v-if="$v.condo.$dirty && $v.condo.$invalid">{{ condoErrors }}</p>
-                </li>
-            </ul>
+  <div class="add-shop">
+    <h1>New Shop</h1>
+    <form @submit="submit" method="POST">
+      <ul>
+        <li>
+          <label for="name">Name</label>
+          <input v-model="name" name="name" @blur="$v.name.$touch()" />
+          <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
+        </li>
+        <li>
+          <image-uploader
+            validation="$v.thumbnail"
+            @render="thumbnailRendered"
+            ref="imageUploader"
+          />
+          <p v-if="$v.thumbnail.$dirty && $v.thumbnail.$invalid">
+            {{ thumbnailErrors }}
+          </p>
+        </li>
+        <li>
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            v-model="description"
+            name="description"
+            @blur="$v.description.$touch()"
+            placeholder="Enter a description here..."
+          />
+          <p v-if="$v.description.$dirty && $v.description.$invalid">
+            {{ descriptionErrors }}
+          </p>
+        </li>
+        <li>
+          <label for="condo">Condo</label>
+          <input v-model="condo" name="condo" @blur="$v.condo.$touch()" />
+          <p v-if="$v.condo.$dirty && $v.condo.$invalid">{{ condoErrors }}</p>
+        </li>
+      </ul>
 
-            <input id="submit" type="submit" value="ADD" :disabled="$v.$invalid"/>
-        </form>
-    </div>
+      <input id="submit" type="submit" value="ADD" :disabled="$v.$invalid" />
+    </form>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import { required, minLength } from 'vuelidate/lib/validators';
-
+import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
-    data(){
-        return {
-            name: '',
-            description: '',
-            condo: '',
-            thumbnail: ''
-        }
+  data() {
+    return {
+      name: "",
+      description: "",
+      condo: "",
+      thumbnail: "",
+    };
+  },
+  methods: {
+    thumbnailRendered: function(e) {
+      this.thumbnail = e;
     },
-    methods:{
-        thumbnailRendered: function(e) {
-            this.thumbnail = e;
-        },
-        submit: function(e) {
-            e.preventDefault();
-            e.submitter.disabled = true;
-            this.$v.$touch();
-            if(this.$v.$anyError){
-                return;
-            }
+    submit: function(e) {
+      e.preventDefault();
+      e.submitter.disabled = true;
+      this.$v.$touch();
+      if (this.$v.$anyError) {
+        return;
+      }
 
-            axios.get('https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url')
-            .then((res) =>{
-                this.$refs.imageUploader.uploadImage(res.data.uploadURL);
-                const params = {
-                    name: this.name,
-                    description: this.description,
-                    thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
-                    condo: this.condo
-                }
-                const options = {
-                    headers: {'Authorization': `Bearer ${this.$store.state.account.token}`}
-                }
-                axios.post('https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/shop', params, options)
-                .then(() => {
-                    this.$router.push('/shops');
-                })
-                .catch((error) => {
-                    console.log('Oh No! An Error!', error);
-                })
-                .finally(() => {
-
-                });
+      axios
+        .get(
+          "https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url"
+        )
+        .then((res) => {
+          this.$refs.imageUploader.uploadImage(res.data.uploadURL);
+          this.$store.commit("loading/start");
+          const params = {
+            name: this.name,
+            description: this.description,
+            thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
+            condo: this.condo,
+          };
+          const options = {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.account.token}`,
+            },
+          };
+          axios
+            .post(
+              "https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/shop",
+              params,
+              options
+            )
+            .then(() => {
+              this.$router.push("/shops");
             })
             .catch((error) => {
-                console.log('Oh No! An Error!', error);
+              console.log("Oh No! An Error!", error);
             })
             .finally(() => {
-                // console.log('Do this always... or else...');
+              this.$store.commit("loading/stop");
             });
-            
-        },
+        })
+        .catch((error) => {
+          console.log("Oh No! An Error!", error);
+        })
+        .finally(() => {
+          // console.log('Do this always... or else...');
+        });
     },
-    validations: {
-        name: { required },
-        description: {required, minLength: minLength(8)},
-        condo: { required },
-        thumbnail: { required }
+  },
+  validations: {
+    name: { required },
+    description: { required, minLength: minLength(8) },
+    condo: { required },
+    thumbnail: { required },
+  },
+  computed: {
+    nameErrors() {
+      const errors = [];
+      if (!this.$v.name.$dirty && !this.$v.name.$dirty) return errors;
+      !this.$v.name.required && errors.push("Name is required.");
+      return errors;
     },
-    computed: {
-        nameErrors() {
-            const errors = [];
-            if(!this.$v.name.$dirty && !this.$v.name.$dirty) return errors;
-            !this.$v.name.required && errors.push('Name is required.');
-            return errors;
-        },
-        descriptionErrors() {
-            const errors = [];
-            if(!this.$v.description.$dirty) return errors;
-            !this.$v.description.required && errors.push('Description is required.');
-            !this.$v.description.minLength && errors.push('Description must be at least 8 characters long.');
-            return errors;
-        },
-        condoErrors() {
-            const errors = [];
-            if(!this.$v.condo.$dirty && !this.$v.condo.$dirty) return errors;
-            !this.$v.condo.required && errors.push('Condo is required.');
-            return errors;
-        },
-        thumbnailErrors() {
-            const errors = [];
-            if(!this.validation.$dirty && !this.validation.$dirty) return errors;
-            !this.validation.required && errors.push('Thumbnail is required.');
-            return errors;
-        }
+    descriptionErrors() {
+      const errors = [];
+      if (!this.$v.description.$dirty) return errors;
+      !this.$v.description.required && errors.push("Description is required.");
+      !this.$v.description.minLength &&
+        errors.push("Description must be at least 8 characters long.");
+      return errors;
     },
-    mounted(){
-        if(this.$store.state.account.token === null){
-            this.$router.push('/login');
-        }
+    condoErrors() {
+      const errors = [];
+      if (!this.$v.condo.$dirty && !this.$v.condo.$dirty) return errors;
+      !this.$v.condo.required && errors.push("Condo is required.");
+      return errors;
+    },
+    thumbnailErrors() {
+      const errors = [];
+      if (!this.validation.$dirty && !this.validation.$dirty) return errors;
+      !this.validation.required && errors.push("Thumbnail is required.");
+      return errors;
+    },
+  },
+  mounted() {
+    if (this.$store.state.account.token === null) {
+      this.$router.push("/login");
     }
-}
+  },
+};
 </script>
 
 <style lang="scss">
 @import "../assets/styles/config.scss";
-.add-shop{
-    padding: 5em 1em;
-    ul{
-        li{
-            margin: 1em 0;
-            label{
-                width: 350px;
-                margin: 0 0 0.5em;
-                font-weight: 600;
-            }
-            
-            input{
-                display: block;
-                width: 100%;
-                height: 3em;
-                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                border-radius: 5%;
-                border: solid 1px $color-primary-0;
-            }
-            textarea{
-                resize: none;
-                height: 8em;
-                padding: 0.5em;
-                text-align: left;
-                margin-top: 0;
-                width: 100%;
-                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                border-radius: 5%;
-                border: solid 1px $color-primary-0;
-                overflow: auto;
-            }
-        }
-    }
+.add-shop {
+  padding: 5em 1em;
+  ul {
+    li {
+      margin: 1em 0;
+      label {
+        width: 350px;
+        margin: 0 0 0.5em;
+        font-weight: 600;
+      }
 
-    input#submit{
+      input {
         display: block;
-        background-color: $color-primary-0;
-        color: $color-primary-3;
         width: 100%;
-        height: 2em;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        height: 3em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 5%;
         border: solid 1px $color-primary-0;
-        font-size: 40px;
-        font-weight: 600;
-        margin-bottom: 1em;
+      }
+      textarea {
+        resize: none;
+        height: 8em;
         padding: 0.5em;
-        &:disabled{
-            background-color: rgb(143, 143, 143);
-            color: #000;
-        }
+        text-align: left;
+        margin-top: 0;
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5%;
+        border: solid 1px $color-primary-0;
+        overflow: auto;
+      }
     }
-}
+  }
 
+  input#submit {
+    display: block;
+    background-color: $color-primary-0;
+    color: $color-primary-3;
+    width: 100%;
+    height: 2em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5%;
+    border: solid 1px $color-primary-0;
+    font-size: 40px;
+    font-weight: 600;
+    margin-bottom: 1em;
+    padding: 0.5em;
+    &:disabled {
+      background-color: rgb(143, 143, 143);
+      color: #000;
+    }
+  }
+}
 </style>

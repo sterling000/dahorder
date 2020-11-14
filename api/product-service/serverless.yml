@@ -21,15 +21,24 @@ provider:
         - "dynamodb:Query"
         - "dynamodb:PutItem"
         - "dynamodb:Scan"
+        - "dynamodb:UpdateItem"
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}
-        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}/index/pk
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}/index/id
 
   environment:
     DYNAMODB_PRODUCT_TABLE: ${self:custom.dynamodb.productTable}
     JWT_SECRET: ${param:JWT_SECRET}
 
 functions:
+  updateProduct:
+    handler: src/functions/updateProduct.handler
+    events:
+      - http:
+         path: /product
+         method: put
+         cors: true
+         authorizer: authorizer
   authorizer:
     handler: src/functions/authorizer.validate
   listProducts:
@@ -63,15 +72,11 @@ resources:
       Properties:
         TableName: ${self:custom.dynamodb.productTable}
         AttributeDefinitions:
-          - AttributeName: pk
-            AttributeType: S
           - AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: pk
-            KeyType: HASH
           - AttributeName: id
-            KeyType: RANGE
+            KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
 plugins:

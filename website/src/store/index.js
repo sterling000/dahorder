@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import account from "./modules/account";
+import cart from "./modules/cart";
+import loading from "./modules/loading";
 import createPersistedState from "vuex-persistedstate";
 import Cookies from "js-cookie";
 Vue.use(Vuex);
@@ -15,11 +17,10 @@ const storageOptions = {
 };
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
   modules: {
     account,
+    cart,
+    loading,
   },
   plugins: [createPersistedState(storageOptions)],
 });

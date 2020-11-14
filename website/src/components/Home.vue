@@ -26,13 +26,28 @@ export default {
   },
   methods: {
     selectStore: function(event) {
-      console.log(event);
-      this.$router.push(`/products/${event.id}`); 
+      this.$store.commit("loading/start");
+      this.$router.push(`/products/${event.id}`);
     },
     getShops: async function() {
       this.shops = await axios.get(
         "https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/listshops"
       );
+      this.$store.commit("loading/stop");
+    },
+  },
+  computed: {
+    progressModel: {
+      get() {
+        return this.progress * 100;
+      },
+      set(value) {
+        this.progress = value / 100;
+      },
+    },
+
+    progressDisplay() {
+      return `${Math.round(this.progress * 100)}%`;
     },
   },
 };

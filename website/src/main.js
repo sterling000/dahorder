@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Store from "./components/store.vue";
 import Product from "./components/product.vue";
 import ImageUploader from "./components/image-uploader.vue";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 library.add(
   faList,
   faUtensils,
@@ -30,7 +31,7 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("store", Store);
 Vue.component("product", Product);
 Vue.component("image-uploader", ImageUploader);
-
+Vue.component("pulse-loader", PulseLoader);
 Vue.config.productionTip = false;
 
 Vue.use(Vuelidate);

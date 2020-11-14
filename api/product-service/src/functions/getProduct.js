@@ -4,22 +4,15 @@ const jwt = require("jsonwebtoken");
 
 module.exports.handler = async (event, context) => {
   console.log(event);
-  const authorizerToken = event.headers.Authorization;
-  const authorizerArr = authorizerToken.split(" ");
-  const token = authorizerArr[1];
-  let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
-  console.log(decodedJwt);
 
   const id = event.queryStringParameters.id;
   const queryProductParams = {
     TableName: process.env.DYNAMODB_PRODUCT_TABLE,
-    KeyConditionExpression: "#pk = :pk and #id = :id",
+    KeyConditionExpression: "#id = :id",
     ExpressionAttributeNames: {
-      "#pk": "pk",
       "#id": "id",
     },
     ExpressionAttributeValues: {
-      ":pk": `${decodedJwt.phone}`,
       ":id": `${id}`,
     },
   };

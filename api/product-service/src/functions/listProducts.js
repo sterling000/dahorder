@@ -3,8 +3,16 @@ const AWS = require("aws-sdk");
 
 module.exports.handler = async (event) => {
   console.log("event", event);
+  const shop = event.queryStringParameters.shop;
   const params = {
     TableName: process.env.DYNAMODB_PRODUCT_TABLE,
+    FilterExpression: "#shop = :shop",
+    ExpressionAttributeNames: {
+      "#shop": "shop",
+    },
+    ExpressionAttributeValues: {
+      ":shop": `${shop}`,
+    },
   };
 
   let scanResults = [];
