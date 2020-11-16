@@ -148,10 +148,7 @@ export default {
       };
 
       axios
-        .post(
-          "https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/v1/user",
-          params
-        )
+        .post(`${process.env.USER_SERVICE_URL}/v1/user`, params)
         .then((res) => {
           if (res.status === 202) {
             console.log("Another user exists with that email.");
@@ -159,6 +156,7 @@ export default {
           } else {
             this.error = "";
             console.log("Success! User Created!", res);
+            this.$store.commit("account/login", res.data.token);
             this.$router.push("/");
           }
         })
@@ -230,6 +228,9 @@ export default {
       !this.$v.role.required && errors.push("Role is required.");
       return errors;
     },
+  },
+  mounted() {
+    this.$store.commit("loading/stop");
   },
 };
 </script>
