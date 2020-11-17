@@ -11,7 +11,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
-  region: us-east-1
+  region: ${opt:region, 'ap-southeast-1'}
   httpApi:
     cors: true
 
@@ -80,7 +80,7 @@ plugins:
   - serverless-mocha
 custom:
   dynamodb:
-    userTable: user-${self:provider.stage}
+    userTable: user-${self:provider.stage}-${self:provider.region}
   serverless-mocha-plugin:
     testTemplate: ../templates/test-template.ejs
     functionTemplate: ../templates/function-template.ejs

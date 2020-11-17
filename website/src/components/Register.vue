@@ -14,20 +14,22 @@
           <p class="error">{{ error }}</p>
         </li>
       </ul>
-      <label for="condo">Condominium / Apartment Name:</label>
-      <input
-        v-model.trim="condo"
-        name="condo"
-        placeholder="Petaling Jaya"
-        @blur="$v.condo.$touch"
-      />
+      <label for="condo">Condominium:</label>
+      <select v-model="condo" name="condo" @blur="$v.condo.$touch">
+        <option selected>Armanee Terrace</option>
+      </select>
       <ul>
         <li class="error" v-for="error in condoErrors" :key="error">
           <p class="error">{{ error }}</p>
         </li>
       </ul>
       <label for="apartment">Apartment:</label>
-      <input v-model.trim="apartment" placeholder="999" name="apartment" />
+      <input v-model="apartment" name="apartment" @blur="$v.apartment.$touch" />
+      <ul>
+        <li class="error" v-for="error in apartmentErrors" :key="error">
+          <p class="error">{{ error }}</p>
+        </li>
+      </ul>
       <label for="phone">Phone:</label>
       <p class="countrycode">+6</p>
       <input
@@ -111,7 +113,7 @@ import axios from "axios";
 axios.defaults.headers.post["Content-Type"] = "application/json";
 import { required, minLength, email, sameAs } from "vuelidate/lib/validators";
 
-import validPhone from "../validators/validators";
+import { validPhone, validApartment } from "../validators/validators";
 
 export default {
   data() {
@@ -148,11 +150,11 @@ export default {
       };
 
       axios
-        .post(`${process.env.USER_SERVICE_URL}/v1/user`, params)
+        .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user`, params)
         .then((res) => {
           if (res.status === 202) {
-            console.log("Another user exists with that email.");
-            this.error = "Another user exists with that email.";
+            console.log("Another user exists with that phone.");
+            this.error = "Another user exists with that phone.";
           } else {
             this.error = "";
             console.log("Success! User Created!", res);
@@ -174,6 +176,7 @@ export default {
     password: { required, minLength: minLength(8) },
     confirm: { sameAsPassword: sameAs("password") },
     condo: { required },
+    apartment: { required, validApartment },
     phone: { required, validPhone },
     role: { required },
   },
@@ -226,6 +229,14 @@ export default {
       const errors = [];
       if (!this.$v.role.$dirty) return errors;
       !this.$v.role.required && errors.push("Role is required.");
+      return errors;
+    },
+    apartmentErrors() {
+      const errors = [];
+      if (!this.$v.apartment.$dirty) return errors;
+      !this.$v.apartment.required && errors.push("Apartment is required.");
+      !this.$v.apartment.towerFloorUnit &&
+        errors.push("Apartment is in the wrong format.");
       return errors;
     },
   },

@@ -44,10 +44,16 @@
         <p>CART</p>
       </li>
 
-      <li v-show="!signedIn" id="login" class="cta" @click="signIn">
+      <li v-show="!signedIn" id="login" class="cta" @click="signIn" ref="login">
         <div>Sign In</div>
       </li>
-      <li v-show="!signedIn" id="register" class="cta" @click="register">
+      <li
+        v-show="!signedIn"
+        id="register"
+        class="cta"
+        @click="register"
+        ref="register"
+      >
         <div>Register</div>
       </li>
     </ul>
@@ -85,6 +91,20 @@ export default {
   computed: {
     signedIn() {
       return this.$store.state.account.token !== null; // check the token is valid next time?
+    },
+  },
+  watch: {
+    $route(to) {
+      if (to.name === "Register") {
+        this.$refs["register"].classList.add("current");
+      } else {
+        this.$refs["register"].classList.remove("current");
+      }
+      if (to.name === "Login") {
+        this.$refs["login"].classList.add("current");
+      } else {
+        this.$refs["login"].classList.remove("current");
+      }
     },
   },
 };

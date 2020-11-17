@@ -128,15 +128,13 @@ export default {
       }
 
       axios
-        .get(
-          "https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url"
-        )
+        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`)
         .then((res) => {
           this.$refs.imageUploader.uploadImage(res.data.uploadURL);
           const params = {
             name: this.name,
             description: this.description,
-            thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
+            thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${res.data.photoFilename}`,
             price: this.price,
             quantity: this.quantity,
             available: this.date,
@@ -151,7 +149,7 @@ export default {
           };
           axios
             .post(
-              "https://1e3y4lcl59.execute-api.us-east-1.amazonaws.com/dev/product",
+              `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
               params,
               options
             )
@@ -223,6 +221,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.commit("loading/stop");
     if (this.$store.state.account.token === null) {
       this.$router.push("/login");
     }

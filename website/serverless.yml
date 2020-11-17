@@ -8,9 +8,4 @@ inputs:
     src: ./src
     hook: npm run build
     dist: ./dist
-
-environment:
-  USER_SERVICE_URL: ${env.USER_SERVICE_URL}
-  SHOP_SERVICE_URL: ${env.SHOP_SERVICE_URL}
-  PRODUCT_SERVICE_URL: ${env.PRODUCT_SERVICE_URL}
-  IMAGE_SERVICE_URL: ${env.IMAGE_SERVICE_URL}
+  region: ${env:REGION}

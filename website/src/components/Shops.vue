@@ -35,7 +35,7 @@ export default {
       };
 
       const res = await axios.get(
-        `https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/myshops`,
+        `${process.env.VUE_APP_SHOP_SERVICE_URL}/myshops`,
         options
       );
       this.shops = res.data.shops;

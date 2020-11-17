@@ -33,7 +33,9 @@
         </li>
         <li>
           <label for="condo">Condo</label>
-          <input v-model="condo" name="condo" @blur="$v.condo.$touch()" />
+          <select v-model="condo" name="condo" @blur="$v.condo.$touch()">
+            <option selected>Armanee Terrace</option>
+          </select>
           <p v-if="$v.condo.$dirty && $v.condo.$invalid">{{ condoErrors }}</p>
         </li>
       </ul>
@@ -70,16 +72,14 @@ export default {
       }
 
       axios
-        .get(
-          "https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url"
-        )
+        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`)
         .then((res) => {
           this.$refs.imageUploader.uploadImage(res.data.uploadURL);
           this.$store.commit("loading/start");
           const params = {
             name: this.name,
             description: this.description,
-            thumbnail: `https://imagesq323dsad.s3.amazonaws.com/${res.data.photoFilename}`,
+            thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${res.data.photoFilename}`,
             condo: this.condo,
           };
           const options = {
@@ -89,7 +89,7 @@ export default {
           };
           axios
             .post(
-              "https://bcaf0sq478.execute-api.us-east-1.amazonaws.com/dev/shop",
+              `${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`,
               params,
               options
             )
@@ -146,6 +146,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.commit("loading/stop");
     if (this.$store.state.account.token === null) {
       this.$router.push("/login");
     }

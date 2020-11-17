@@ -13,4 +13,9 @@ const validPhone = (value) => {
   return false;
 };
 
-export default validPhone;
+const validApartment = (value) => {
+  const regex = new RegExp(/([A-Z][0-9][0-9]-[A-Z][0-9][0-9])/i);
+  return regex.test(value);
+};
+
+export { validPhone, validApartment };

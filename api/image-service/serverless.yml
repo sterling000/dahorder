@@ -7,7 +7,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
-  region: us-east-1
+  region: ${opt:region, 'ap-southeast-1'}
   httpApi:
     cors: true
   
@@ -18,10 +18,10 @@ provider:
         - "s3:PutObject"
         - "s3:PutObjectAcl"
       Resource:
-        - arn:aws:s3:::imagesq323dsad/*
+        - arn:aws:s3:::${self:custom.s3.bucket}/*
 
   environment:
-    UPLOAD_BUCKET: imagesq323dsad
+    UPLOAD_BUCKET: ${self:custom.s3.bucket}
 
 functions:
   getUploadURL:
@@ -31,13 +31,43 @@ functions:
           path: /v1/image/url
           method: get
           cors: true
-      - s3: imagesq323dsad
+      - s3: 
+        bucket: ${self:custom.s3.bucket}
+        existing: true
+
+
+resources:
+  Resources:
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: "PublicReadWrite"
+        BucketName: ${self:custom.s3.bucket}
+        CorsConfiguration: 
+          CorsRules: 
+            - AllowedHeaders: 
+              - '*'
+              AllowedMethods: 
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              AllowedOrigins: 
+                - '*'
+              ExposedHeaders:
+                - Content-Type
+                - Content-Length
+              Id: ImageServiceCorsRule
+              MaxAge: '3600'      
 
 plugins:
   - serverless-pseudo-parameters
   - serverless-mocha
 
 custom:
+  s3:
+    bucket: dah-order-images-${self:provider.stage}-${self:provider.region}
   serverless-mocha-plugin:
     testTemplate: ../templates/test-template.ejs
     functionTemplate: ../templates/function-template.ejs

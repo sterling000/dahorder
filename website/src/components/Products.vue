@@ -44,7 +44,7 @@ export default {
         },
       };
       const res = await axios.get(
-        "https://1e3y4lcl59.execute-api.us-east-1.amazonaws.com/dev/products",
+        `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/products`,
         options
       );
       this.$store.commit("loading/stop");

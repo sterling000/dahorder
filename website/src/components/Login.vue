@@ -7,7 +7,7 @@
         <input
           class="phone"
           v-model.trim="phone"
-          placeholder="0123456789"
+          placeholder=""
           name="phone"
           @blur="$v.phone.$touch"
         />
@@ -22,7 +22,6 @@
             v-model="password"
             type="password"
             name="password"
-            placeholder="Password"
             @blur="$v.password.$touch"
           />
           <p v-if="$v.password.$invalid && $v.password.$dirty">
@@ -47,7 +46,7 @@
 <script>
 import axios from "axios";
 import { required } from "vuelidate/lib/validators";
-import validPhone from "../validators/validators";
+import { validPhone } from "../validators/validators";
 import { mapState } from "vuex";
 axios.defaults.headers.post["Content-Type"] = "application/json";
 export default {
@@ -71,15 +70,12 @@ export default {
       }
       this.$store.commit("loading/start");
       const params = {
-        phone: this.phone,
+        phone: `+6${this.phone}`,
         password: this.password,
       };
 
       axios
-        .post(
-          "https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/v1/user/login", // todo: move the url to config
-          params
-        )
+        .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user/login`, params)
         .then((res) => {
           if (res.status === 404) {
             console.log(
@@ -97,10 +93,7 @@ export default {
               },
             };
             axios
-              .get(
-                "https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/user",
-                options
-              )
+              .get(`${process.env.VUE_APP_USER_SERVICE_URL}/user`, options)
               .then((res) => {
                 this.$store.commit("account/user", res.data);
                 this.$store.commit("loading/stop");

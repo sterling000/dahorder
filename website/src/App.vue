@@ -24,16 +24,15 @@ export default {
     "app-footer": Footer,
   },
   mounted() {
+    console.log(process.env);
     this.$store.commit("loading/start");
     if (this.$store.state.account.token !== null) {
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
+
       axios
-        .get(
-          "https://nqq2u2wci7.execute-api.us-east-1.amazonaws.com/dev/user",
-          options
-        )
+        .get(`${process.env.VUE_APP_USER_SERVICE_URL}/user`, options)
         .then((res) => {
           this.$store.commit("account/user", res.data);
         })

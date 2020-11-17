@@ -13,7 +13,7 @@ module.exports.login = async (event, context) => {
       "#pk": "pk",
     },
     ExpressionAttributeValues: {
-      ":pk": `+6${body.phone}`,
+      ":pk": body.phone,
     },
   };
 

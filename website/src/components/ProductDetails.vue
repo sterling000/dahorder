@@ -167,12 +167,12 @@ export default {
       console.log(params.thumbnail);
       if (params.thumbnail !== undefined) {
         const resUrl = await axios.get(
-          "https://kin9q3i70f.execute-api.us-east-1.amazonaws.com/dev/v1/image/url"
+          `${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`
         );
         const resUpload = await this.$refs.imageUploader.uploadImage(
           resUrl.data.uploadURL
         );
-        params.thumbnail = `https://imagesq323dsad.s3.amazonaws.com/${resUpload.data.photoFilename}`;
+        params.thumbnail = `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${resUpload.data.photoFilename}`;
       }
 
       const options = {
@@ -183,7 +183,7 @@ export default {
 
       try {
         await axios.put(
-          "https://1e3y4lcl59.execute-api.us-east-1.amazonaws.com/dev/product",
+          `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
           params,
           options
         );
@@ -202,7 +202,7 @@ export default {
           },
         };
         const res = await axios.get(
-          "https://1e3y4lcl59.execute-api.us-east-1.amazonaws.com/dev/product",
+          `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
           options
         );
         console.log(res);

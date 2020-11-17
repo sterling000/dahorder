@@ -2,6 +2,7 @@
 const AWS = require("aws-sdk");
 const bcrypt = require("bcryptjs");
 const parsePhoneNumber = require("libphonenumber-js");
+const jwt = require("jsonwebtoken");
 
 module.exports.createUser = async (event) => {
   const body = JSON.parse(event.body);
@@ -41,6 +42,13 @@ module.exports.createUser = async (event) => {
   try {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const putResult = await dynamodb.put(newUserParams).promise();
+
+    let token = jwt.sign(
+      {
+        phone: phone,
+      },
+      process.env.JWT_SECRET
+    );
     return {
       statusCode: 201,
       headers: {
@@ -48,6 +56,9 @@ module.exports.createUser = async (event) => {
         "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Headers": "Authorization",
       },
+      body: JSON.stringify({
+        token: token,
+      }),
     };
   } catch (putError) {
     console.log("typeof(putError)", typeof putError);
