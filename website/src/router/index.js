@@ -5,8 +5,6 @@ import store from "../store/index";
 Vue.use(VueRouter);
 
 const boot = (to, from, next) => {
-  console.log("beforeEnter", to, from, next, store.state.account.user);
-  console.log("router", router);
   if (store.state.account.token === null) {
     router.push("/");
   }
@@ -56,6 +54,13 @@ const routes = [
     path: "/cart",
     name: "Cart",
     component: () => import("../components/Cart.vue"),
+    beforeEnter: boot,
+  },
+  {
+    path: "/account",
+    name: "Account",
+    component: () => import("../components/Account.vue"),
+    beforeEnter: boot,
   },
   {
     path: "/login",

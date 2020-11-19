@@ -78,16 +78,13 @@ export default {
     },
     uploadImage: async function(presignedURL) {
       this.$store.commit("loading/start");
-      console.log("Uploading to: ", presignedURL);
       var options = {
         headers: { "Content-Type": "image/jpeg", "x-amz-acl": "public-read" },
       };
-      let res = {};
       try {
-        res = await axios.put(presignedURL, this.thumbnail, options);
-        console.log("Upload Response... ", res);
+        await axios.put(presignedURL, this.thumbnail, options);
       } catch (error) {
-        console.log("Upload Error...", error);
+        console.error("Upload Error...", error);
       }
       this.$store.commit("loading/stop");
     },

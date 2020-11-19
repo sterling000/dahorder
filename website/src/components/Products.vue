@@ -48,11 +48,9 @@ export default {
         options
       );
       this.$store.commit("loading/stop");
-      console.log(res);
       this.products = res.data;
     },
     selectProduct: function(event) {
-      console.log("selectProduct", event);
       this.$router.push(`/product/${event.id}`);
     },
   },

@@ -17,7 +17,10 @@
           <router-link v-show="signedIn" to="/orders" class="nav-link"
             >My Orders</router-link
           >
-          <router-link v-show="signedIn" to="/shops" class="nav-link"
+          <router-link
+            v-show="signedIn && isSeller"
+            to="/shops"
+            class="nav-link"
             >My Shops</router-link
           >
           <router-link v-show="signedIn" to="/logout" class="nav-link"
@@ -76,6 +79,12 @@ export default {
     },
     signedIn() {
       return this.$store.state.account.token !== null; // check the token is valid next time?
+    },
+    isSeller() {
+      return (
+        this.$store.state.account.user.role === "seller" ||
+        this.$store.state.account.user.role === "both"
+      );
     },
   },
   watch: {

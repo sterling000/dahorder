@@ -8,15 +8,22 @@
     >
       <pulse-loader class="loader" :color="loaderColor" />
     </div>
-    <router-view />
+    <router-view v-show="!this.$store.state.loading.loading" />
+    <ul class="notices" v-show="this.notifications.length > 0">
+      <li v-for="notice in this.notifications" :key="notice.id">
+        <notification :notice="notice" @destroy="destroyNotification" />
+      </li>
+    </ul>
     <app-footer />
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Vue from "vue";
 import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
+
 export default {
   name: "App",
   components: {
@@ -24,8 +31,38 @@ export default {
     "app-footer": Footer,
   },
   mounted() {
-    console.log(process.env);
+    console.log = (...args) => {
+      if (this.notifications !== null) {
+        let message = "";
+        for (let i = 0; i < args.length; i++) {
+          message += ` ${args[i]}`;
+        }
+        this.notifications.push({
+          id: Math.random(),
+          info: message,
+          error: "",
+          timeout: 6 * 1000, // 4 seconds
+        });
+      }
+    };
+    Vue.config.errorHandler = (...args) => {
+      console.debug(args);
+      if (this.notifications !== null) {
+        let message = "";
+        for (let i = 0; i < args.length; i++) {
+          message += ` ${args[i]}`;
+        }
+
+        this.notifications.push({
+          id: Math.random(),
+          info: "",
+          error: message,
+          timeout: 6 * 1000,
+        });
+      }
+    };
     this.$store.commit("loading/start");
+
     if (this.$store.state.account.token !== null) {
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
@@ -37,14 +74,24 @@ export default {
           this.$store.commit("account/user", res.data);
         })
         .catch((error) => {
-          console.log("Oh No! An Error!", error);
+          console.error("Oh No! An Error!", error);
         });
     }
   },
   data() {
     return {
       loaderColor: "#e9750b",
+      notifications: [],
+      destroyEvents: [],
     };
+  },
+  methods: {
+    destroyNotification(e) {
+      const filtered = this.notifications.filter((notice) => {
+        return notice.id !== e;
+      });
+      this.notifications = filtered;
+    },
   },
 };
 </script>
@@ -78,6 +125,13 @@ a {
 
 ul {
   list-style: none;
+}
+
+.notices {
+  z-index: 999;
+  position: fixed;
+  bottom: 1em;
+  margin: 1em 1em 12vh;
 }
 
 router-view {

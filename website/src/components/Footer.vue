@@ -119,6 +119,7 @@ footer {
   bottom: 0;
   min-width: 100vw;
   justify-content: space;
+  z-index: 10;
   ul {
     display: flex;
     width: 100vw;

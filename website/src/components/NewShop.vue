@@ -1,7 +1,7 @@
 <template>
   <div class="add-shop">
     <h1>New Shop</h1>
-    <form @submit="submit" method="POST">
+    <form>
       <ul>
         <li>
           <label for="name">Name</label>
@@ -40,7 +40,15 @@
         </li>
       </ul>
 
-      <input id="submit" type="submit" value="ADD" :disabled="$v.$invalid" />
+      <button
+        id="submit"
+        type="submit"
+        title="ADD"
+        @click.prevent="submit"
+        :disabled="$v.$invalid"
+      >
+        ADD
+      </button>
     </form>
   </div>
 </template>
@@ -55,7 +63,7 @@ export default {
     return {
       name: "",
       description: "",
-      condo: "",
+      condo: "Armanee Terrace",
       thumbnail: "",
     };
   },
@@ -63,9 +71,7 @@ export default {
     thumbnailRendered: function(e) {
       this.thumbnail = e;
     },
-    submit: function(e) {
-      e.preventDefault();
-      e.submitter.disabled = true;
+    submit: function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -97,14 +103,14 @@ export default {
               this.$router.push("/shops");
             })
             .catch((error) => {
-              console.log("Oh No! An Error!", error);
+              console.error("Oh No! An Error!", error);
             })
             .finally(() => {
               this.$store.commit("loading/stop");
             });
         })
         .catch((error) => {
-          console.log("Oh No! An Error!", error);
+          console.error("Oh No! An Error!", error);
         })
         .finally(() => {
           // console.log('Do this always... or else...');
@@ -120,7 +126,7 @@ export default {
   computed: {
     nameErrors() {
       const errors = [];
-      if (!this.$v.name.$dirty && !this.$v.name.$dirty) return errors;
+      if (!this.$v.name.$dirty) return errors;
       !this.$v.name.required && errors.push("Name is required.");
       return errors;
     },
@@ -192,7 +198,7 @@ export default {
     }
   }
 
-  input#submit {
+  button#submit {
     display: block;
     background-color: $color-primary-0;
     color: $color-primary-3;

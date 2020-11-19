@@ -2,7 +2,13 @@
   <div class="shops">
     <div class="category">
       <h2>Shops</h2>
-      <ul>
+      <div class="notASeller" v-show="!isSeller">
+        <h3>
+          Your role is 'Buyer', update your account in the menu under
+          <span class="myAccount">My Account</span> to begin selling products.
+        </h3>
+      </div>
+      <ul v-show="isSeller">
         <li v-for="shop in shops" :key="shop.id">
           <store v-bind:store="shop" @selected="selectStore"></store>
         </li>
@@ -42,7 +48,6 @@ export default {
       this.$store.commit("loading/stop");
     },
     selectStore: function(event) {
-      console.log("selectStore", event);
       this.$router.push(`/products/${event.id}`);
     },
   },
@@ -53,6 +58,14 @@ export default {
     }
     this.$store.commit("loading/start");
     this.getShops();
+  },
+  computed: {
+    isSeller() {
+      return (
+        this.$store.state.account.user.role === "seller" ||
+        this.$store.state.account.user.role === "both"
+      );
+    },
   },
 };
 </script>

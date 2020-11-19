@@ -129,22 +129,17 @@ export default {
     },
     isOwner() {
       if (this.details.owner === null) {
-        console.log("details.owner is null");
         return false;
       }
       if (this.$store.state.account.token === null) {
-        console.log("token is null");
         return false;
       }
       if (this.$store.state.account.user === null) {
-        console.log("user is null");
         return false;
       }
       if (this.$store.state.account.user.pk === this.details.owner) {
-        console.log("you are the owner");
         return true;
       }
-      console.log("you are not the owner");
       return false;
     },
     toggleEdit() {
@@ -156,7 +151,6 @@ export default {
       const filtered = originalKeys.filter(
         (key) => this.details[key] !== this.changes[key]
       );
-      console.log(filtered);
       const params = {};
       filtered.forEach((key) => {
         params[key] = this.changes[key];
@@ -164,7 +158,6 @@ export default {
       params["id"] = this.$route.params.id;
       console.log("Saving changes to: ", params);
       this.$store.commit("loading/start");
-      console.log(params.thumbnail);
       if (params.thumbnail !== undefined) {
         const resUrl = await axios.get(
           `${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`
@@ -188,13 +181,12 @@ export default {
           options
         );
       } catch (putError) {
-        console.log(putError);
+        console.error(putError);
       }
       this.$store.commit("loading/stop");
       this.toggleEdit();
     },
     getProduct: async function() {
-      console.log("fetching product...", this.$route.params.id);
       try {
         const options = {
           params: {
@@ -205,7 +197,6 @@ export default {
           `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
           options
         );
-        console.log(res);
         this.details = res.data[0];
         this.changes = { ...this.details };
         this.$refs["thumbnail"].style.setProperty(
@@ -214,9 +205,7 @@ export default {
         );
         this.$store.commit("loading/stop");
       } catch (error) {
-        console.log(error);
-      } finally {
-        console.log("getProduct finally...");
+        console.error(error);
       }
     },
   },

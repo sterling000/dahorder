@@ -3,12 +3,7 @@
     <h1>Sign Up</h1>
     <form @submit="register" method="POST">
       <label for="name">Name:</label>
-      <input
-        v-model.trim="name"
-        placeholder="John Doe"
-        name="name"
-        @blur="$v.name.$touch"
-      />
+      <input v-model.trim="name" name="name" @blur="$v.name.$touch" />
       <ul>
         <li class="error" v-for="error in nameErrors" :key="error">
           <p class="error">{{ error }}</p>
@@ -16,7 +11,7 @@
       </ul>
       <label for="condo">Condominium:</label>
       <select v-model="condo" name="condo" @blur="$v.condo.$touch">
-        <option selected>Armanee Terrace</option>
+        <option value="Armanee Terrace" selected>Armanee Terrace</option>
       </select>
       <ul>
         <li class="error" v-for="error in condoErrors" :key="error">
@@ -35,10 +30,9 @@
       <input
         class="phone"
         v-model.trim="phone"
-        placeholder="0123456789"
         name="phone"
-        @blur="logEvent"
-        @change="logEvent"
+        @blur="$v.phone.$touch"
+        @change="$v.phone.$touch"
       />
       <ul>
         <li class="error" v-for="error in phoneErrors" :key="error">
@@ -46,12 +40,7 @@
         </li>
       </ul>
       <label for="email">Email:</label>
-      <input
-        v-model.trim="email"
-        placeholder="john.doe@email.com"
-        name="email"
-        @blur="$v.email.$touch"
-      />
+      <input v-model.trim="email" name="email" @blur="$v.email.$touch" />
       <ul>
         <li class="error" v-for="error in emailErrors" :key="error">
           <p class="error">{{ error }}</p>
@@ -75,7 +64,6 @@
       <label for="confirm">Confirm Password:</label>
       <input
         v-model.trim="confirm"
-        placeholder=""
         name="confirm"
         type="password"
         @blur="$v.confirm.$touch"
@@ -98,12 +86,15 @@
         <option value="both">Both</option>
       </select>
 
-      <input
+      <button
         id="submit"
         type="submit"
-        value="Sign Up"
+        title="ADD"
+        @click.prevent="register"
         :disabled="$v.$invalid"
-      />
+      >
+        Sign Up
+      </button>
     </form>
   </div>
 </template>
@@ -119,7 +110,7 @@ export default {
   data() {
     return {
       name: "",
-      condo: "",
+      condo: "Armanee Terrace",
       apartment: "",
       phone: "",
       email: "",
@@ -130,11 +121,7 @@ export default {
     };
   },
   methods: {
-    logEvent: function(e) {
-      console.log(e);
-    },
-    register: function(e) {
-      e.preventDefault();
+    register: function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -153,20 +140,15 @@ export default {
         .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user`, params)
         .then((res) => {
           if (res.status === 202) {
-            console.log("Another user exists with that phone.");
             this.error = "Another user exists with that phone.";
           } else {
-            this.error = "";
-            console.log("Success! User Created!", res);
+            this.error = "Success! You've signed up!";
             this.$store.commit("account/login", res.data.token);
             this.$router.push("/");
           }
         })
         .catch((error) => {
-          console.log("Oh No! An Error!", error);
-        })
-        .finally(() => {
-          // console.log('Do this always... or else...');
+          console.error("Oh No! An Error!", error);
         });
     },
   },
@@ -235,7 +217,7 @@ export default {
       const errors = [];
       if (!this.$v.apartment.$dirty) return errors;
       !this.$v.apartment.required && errors.push("Apartment is required.");
-      !this.$v.apartment.towerFloorUnit &&
+      !this.$v.apartment.validApartment &&
         errors.push("Apartment is in the wrong format.");
       return errors;
     },
@@ -263,7 +245,8 @@ export default {
       font-weight: 600;
     }
     input,
-    select {
+    select,
+    button {
       display: block;
       width: 275px;
       height: 2em;

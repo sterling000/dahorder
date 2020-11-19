@@ -30,12 +30,15 @@
         </li>
       </ul>
 
-      <input
+      <button
         id="submit"
         type="submit"
-        value="Sign In"
+        title="ADD"
+        @click.prevent="signin"
         :disabled="$v.$invalid"
-      />
+      >
+        Sign In
+      </button>
       <button @click.stop.prevent="register()">Register</button>
       <a href="#" class="forgot-password">Forgot Password?</a>
     </form>
@@ -59,11 +62,7 @@ export default {
     };
   },
   methods: {
-    logEvent: function(e) {
-      console.log(e);
-    },
-    signin: function(e) {
-      e.preventDefault();
+    signin: function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -78,14 +77,14 @@ export default {
         .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user/login`, params)
         .then((res) => {
           if (res.status === 404) {
-            console.log(
+            console.error(
               "That phone/password combination does not match our records."
             );
             this.errorMessages =
               "That phone/password combination does not match our records.";
           } else {
             this.error = "";
-            console.log("Success!", res.data.token);
+            console.log("Success!");
             this.$store.commit("account/login", res.data.token);
             const options = {
               headers: {
@@ -104,19 +103,18 @@ export default {
                 }
               })
               .catch((error) => {
-                console.log("Oh No! An Error!", error);
+                console.error("Oh No! An Error!", error);
               });
           }
         })
         .catch((error) => {
-          console.log("Oh No! An Error!", error);
+          console.error("Oh No! An Error!", error);
         })
         .finally(() => {
           // console.log('Do this always... or else...');
         });
     },
     register: function() {
-      console.log("Register clicked");
       this.$router.push("/register");
     },
   },

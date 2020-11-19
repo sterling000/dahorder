@@ -16,6 +16,7 @@
       </tr>
     </table>
 
+    <button class="checkout" @click="checkout">Check Out</button>
     <button class="clear" @click="clear">Clear</button>
   </div>
 </template>
@@ -25,6 +26,9 @@ export default {
   methods: {
     clear() {
       this.$store.commit("cart/clear");
+    },
+    checkout() {
+      console.log("Proceeding to checkout");
     },
   },
 };

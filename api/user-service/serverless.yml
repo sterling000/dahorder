@@ -20,6 +20,7 @@ provider:
       Action:
         - "dynamodb:Query"
         - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}/index/pk
@@ -29,6 +30,14 @@ provider:
     JWT_SECRET: ${param:JWT_SECRET}
 
 functions:
+  updateUser:
+    handler: src/functions/updateUser.handler
+    events:
+      - http:
+          path: /user
+          method: put
+          cors: true
+          authorizer: validate
   getUser:
     handler: src/functions/getUser.handler
     events:
@@ -43,7 +52,7 @@ functions:
     handler: src/functions/login.login
     events:
       - http:
-          path: /v1/user/login
+          path: /user/login
           method: post
           cors: true
           request:
@@ -53,7 +62,7 @@ functions:
     handler: src/functions/createUser.createUser
     events:
       - http:
-          path: /v1/user
+          path: /user
           method: post
           cors: true
           request:
