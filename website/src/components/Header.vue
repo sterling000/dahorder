@@ -81,10 +81,13 @@ export default {
       return this.$store.state.account.token !== null; // check the token is valid next time?
     },
     isSeller() {
-      return (
-        this.$store.state.account.user.role === "seller" ||
-        this.$store.state.account.user.role === "both"
-      );
+      return true;
+      // (
+      // (this.$store.state.account.user !== null &&
+      //   this.$store.state.account.user.role === "seller") ||
+      // (this.$store.state.account.user !== null &&
+      //   this.$store.state.account.user.role === "both")
+      // );
     },
   },
   watch: {

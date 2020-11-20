@@ -134,7 +134,7 @@ export default {
       }
 
       axios
-        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`)
+        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`)
         .then((res) => {
           this.$refs.imageUploader.uploadImage(res.data.uploadURL);
           const params = {
@@ -160,7 +160,9 @@ export default {
               options
             )
             .then(() => {
-              this.$router.push(`/products/${this.shop}`);
+              this.$router.push(
+                `/products/${this.shop}/${this.$route.params.owner}`
+              );
             })
             .catch((error) => {
               console.error("Oh No! An Error!", error);

@@ -41,6 +41,7 @@
           class="shortcut-icon"
           :icon="['fas', 'shopping-cart']"
         />
+        <span class="badge" v-show="this.cartSize">{{ this.cartSize }}</span>
         <p>CART</p>
       </li>
 
@@ -87,10 +88,29 @@ export default {
       }
       this.$router.push("/register");
     },
+    productReducer(acc, cur) {
+      console.debug("reducer", acc, cur);
+    },
   },
   computed: {
     signedIn() {
       return this.$store.state.account.token !== null; // check the token is valid next time?
+    },
+    cartSize() {
+      let total = 0;
+      const shopKeys = Object.keys(this.$store.state.cart.products);
+      if (shopKeys.length > 0) {
+        shopKeys.forEach((key) => {
+          let quantities = this.$store.state.cart.products[key].map(
+            (product) => product.quantity
+          );
+          total += quantities.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0
+          );
+        });
+      }
+      return total;
     },
   },
   watch: {
@@ -142,10 +162,24 @@ footer {
       font-size: 12px;
       font-weight: 600;
       border: 1px solid $color-primary-3;
+      position: relative;
       .shortcut-icon {
         font-size: 24px;
         margin-bottom: 5px;
         padding: auto auto 1.5em;
+      }
+      .badge {
+        font-size: 2em;
+        display: block;
+        position: absolute;
+        top: 0.12em;
+        left: 0.25em;
+        width: 1em;
+        height: 1em;
+        line-height: 1em;
+        border-radius: 50%;
+        text-align: center;
+        background: $color-primary-2;
       }
     }
     .cta {

@@ -2,6 +2,12 @@
   <div class="products">
     <div class="category">
       <h2>Products</h2>
+      <div class="noProducts" v-show="products.length < 1">
+        <h3>
+          The Owner of this shop has not added any products yet.
+          <br /><br />Check back later.
+        </h3>
+      </div>
       <ul>
         <li v-for="product in products" :key="product.id">
           <product v-bind:product="product" @selected="selectProduct"></product>
@@ -10,7 +16,8 @@
           <div
             v-show="
               this.$store.state.account.token !== null &&
-                this.$store.state.account.user.role !== 'buyer'
+                this.$store.state.account.user.role !== 'buyer' &&
+                this.isOwner
             "
             class="new"
             @click="newProduct"
@@ -34,11 +41,12 @@ export default {
   },
   methods: {
     newProduct: function() {
-      this.$router.push(`/newproduct/${this.$route.params.id}`);
+      this.$router.push(
+        `/newproduct/${this.$route.params.id}/${this.$route.params.owner}`
+      );
     },
     getProducts: async function() {
       const options = {
-        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
         params: {
           shop: this.$route.params.id,
         },
@@ -58,6 +66,11 @@ export default {
     this.$store.commit("loading/start");
     this.getProducts();
   },
+  computed: {
+    isOwner() {
+      return this.$route.params.owner === this.$store.state.account.user.pk;
+    },
+  },
 };
 </script>
 
@@ -66,7 +79,10 @@ export default {
 .products {
   overflow-y: auto;
   padding: 10vh 5vh 15vh;
-
+  .noProducts {
+    margin: 2em 0;
+    color: $color-primary-2;
+  }
   .category {
     margin: 1em;
     display: grid;

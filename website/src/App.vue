@@ -21,6 +21,7 @@
 <script>
 import axios from "axios";
 import Vue from "vue";
+import { mapState } from "vuex";
 import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 
@@ -61,22 +62,7 @@ export default {
         });
       }
     };
-    this.$store.commit("loading/start");
-
-    if (this.$store.state.account.token !== null) {
-      const options = {
-        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
-      };
-
-      axios
-        .get(`${process.env.VUE_APP_USER_SERVICE_URL}/user`, options)
-        .then((res) => {
-          this.$store.commit("account/user", res.data);
-        })
-        .catch((error) => {
-          console.error("Oh No! An Error!", error);
-        });
-    }
+    //this.getUserData();
   },
   data() {
     return {
@@ -85,12 +71,31 @@ export default {
       destroyEvents: [],
     };
   },
+  computed: mapState("account", ["token"]),
   methods: {
     destroyNotification(e) {
       const filtered = this.notifications.filter((notice) => {
         return notice.id !== e;
       });
       this.notifications = filtered;
+    },
+    getUserData: async function() {
+      this.$store.commit("loading/start");
+
+      const options = {
+        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
+      };
+      const res = await axios.get(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        options
+      );
+      this.$store.commit("account/user", res.data);
+      this.$store.commit("loading/stop");
+    },
+  },
+  watch: {
+    "account.token"() {
+      this.getUserData();
     },
   },
 };

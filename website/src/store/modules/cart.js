@@ -1,32 +1,42 @@
 const state = {
-  products: [],
+  products: {},
 };
 
 const mutations = {
   add(state, product) {
-    const { id, name, quantity, price } = product;
+    const { id, name, quantity, price, shop, owner } = product;
     const cartItem = {
-      id,
-      name,
-      quantity,
-      price,
+      id: id,
+      name: name,
+      price: price,
+      quantity: 1,
+      remaining: quantity,
+      shop: shop,
+      owner: owner,
     };
-    const increment = state.products.find((el) => {
-      return el.id === id;
-    });
-    if (increment !== undefined) {
-      increment.quantity++;
+    console.debug("cartItem", cartItem);
+    let shopProductsForNewProduct = state.products[shop];
+    console.debug(
+      "looking for shop with an item with the same id.",
+      shopProductsForNewProduct
+    );
+    if (shopProductsForNewProduct) {
+      const increment = shopProductsForNewProduct.find((el) => {
+        return el.id === id;
+      });
+      if (increment !== undefined) {
+        increment.quantity++;
+      } else {
+        shopProductsForNewProduct = [...shopProductsForNewProduct, cartItem];
+      }
     } else {
-      state.products = [...state.products, cartItem];
+      shopProductsForNewProduct = [];
+      shopProductsForNewProduct.push(cartItem);
+      state.products[shop] = shopProductsForNewProduct;
     }
   },
-  remove(state, product) {
-    state.products = state.products.filter((e) => {
-      return e.id !== product.id;
-    });
-  },
   clear(state) {
-    state.products = [];
+    state.products = {};
   },
 };
 

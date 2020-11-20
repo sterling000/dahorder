@@ -78,7 +78,7 @@ export default {
       }
 
       axios
-        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`)
+        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`)
         .then((res) => {
           this.$refs.imageUploader.uploadImage(res.data.uploadURL);
           this.$store.commit("loading/start");

@@ -126,6 +126,7 @@ export default {
         this.$router.push("/login");
       }
       this.$store.commit("cart/add", this.details);
+      console.log(`Added ${this.details.name} to Cart!`);
     },
     isOwner() {
       if (this.details.owner === null) {
@@ -160,7 +161,7 @@ export default {
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
         const resUrl = await axios.get(
-          `${process.env.VUE_APP_IMAGE_SERVICE_URL}/v1/image/url`
+          `${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`
         );
         const resUpload = await this.$refs.imageUploader.uploadImage(
           resUrl.data.uploadURL

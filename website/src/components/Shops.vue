@@ -48,7 +48,7 @@ export default {
       this.$store.commit("loading/stop");
     },
     selectStore: function(event) {
-      this.$router.push(`/products/${event.id}`);
+      this.$router.push(`/products/${event.id}/${event.pk}`);
     },
   },
   mounted() {

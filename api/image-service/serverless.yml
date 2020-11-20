@@ -28,13 +28,12 @@ functions:
     handler: src/functions/getUploadURL.handler
     events:
       - http:
-          path: /v1/image/url
+          path: /image/url
           method: get
           cors: true
-      - s3: 
-        bucket: ${self:custom.s3.bucket}
-        existing: true
-
+      - s3:
+          bucket: ${self:custom.s3.bucket}
+          existing: true
 
 resources:
   Resources:

@@ -29,7 +29,7 @@ const routes = [
     beforeEnter: boot,
   },
   {
-    path: "/products/:id",
+    path: "/products/:id/:owner",
     name: "Products",
     component: () => import("../components/Products.vue"),
   },
@@ -40,7 +40,7 @@ const routes = [
     beforeEnter: boot,
   },
   {
-    path: "/newproduct/:id",
+    path: "/newproduct/:id/:owner",
     name: "New Product",
     component: () => import("../components/NewProduct.vue"),
     beforeEnter: boot,
@@ -54,6 +54,12 @@ const routes = [
     path: "/cart",
     name: "Cart",
     component: () => import("../components/Cart.vue"),
+    beforeEnter: boot,
+  },
+  {
+    path: "/checkout/:shop/:owner",
+    name: "Checkout",
+    component: () => import("../components/Checkout.vue"),
     beforeEnter: boot,
   },
   {

@@ -30,6 +30,13 @@ provider:
     JWT_SECRET: ${param:JWT_SECRET}
 
 functions:
+  getShop:
+    handler: src/functions/getShop.handler
+    events:
+      - http:
+          path: /shop
+          method: get
+          cors: true
   authorizer:
     handler: src/functions/authorizer.validate
   myShops:

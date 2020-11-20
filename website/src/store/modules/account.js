@@ -16,8 +16,17 @@ const mutations = {
   },
 };
 
+const actions = {
+  logout(context) {
+    context.commit("logout");
+    context.commit("cart/clear", null, { root: true });
+    context.commit("loading/stop", null, { root: true });
+  },
+};
+
 export default {
   namespaced: true,
   state,
   mutations,
+  actions,
 };

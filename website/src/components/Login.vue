@@ -63,6 +63,9 @@ export default {
   },
   methods: {
     signin: function() {
+      this.signingAsync();
+    },
+    signingAsync: async function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -73,46 +76,32 @@ export default {
         password: this.password,
       };
 
-      axios
-        .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user/login`, params)
-        .then((res) => {
-          if (res.status === 404) {
-            console.error(
-              "That phone/password combination does not match our records."
-            );
-            this.errorMessages =
-              "That phone/password combination does not match our records.";
-          } else {
-            this.error = "";
-            console.log("Success!");
-            this.$store.commit("account/login", res.data.token);
-            const options = {
-              headers: {
-                Authorization: `Bearer ${this.$store.state.account.token}`,
-              },
-            };
-            axios
-              .get(`${process.env.VUE_APP_USER_SERVICE_URL}/user`, options)
-              .then((res) => {
-                this.$store.commit("account/user", res.data);
-                this.$store.commit("loading/stop");
-                if (this.from.name !== null) {
-                  this.$router.back();
-                } else {
-                  this.$router.push("/");
-                }
-              })
-              .catch((error) => {
-                console.error("Oh No! An Error!", error);
-              });
-          }
-        })
-        .catch((error) => {
-          console.error("Oh No! An Error!", error);
-        })
-        .finally(() => {
-          // console.log('Do this always... or else...');
-        });
+      const res = await axios.post(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user/login`,
+        params
+      );
+      if (res.status === 404) {
+        throw "That phone/password combination does not match our records.";
+      } else {
+        console.log("Success!");
+        this.$store.commit("account/login", res.data.token);
+        const options = {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.account.token}`,
+          },
+        };
+        const res2 = await axios.get(
+          `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+          options
+        );
+        this.$store.commit("account/user", res2.data);
+        this.$store.commit("loading/stop");
+        if (this.from.name !== null) {
+          this.$router.back();
+        } else {
+          this.$router.push("/");
+        }
+      }
     },
     register: function() {
       this.$router.push("/register");

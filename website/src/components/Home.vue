@@ -28,7 +28,7 @@ export default {
   methods: {
     selectStore: function(event) {
       this.$store.commit("loading/start");
-      this.$router.push(`/products/${event.id}`);
+      this.$router.push(`/products/${event.id}/${event.pk}`);
     },
     getShops: async function() {
       this.shops = await axios.get(

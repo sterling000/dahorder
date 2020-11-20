@@ -118,10 +118,11 @@ export default {
       confirm: "",
       role: "both",
       error: "",
+      from: {},
     };
   },
   methods: {
-    register: function() {
+    register: async function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -135,22 +136,39 @@ export default {
         phone: "+6" + this.phone,
         role: this.role,
       };
+      const res = await axios.post(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        params
+      );
+      if (res.status === 202) {
+        throw "Another user exists with that phone.";
+      } else {
+        console.log("Success! You've signed up!");
+        this.$store.commit("account/login", res.data.token);
+        const options = {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.account.token}`,
+          },
+        };
+        const res1 = await axios.get(
+          `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+          options
+        );
 
-      axios
-        .post(`${process.env.VUE_APP_USER_SERVICE_URL}/v1/user`, params)
-        .then((res) => {
-          if (res.status === 202) {
-            this.error = "Another user exists with that phone.";
-          } else {
-            this.error = "Success! You've signed up!";
-            this.$store.commit("account/login", res.data.token);
-            this.$router.push("/");
-          }
-        })
-        .catch((error) => {
-          console.error("Oh No! An Error!", error);
-        });
+        this.$store.commit("account/user", res1.data);
+        this.$store.commit("loading/stop");
+        if (this.from.name !== null) {
+          this.$router.back();
+        } else {
+          this.$router.push("/");
+        }
+      }
     },
+  },
+  beforeRouteEnter: (to, from, next) => {
+    next((vm) => {
+      vm.from = from;
+    });
   },
   validations: {
     name: { required, between: (3, 20) },
