@@ -21,6 +21,7 @@ provider:
         - "dynamodb:Query"
         - "dynamodb:PutItem"
         - "dynamodb:Scan"
+        - "dynamodb:GetItem"
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/pk

@@ -43,8 +43,22 @@ export default {
     this.getShop();
   },
   methods: {
-    submit() {
-      console.log("Submitted: ", this.$store.state.cart.products);
+    submit: async function() {
+      console.log("Submitting: ", this.$store.state.cart.products);
+      const params = {
+        shop: this.shop.pk,
+        products: this.$store.state.cart.products[this.$route.params.shop],
+        delivery: true,
+      };
+      const options = {
+        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
+      };
+      await axios.post(
+        `${process.env.VUE_APP_ORDER_SERVICE_URL}/order`,
+        params,
+        options
+      );
+      console.log("Order Submitted");
     },
     paymentRendered(e) {
       this.payment = e;

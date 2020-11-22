@@ -1,0 +1,99 @@
+service: order-service
+
+app: dah-order
+org: sterling000
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+
+  environment:
+    DYNAMODB_ORDER_TABLE: ${self:custom.dynamodb.orderTable}
+    DYNAMODB_PRODUCT_TABLE: ${self:custom.dynamodb.productTable}
+    DYNAMODB_SHOP_TABLE: ${self:custom.dynamodb.shopTable}
+    JWT_SECRET: ${param:JWT_SECRET}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:GetItem"
+      Resource:
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}/index/shop
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}/index/timestamp
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}/index/customerIndex
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.productTable}/index/id
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/pk
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/id
+
+functions:
+  validate:
+    handler: src/functions/validate.validate
+  getShopOrders:
+    handler: src/functions/getShopOrders.handler
+    events:
+      - http:
+          method: get
+          path: /orders
+          cors: true
+          authorizer: validate
+  placeOrder:
+    handler: src/functions/placeOrder.handler
+    events:
+      - http:
+          method: post
+          path: /order
+          cors: true
+          authorizer: validate
+  
+resources:
+  Resources:
+    orderTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:custom.dynamodb.orderTable}
+        AttributeDefinitions:
+          - AttributeName: shopId
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+          - AttributeName: customerId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: shopId
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: customerIndex
+            KeySchema:
+              - AttributeName: customerId
+                KeyType: HASH
+              - AttributeName: date
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-mocha
+
+custom:
+  dynamodb:
+    orderTable: order-${self:provider.stage}-${self:provider.region}
+    productTable: product-${self:provider.stage}-${self:provider.region}
+    shopTable: shop-${self:provider.stage}-${self:provider.region}
+  serverless-mocha-plugin:
+    testTemplate: ../templates/test-template.ejs
+    functionTemplate: ../templates/function-template.ejs

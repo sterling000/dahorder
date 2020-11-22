@@ -19,8 +19,8 @@ module.exports.handler = async (event) => {
   );
   const description = body.description;
   const thumbnail = body.thumbnail;
-  const price = body.price;
-  const quantity = body.quantity;
+  const price = Number(body.price);
+  const quantity = Number(body.quantity);
   const available = body.available;
   const delivery = body.delivery;
   const shop = body.shop;

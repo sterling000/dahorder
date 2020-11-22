@@ -3,5 +3,25 @@
         "Vuelidate",
         "fontawesome",
         "fortawesome"
+    ],
+    "cSpell.enableFiletypes": [
+        "!asciidoc",
+        "!c",
+        "!cpp",
+        "!csharp",
+        "!go",
+        "!handlebars",
+        "!haskell",
+        "!jade",
+        "!latex",
+        "!php",
+        "!pug",
+        "!python",
+        "!rust",
+        "!scala",
+        "javascriptreact",
+        "vue",
+        "vue-html",
+        "vue-postcss"
     ]
 }
