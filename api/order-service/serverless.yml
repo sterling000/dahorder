@@ -36,6 +36,14 @@ provider:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/id
 
 functions:
+  getCustomerOrders:
+    handler: src/functions/getCustomerOrders.handler
+    events:
+      - http:
+          method: get
+          path: /receipts
+          cors: true
+          authorizer: validate
   validate:
     handler: src/functions/validate.validate
   getShopOrders:
@@ -43,7 +51,7 @@ functions:
     events:
       - http:
           method: get
-          path: /orders
+          path: /orders # change this to take a shop query param?
           cors: true
           authorizer: validate
   placeOrder:
