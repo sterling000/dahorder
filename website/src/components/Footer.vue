@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   methods: {
     shortcut: function(route) {
@@ -93,15 +94,18 @@ export default {
     },
   },
   computed: {
+    ...mapState("cart", {
+      products: (state) => state.products,
+    }),
     signedIn() {
       return this.$store.state.account.token !== null; // check the token is valid next time?
     },
     cartSize() {
       let total = 0;
-      const shopKeys = Object.keys(this.$store.state.cart.products);
+      const shopKeys = Object.keys(this.products);
       if (shopKeys.length > 0) {
         shopKeys.forEach((key) => {
-          let quantities = this.$store.state.cart.products[key].map(
+          let quantities = this.products[key].map(
             (product) => product.quantity
           );
           total += quantities.reduce(

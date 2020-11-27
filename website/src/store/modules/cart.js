@@ -1,5 +1,8 @@
+import Vue from 'vue';
+
 const state = {
-  products: {},
+  products: {
+  },
 };
 
 const mutations = {
@@ -30,13 +33,11 @@ const mutations = {
         shopProductsForNewProduct = [...shopProductsForNewProduct, cartItem];
       }
     } else {
-      shopProductsForNewProduct = [];
-      shopProductsForNewProduct.push(cartItem);
-      state.products[shop] = shopProductsForNewProduct;
+      state.products = {...state.products, [cartItem.shop]: [cartItem]};
     }
   },
   clear(state, storeId) {
-    delete state.products[storeId];
+    Vue.delete(state.products, storeId);
   },
 };
 

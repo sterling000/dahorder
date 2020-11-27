@@ -1,10 +1,7 @@
 <template>
   <div class="cart">
     <h2>Shopping Cart</h2>
-    <div
-      class="noProducts"
-      v-show="Object.keys($store.state.cart.products).length < 1"
-    >
+    <div class="noProducts" v-show="Object.keys(products).length < 1">
       <h3>
         Your cart is empty.
         <br /><br />Browse shops buy pressing
@@ -13,10 +10,7 @@
       </h3>
     </div>
     <div
-      v-show="
-        Object.keys($store.state.cart.products).length > 0 &&
-          shopDetails.length > 0
-      "
+      v-show="Object.keys(products).length > 0 && shopDetails.length > 0"
       class="byShop"
       v-for="shop in shops"
       :key="shop.id"
@@ -46,31 +40,49 @@
 
       <button
         class="checkout"
-        @click="checkout(shop)"
-        v-show="Object.keys($store.state.cart.products).length > 0"
+        @click="placeOrder(shop)"
+        v-show="Object.keys(products).length > 0"
       >
         Place Order
       </button>
+      <button
+        class="clear"
+        @click="clear(shop)"
+        v-show="Object.keys(products).length > 0"
+      >
+        Clear
+      </button>
     </div>
-
-    <button
-      class="clear"
-      @click="clear"
-      v-show="Object.keys($store.state.cart.products).length > 0"
-    >
-      Clear All
-    </button>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { mapState } from "vuex";
 export default {
   methods: {
-    clear() {
-      this.$store.commit("cart/clear");
+    clear(shop) {
+      this.$store.commit("cart/clear", shop.id);
     },
-    checkout(shop) {
+    placeOrder: async function(shop) {
+      this.$store.commit("loading/start");
+      console.log("Submitting: ", this.products);
+      const params = {
+        shop: shop.id,
+        products: this.products[shop.id],
+        delivery: true,
+      };
+      const options = {
+        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
+      };
+      await axios.post(
+        `${process.env.VUE_APP_ORDER_SERVICE_URL}/order`,
+        params,
+        options
+      );
+      this.$store.commit("loading/stop");
+      console.log("Order Submitted");
+      this.$store.commit("cart/clear", shop.id);
       this.$router.push(`/checkout/${shop.id}/${shop.owner}`);
     },
     total(products) {
@@ -82,16 +94,21 @@ export default {
       }
     },
     productsByShop(shop) {
-      return this.$store.state.cart.products[shop];
+      return this.products[shop];
     },
     getShops: async function() {
       const promises = [];
       this.shops.forEach((shop) => {
-        promises.push(
-          axios.get(`${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`, {
-            params: { owner: shop.owner, id: shop.id },
-          })
-        );
+        if (
+          this.shopDetails.find((details) => details.id === shop.id) ===
+          undefined
+        ) {
+          promises.push(
+            axios.get(`${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`, {
+              params: { owner: shop.owner, id: shop.id },
+            })
+          );
+        }
       });
       await Promise.all(promises).then((result) => {
         result.forEach((response) => this.shopDetails.push(response.data[0]));
@@ -120,11 +137,14 @@ export default {
     };
   },
   computed: {
+    ...mapState("cart", {
+      products: (state) => state.products,
+    }),
     shops() {
       const result = [];
-      Object.keys(this.$store.state.cart.products).forEach((shopId) =>
+      Object.keys(this.products).forEach((shopId) =>
         result.push({
-          owner: this.$store.state.cart.products[shopId][0].owner,
+          owner: this.products[shopId][0].owner,
           id: shopId,
         })
       );
