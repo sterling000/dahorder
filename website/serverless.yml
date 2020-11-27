@@ -8,4 +8,4 @@ inputs:
     src: ./src
     hook: npm run build
     dist: ./dist
-  region: ${env:REGION}
+  region: ap-southeast-1

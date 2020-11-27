@@ -46,7 +46,7 @@ export default {
     submit: async function() {
       console.log("Submitting: ", this.$store.state.cart.products);
       const params = {
-        shop: this.shop.pk,
+        shop: this.shop.id,
         products: this.$store.state.cart.products[this.$route.params.shop],
         delivery: true,
       };
@@ -59,6 +59,7 @@ export default {
         options
       );
       console.log("Order Submitted");
+      this.$store.commit("cart/clear", this.shop.id);
     },
     paymentRendered(e) {
       this.payment = e;

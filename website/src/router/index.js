@@ -63,6 +63,12 @@ const routes = [
     beforeEnter: boot,
   },
   {
+    path: "/orders",
+    name: "Orders",
+    component: () => import("../components/Orders.vue"),
+    beforeEnter: boot,
+  },
+  {
     path: "/account",
     name: "Account",
     component: () => import("../components/Account.vue"),

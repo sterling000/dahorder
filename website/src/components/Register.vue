@@ -31,6 +31,7 @@
         class="phone"
         v-model.trim="phone"
         name="phone"
+        auto-complete="username"
         @blur="$v.phone.$touch"
         @change="$v.phone.$touch"
       />
@@ -54,6 +55,7 @@
         v-model.trim="password"
         name="password"
         type="password"
+        auto-complete="new-password"
         @blur="$v.password.$touch"
       />
       <ul>
@@ -66,6 +68,7 @@
         v-model.trim="confirm"
         name="confirm"
         type="password"
+        auto-complete="new-password"
         @blur="$v.confirm.$touch"
       />
       <ul>

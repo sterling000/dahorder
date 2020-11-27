@@ -35,8 +35,8 @@ const mutations = {
       state.products[shop] = shopProductsForNewProduct;
     }
   },
-  clear(state) {
-    state.products = {};
+  clear(state, storeId) {
+    delete state.products[storeId];
   },
 };
 

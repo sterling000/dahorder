@@ -9,6 +9,7 @@
           v-model.trim="phone"
           placeholder=""
           name="phone"
+          autocomplete="username"
           @blur="$v.phone.$touch"
         />
         <ul>
@@ -22,6 +23,7 @@
             v-model="password"
             type="password"
             name="password"
+            autocomplete="current-password"
             @blur="$v.password.$touch"
           />
           <p v-if="$v.password.$invalid && $v.password.$dirty">
@@ -51,7 +53,6 @@ import axios from "axios";
 import { required } from "vuelidate/lib/validators";
 import { validPhone } from "../validators/validators";
 import { mapState } from "vuex";
-axios.defaults.headers.post["Content-Type"] = "application/json";
 export default {
   data() {
     return {

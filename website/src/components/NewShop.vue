@@ -103,7 +103,11 @@ export default {
               this.$router.push("/shops");
             })
             .catch((error) => {
-              console.error("Oh No! An Error!", error);
+              const errorKeys = Object.keys(error);
+              console.log(errorKeys);
+              const errors = [];
+              errorKeys.forEach((key) => errors.push(error[key]));
+              console.error("Oh No! An Error!", JSON.stringify(errors));
             })
             .finally(() => {
               this.$store.commit("loading/stop");

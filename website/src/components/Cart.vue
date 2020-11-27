@@ -49,7 +49,7 @@
         @click="checkout(shop)"
         v-show="Object.keys($store.state.cart.products).length > 0"
       >
-        Check Out
+        Place Order
       </button>
     </div>
 

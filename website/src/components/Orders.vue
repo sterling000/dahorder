@@ -1,0 +1,157 @@
+<template>
+  <div class="orders">
+    <h2>Orders</h2>
+    <div class="noSignin" v-show="!isSignedin">
+      <p>Sign in to view your order history.</p>
+    </div>
+
+    <div class="purchases">
+      <h3>Purchases</h3>
+      <div class="noReceipts" v-show="this.receipts.length < 1">
+        <p>You have not placed any orders yet.</p>
+      </div>
+      <ul>
+        <li
+          class="purchase"
+          v-for="purchase in sortedReceipts"
+          :key="purchase.orderId"
+        >
+          <h6>Date:</h6>
+          {{ localDateTime(purchase.date) }}
+          <h6>Total:</h6>
+          {{ purchase.total }} RM
+          <h6>Status:</h6>
+          {{ purchase.status }}
+        </li>
+      </ul>
+    </div>
+    <div class="sales"></div>
+    <h3>Sales</h3>
+    <div class="noReceipts" v-show="this.sales.length < 1">
+      <p>You have not sold any products yet.</p>
+    </div>
+    <ul>
+      <li class="sales" v-for="shop in this.sales" :key="shop">
+        <ul>
+          <li v-for="sale in shop" :key="sale.orderId">
+            <h6>Date:</h6>
+            {{ localDateTime(sale.date) }}
+            <h6>Total:</h6>
+            {{ sale.total }} RM
+            <h6>Status:</h6>
+            {{ sale.status }}
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      receipts: [],
+      sales: {},
+      shops: [],
+    };
+  },
+  mounted() {
+    if (this.isSignedin) {
+      this.getReceipts();
+      this.getShops();
+    }
+  },
+  computed: {
+    isSignedin() {
+      return this.$store.state.account.token !== null;
+    },
+    sortedReceipts() {
+      const sorted = [...this.receipts].sort((a, b) =>
+        a.date < b.date ? 1 : 0
+      );
+      return sorted;
+    },
+    sortedSales() {
+      const sorted = [...this.sales].sort((a, b) => (a.date < b.date ? 1 : 0));
+      return sorted;
+    },
+  },
+  methods: {
+    getShops: async function() {
+      const options = {
+        headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
+      };
+
+      const res = await axios.get(
+        `${process.env.VUE_APP_SHOP_SERVICE_URL}/myshops`,
+        options
+      );
+      this.shops = res.data.shops;
+      this.shops.forEach((shop) => this.getOrders(shop.id));
+      // this.$store.commit("loading/stop");
+    },
+    getReceipts: async function() {
+      this.$store.commit("loading/start");
+      const receiptResponse = await axios.get(
+        `${process.env.VUE_APP_ORDER_SERVICE_URL}/receipts`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.account.token}`,
+          },
+        }
+      );
+      console.debug("receiptResponse", receiptResponse);
+      this.receipts = receiptResponse.data;
+      this.$store.commit("loading/stop");
+    },
+    getOrders: async function(shopId) {
+      this.$store.commit("loading/start");
+      const orderResponse = await axios.get(
+        `${process.env.VUE_APP_ORDER_SERVICE_URL}/orders`,
+        {
+          params: {
+            shop: `${shopId}`,
+          },
+          headers: {
+            Authorization: `Bearer ${this.$store.state.account.token}`,
+          },
+        }
+      );
+      console.debug("orderResponse", orderResponse);
+      if (orderResponse.data.length > 0) {
+        const orderByStore = orderResponse.data;
+        this.sales[shopId] = orderByStore;
+      }
+
+      this.$store.commit("loading/stop");
+    },
+    localDateTime(utc) {
+      console.debug("date from response: ", utc);
+      const date = new Date(utc);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    },
+  },
+};
+</script>
+
+<style lang="scss">
+@import "../assets/styles/config.scss";
+.orders {
+  padding: 4em 1em;
+  h2 {
+    margin: 0 0 0.5em;
+  }
+  ul {
+    margin: 2em 1em;
+    .purchase {
+      margin: 0.25em;
+      border-top: 1px solid grey;
+      &:last-child {
+        border-bottom: 1px solid grey;
+      }
+    }
+  }
+}
+</style>
