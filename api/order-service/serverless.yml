@@ -36,6 +36,14 @@ provider:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/id
 
 functions:
+  submitPayment:
+    handler: src/functions/submitPayment.handler
+    events:
+      - http:
+          method: post
+          path: /payment
+          cors: true
+          authorizer: validate
   getCustomerOrders:
     handler: src/functions/getCustomerOrders.handler
     events:

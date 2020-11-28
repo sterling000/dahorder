@@ -56,14 +56,15 @@ export default {
       this.$refs.imageUploader.uploadImage(imageUrl.data.uploadURL);
 
       const params = {
-        order: this.$route.params.orderId,
+        shop: this.shop.id,
+        date: this.orders[this.orderId].date,
         payment: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${imageUrl.data.photoFilename}`,
       };
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
       await axios.post(
-        `${process.env.VUE_APP_ORDER_SERVICE_URL}/checkout`,
+        `${process.env.VUE_APP_ORDER_SERVICE_URL}/payment`,
         params,
         options
       );
