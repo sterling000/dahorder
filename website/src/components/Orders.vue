@@ -30,7 +30,7 @@
     </div>
     <div class="sales"></div>
     <h3>Sales</h3>
-    <div class="noReceipts" v-show="Object.keys(this.sales).length < 1">
+    <div class="noReceipts" v-show="saleIds.length < 1">
       <p>You have not sold any products yet.</p>
     </div>
     <ul>
@@ -71,10 +71,10 @@ export default {
       shops: [],
     };
   },
-  mounted() {
+  async mounted() {
     if (this.isSignedin) {
-      this.getReceipts();
-      this.getShops();
+      await this.getReceipts();
+      await this.getShops();
     }
   },
   computed: {
@@ -86,6 +86,9 @@ export default {
     },
     isSignedin() {
       return this.$store.state.account.token !== null;
+    },
+    saleIds() {
+      return Object.keys(this.sales);
     },
   },
   methods: {
@@ -99,7 +102,7 @@ export default {
         options
       );
       this.shops = res.data.shops;
-      this.shops.forEach((shop) => this.getOrders(shop.id));
+      this.shops.forEach(async (shop) => await this.getOrders(shop.id));
       // this.$store.commit("loading/stop");
     },
     getReceipts: async function() {
@@ -132,7 +135,8 @@ export default {
       console.debug("orderResponse", orderResponse);
       if (orderResponse.data.length > 0) {
         const orderByStore = orderResponse.data;
-        this.sales[shopId] = orderByStore;
+        this.sales = { ...this.sales, [shopId]: orderByStore };
+        // this.sales[shopId] = orderByStore;
       }
 
       this.$store.commit("loading/stop");
@@ -143,7 +147,7 @@ export default {
       return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     },
     checkout(purchase) {
-      this.$router.push(`/checkout/${purchase.orderId}}`);
+      this.$router.push(`/checkout/${purchase.orderId}`);
     },
   },
 };

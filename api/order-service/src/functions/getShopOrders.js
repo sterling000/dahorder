@@ -25,7 +25,7 @@ module.exports.handler = async (event, context) => {
     console.log(shopResult);
     if (shopResult.Item.pk !== decodedJwt.phone) {
       return {
-        statusCode: 403,
+        statusCode: 408,
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Credentials": true,
