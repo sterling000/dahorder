@@ -30,19 +30,30 @@
     </div>
     <div class="sales"></div>
     <h3>Sales</h3>
-    <div class="noReceipts" v-show="this.sales.length < 1">
+    <div class="noReceipts" v-show="Object.keys(this.sales).length < 1">
       <p>You have not sold any products yet.</p>
     </div>
     <ul>
-      <li class="sales" v-for="shop in this.sales" :key="shop">
+      <li
+        class="shop"
+        v-for="(shop, propertyName) in this.sales"
+        :key="propertyName"
+      >
         <ul>
-          <li v-for="sale in shop" :key="sale.orderId">
+          <li class="sale" v-for="sale in shop" :key="sale.orderId">
             <h6>Date:</h6>
-            {{ localDateTime(sale.date) }}
+            <p class="date">{{ localDateTime(sale.date) }}</p>
             <h6>Total:</h6>
-            {{ sale.total }} RM
+            <p class="total">{{ sale.total }} RM</p>
             <h6>Status:</h6>
-            {{ sale.status }}
+            <p class="status">{{ sale.status }}</p>
+            <!-- <button
+              class="complete"
+              @click="complete(sale)"
+              v-show="sale.status === 'paid'"
+            >
+              Check Out
+            </button> -->
           </li>
         </ul>
       </li>
@@ -75,17 +86,6 @@ export default {
     },
     isSignedin() {
       return this.$store.state.account.token !== null;
-    },
-    sortedReceipts() {
-      // const sorted = [...this.receipts].sort((a, b) =>
-      //   a.date < b.date ? 1 : 0
-      // );
-      // return sorted;
-      return this.receipts;
-    },
-    sortedSales() {
-      const sorted = [...this.sales].sort((a, b) => (a.date < b.date ? 1 : 0));
-      return sorted;
     },
   },
   methods: {
@@ -158,11 +158,25 @@ export default {
   }
   ul {
     margin: 2em 1em;
-    .purchase {
+    li.purchase {
       margin: 0.25em;
       border-top: 1px solid grey;
       &:last-child {
+        border-top: 1px solid grey;
         border-bottom: 1px solid grey;
+      }
+    }
+    li.sale {
+      margin: 0.25em;
+      border-top: 1px solid grey;
+      &:last-child {
+        border-top: 1px solid grey;
+        border-bottom: 1px solid grey;
+      }
+      .status {
+        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 600;
       }
     }
   }
