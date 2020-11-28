@@ -57,7 +57,7 @@ const routes = [
     beforeEnter: boot,
   },
   {
-    path: "/checkout/:shop/:owner",
+    path: "/checkout/:orderId",
     name: "Checkout",
     component: () => import("../components/Checkout.vue"),
     beforeEnter: boot,

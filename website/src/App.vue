@@ -47,7 +47,6 @@ export default {
       }
     };
     Vue.config.errorHandler = (...args) => {
-      console.debug(args);
       if (this.notifications !== null) {
         let message = "";
         for (let i = 0; i < args.length; i++) {

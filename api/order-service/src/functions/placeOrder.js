@@ -16,6 +16,7 @@ module.exports.handler = async (event) => {
 
   const orderId = uuidv4();
   const shopId = body.shop;
+  const owner = body.owner;
   const customerId = decodedJwt.phone;
 
   const products = [];
@@ -53,6 +54,7 @@ module.exports.handler = async (event) => {
     Item: {
       orderId: orderId,
       shopId: shopId,
+      owner: owner,
       customerId: customerId,
       products: products,
       delivery: delivery,

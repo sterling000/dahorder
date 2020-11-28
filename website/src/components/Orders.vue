@@ -7,21 +7,24 @@
 
     <div class="purchases">
       <h3>Purchases</h3>
-      <div class="noReceipts" v-show="this.receipts.length < 1">
+      <div class="noReceipts" v-show="this.receipts && orderIds.length < 1">
         <p>You have not placed any orders yet.</p>
       </div>
       <ul>
-        <li
-          class="purchase"
-          v-for="purchase in sortedReceipts"
-          :key="purchase.orderId"
-        >
+        <li class="purchase" v-for="orderId in orderIds" :key="orderId">
           <h6>Date:</h6>
-          {{ localDateTime(purchase.date) }}
+          {{ localDateTime(receipts[orderId].date) }}
           <h6>Total:</h6>
-          {{ purchase.total }} RM
+          {{ receipts[orderId].total }} RM
           <h6>Status:</h6>
-          {{ purchase.status }}
+          {{ receipts[orderId].status }}
+          <button
+            class="checkout"
+            @click="checkout(receipts[orderId])"
+            v-show="receipts[orderId].status === 'pending'"
+          >
+            Check Out
+          </button>
         </li>
       </ul>
     </div>
@@ -49,10 +52,10 @@
 
 <script>
 import axios from "axios";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
-      receipts: [],
       sales: {},
       shops: [],
     };
@@ -64,14 +67,21 @@ export default {
     }
   },
   computed: {
+    ...mapState("cart", {
+      receipts: (state) => state.orders,
+    }),
+    orderIds() {
+      return Object.keys(this.receipts);
+    },
     isSignedin() {
       return this.$store.state.account.token !== null;
     },
     sortedReceipts() {
-      const sorted = [...this.receipts].sort((a, b) =>
-        a.date < b.date ? 1 : 0
-      );
-      return sorted;
+      // const sorted = [...this.receipts].sort((a, b) =>
+      //   a.date < b.date ? 1 : 0
+      // );
+      // return sorted;
+      return this.receipts;
     },
     sortedSales() {
       const sorted = [...this.sales].sort((a, b) => (a.date < b.date ? 1 : 0));
@@ -103,7 +113,7 @@ export default {
         }
       );
       console.debug("receiptResponse", receiptResponse);
-      this.receipts = receiptResponse.data;
+      this.$store.commit("cart/addOrders", receiptResponse.data);
       this.$store.commit("loading/stop");
     },
     getOrders: async function(shopId) {
@@ -131,6 +141,9 @@ export default {
       console.debug("date from response: ", utc);
       const date = new Date(utc);
       return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    },
+    checkout(purchase) {
+      this.$router.push(`/checkout/${purchase.orderId}}`);
     },
   },
 };

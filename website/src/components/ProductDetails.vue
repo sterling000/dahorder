@@ -125,7 +125,7 @@ export default {
       if (this.$store.state.account.token === null) {
         this.$router.push("/login");
       }
-      this.$store.commit("cart/add", this.details);
+      this.$store.commit("cart/addProduct", this.details);
       console.log(`Added ${this.details.name} to Cart!`);
     },
     isOwner() {

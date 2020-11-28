@@ -19,7 +19,8 @@ const mutations = {
 const actions = {
   logout(context) {
     context.commit("logout");
-    context.commit("cart/clear", null, { root: true });
+    context.commit("cart/logout", null, { root: true });
+    context.commit("cart/clearOrders", null, { root: true });
     context.commit("loading/stop", null, { root: true });
   },
 };

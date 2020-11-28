@@ -62,28 +62,31 @@ import { mapState } from "vuex";
 export default {
   methods: {
     clear(shop) {
-      this.$store.commit("cart/clear", shop.id);
+      this.$store.commit("cart/clearProducts", shop.id);
     },
     placeOrder: async function(shop) {
       this.$store.commit("loading/start");
       console.log("Submitting: ", this.products);
       const params = {
         shop: shop.id,
+        owner: shop.owner,
         products: this.products[shop.id],
         delivery: true,
       };
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
-      await axios.post(
+      const order = await axios.post(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/order`,
         params,
         options
       );
       this.$store.commit("loading/stop");
-      console.log("Order Submitted");
-      this.$store.commit("cart/clear", shop.id);
-      this.$router.push(`/checkout/${shop.id}/${shop.owner}`);
+      console.log("Order Submitted", order.data);
+      this.$store.commit("cart/clearProducts", shop.id);
+      // this.$router.push(`/checkout/${shop.id}/${shop.owner}`);
+      // this.$router.push(`/checkout/${order.id}`);
+      this.$router.push(`/orders`);
     },
     total(products) {
       if (products.length > 0) {

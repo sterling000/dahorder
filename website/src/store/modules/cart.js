@@ -3,10 +3,12 @@ import Vue from 'vue';
 const state = {
   products: {
   },
+  orders: {
+  }
 };
 
 const mutations = {
-  add(state, product) {
+  addProduct(state, product) {
     const { id, name, quantity, price, shop, owner } = product;
     const cartItem = {
       id: id,
@@ -36,9 +38,22 @@ const mutations = {
       state.products = {...state.products, [cartItem.shop]: [cartItem]};
     }
   },
-  clear(state, storeId) {
+  clearProducts(state, storeId) {
     Vue.delete(state.products, storeId);
   },
+  logout(state) {
+    Object.keys(state.products).forEach(key => Vue.delete(state.products, key));
+  },
+  addOrders(state, orders){
+    console.debug('cart:orders', orders);
+    orders.forEach(order => {
+      state.orders = {...state.orders, [order.orderId]: order};
+    })
+    
+  },
+  clearOrders(state){
+    state.orders = {};
+  }
 };
 
 export default {
