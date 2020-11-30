@@ -19,7 +19,7 @@ module.exports.validate = async (event, context) => {
   let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
   console.log(decodedJwt);
   if (typeof decodedJwt.phone !== "undefined") {
-    return generatePolicy(decodedJwt.phone, "Allow", event.methodArn);
+    return generatePolicy(decodedJwt.phone, "Allow", `arn:aws:execute-api:${process.env.REGION}:222008606357:*/${process.env.STAGE}/*/*`);
   }
   generatePolicy("undefined", "Deny", event.methodArn);
 };

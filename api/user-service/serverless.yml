@@ -29,6 +29,8 @@ provider:
   environment:
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
 
 functions:
   updateUser:

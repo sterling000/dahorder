@@ -30,6 +30,8 @@ provider:
   environment:
     DYNAMODB_PRODUCT_TABLE: ${self:custom.dynamodb.productTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
 
 functions:
   updateProduct:

@@ -22,6 +22,8 @@ provider:
 
   environment:
     UPLOAD_BUCKET: ${self:custom.s3.bucket}
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
 
 functions:
   getUploadURL:

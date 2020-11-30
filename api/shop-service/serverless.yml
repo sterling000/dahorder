@@ -29,6 +29,8 @@ provider:
   environment:
     DYNAMODB_SHOP_TABLE: ${self:custom.dynamodb.shopTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
 
 functions:
   getShop:
