@@ -41,7 +41,7 @@
       >
         Sign In
       </button>
-      <button @click.stop.prevent="register()">Register</button>
+      <button @click.prevent="register">Register</button>
       <a href="#" class="forgot-password">Forgot Password?</a>
     </form>
     <p v-if="this.errors.length > 0" class="error">{{ errors }}</p>

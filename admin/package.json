@@ -1,26 +1,21 @@
 {
-  "name": "website",
+  "name": "admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.32",
-    "@fortawesome/free-solid-svg-icons": "^5.15.1",
-    "@fortawesome/vue-fontawesome": "^2.0.0",
     "axios": "^0.21.0",
     "cookie": "^0.4.1",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",
-    "libphonenumber-js": "^1.8.5",
     "vue": "^2.6.11",
-    "vue-router": "^3.4.7",
+    "vue-router": "^3.4.9",
     "vue-spinner": "^1.0.4",
-    "vuelidate": "^0.7.6",
-    "vuex": "^3.5.1",
+    "vuex": "^3.6.0",
     "vuex-persistedstate": "^4.0.0-beta.1"
   },
   "devDependencies": {
@@ -30,8 +25,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^10.0.3",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^10.1.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

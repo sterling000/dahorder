@@ -1,0 +1,83 @@
+service: admin-service
+
+app: dah-order
+org: sterling000
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+  httpApi:
+    cors: true
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:GetItem"
+        - "dynamodb:Scan"
+      Resource:
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.adminTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.adminTable}/index/pk
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.orderTable}/index/shopId
+  environment:
+    DYNAMODB_ADMIN_TABLE: ${self:custom.dynamodb.adminTable}
+    DYNAMODB_ORDER_TABLE: ${self:custom.dynamodb.orderTable}
+    JWT_SECRET: ${param:JWT_SECRET}
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+
+functions:
+  confirmPurchase:
+    handler: src/functions/confirmPurchase.handler
+    events:
+      - http:
+          path: /purchase/confirm
+          method: post
+          cors: true
+  listOrders:
+    handler: src/functions/listOrders.handler
+    events:
+      - http:
+          path: /orders
+          method: get
+          cors: true
+  login:
+    handler: src/functions/login.handler
+    events:
+      - http:
+          path: /login
+          method: post
+          cors: true
+          
+resources:
+  Resources:
+    adminTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:custom.dynamodb.adminTable}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-mocha
+
+custom:
+  dynamodb:
+    adminTable: admin-${self:provider.stage}-${self:provider.region}
+    orderTable: order-${self:provider.stage}-${self:provider.region}
+  serverless-mocha-plugin:
+    testTemplate: ../templates/test-template.ejs
+    functionTemplate: ../templates/function-template.ejs
