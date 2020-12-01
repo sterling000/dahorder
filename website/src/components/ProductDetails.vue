@@ -25,7 +25,7 @@
         <li>
           <h2>Date Available</h2>
 
-          <p>{{ details.available }}</p>
+          <p>{{ localeTime(details.available) }}</p>
         </li>
         <li>
           <h2>Delivery</h2>
@@ -123,6 +123,10 @@ export default {
     };
   },
   methods: {
+    localeTime(utc) {
+      const dateTime = new Date(utc);
+      return dateTime.toLocaleString();
+    },
     async share() {
       await navigator.clipboard.writeText(window.location);
       console.log("Link copied to clipboard.");

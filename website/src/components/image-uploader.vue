@@ -105,9 +105,7 @@ export default {
     width: 350px;
     margin: 0 0 0.5em;
     font-weight: 600;
-    .wrapper {
-      display: flex;
-    }
+
     .or {
       margin: 5em 1em;
     }
@@ -123,6 +121,7 @@ export default {
       text-align: center;
       font-size: 48px;
       padding: 0.2em 0;
+      line-height: 1;
       p {
         font-size: 18px;
         font-weight: 600;
@@ -143,6 +142,7 @@ export default {
       text-align: center;
       font-size: 48px;
       padding: 0.5em 0;
+      line-height: 1.5;
       p {
         font-size: 24px;
         font-weight: 600;
@@ -153,7 +153,7 @@ export default {
     }
     canvas {
       position: absolute;
-      top: 9999px;
+      top: -9999px;
       &.show {
         position: unset;
         top: 0px;

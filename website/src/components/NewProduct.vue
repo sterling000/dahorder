@@ -4,19 +4,27 @@
     <form @submit="submit" method="POST">
       <ul>
         <li>
-          <label for="name">Name</label>
-          <input v-model="name" name="name" @blur="$v.name.$touch()" />
+          <div class="wrapper">
+            <label for="name">Name</label>
+            <input
+              class="name"
+              v-model="name"
+              name="name"
+              @blur="$v.name.$touch()"
+            />
+          </div>
+
           <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
         </li>
         <li class="price">
           <div class="wrapper">
-            <label for="price">Price</label>
+            <label for="price">Price (RM)</label>
             <input
               v-model="price"
               name="price"
               class="price"
               @blur="$v.price.$touch()"
-            />RM
+            />
           </div>
           <p class="error" v-if="$v.price.$dirty && $v.price.$invalid">
             {{ priceErrors }}
@@ -36,7 +44,7 @@
             {{ quantityErrors }}
           </p>
         </li>
-        <!-- Add option for On-Demand -->
+
         <li>
           <label for="description">Description</label>
           <textarea
@@ -62,20 +70,12 @@
         </li>
         <li>
           <label for="date">Date Available</label>
-          <!-- <input
-            v-model="date"
-            type="date"
-            name="date"
-            @blur="$v.date.$touch()"
-          /> 
-          <p v-if="$v.date.$dirty && $v.date.$invalid">{{ dateErrors }}</p> -->
           <date-picker
             :option="timeOption"
             :date="date"
             :limit="limit"
           ></date-picker>
         </li>
-        <!-- Preset Delivery Time -->
         <li>
           <div class="can-toggle">
             <input type="checkbox" id="delivery" v-model="delivery" />
@@ -303,39 +303,41 @@ export default {
     li {
       margin: 1em 0;
 
+      .wrapper {
+        display: flex;
+        justify-content: space-between;
+        .name {
+          width: 65vw;
+        }
+      }
       label {
-        display: inline-block;
-        width: 350px;
         margin: 0 0 0.5em;
         font-weight: 600;
 
+        line-height: 2;
         .price,
         .quantity {
           width: 175px;
         }
       }
       input {
-        display: block;
-        width: 100%;
-        height: 3em;
+        height: 1.5em;
+
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
           0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 5%;
         border: solid 1px $color-primary-0;
-        text-indent: 1em;
-
-        .price,
-        .quantity {
-          width: 50%;
-        }
+        text-indent: 0.25em;
+        font-size: 1.5em;
       }
       .price,
       .quantity {
         text-align: right;
-        font-size: 24px;
-        height: 1em;
-        width: 50%;
-        margin-right: 0.5em;
+        font-size: 1.5em;
+        height: 1.5em;
+
+        width: 20%;
+        padding-right: 0.25em;
         .error {
           display: inline-block;
         }
@@ -343,6 +345,7 @@ export default {
 
       textarea {
         resize: none;
+        font-size: 1.5em;
         height: 8em;
         padding: 0.5em;
         text-align: left;
