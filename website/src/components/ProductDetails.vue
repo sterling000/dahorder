@@ -1,15 +1,13 @@
 <template>
   <div class="product">
     <div class="wrapper" v-show="!edit">
-      <div class="hero" ref="thumbnail">
-        <h2 class="name">{{ details.name }}</h2>
-        <font-awesome-icon
-          class="share-icon"
-          :icon="['fas', 'share']"
-          @click.prevent="share"
-        />
-      </div>
-
+      <div class="hero" ref="thumbnail"></div>
+      <h2 class="name">{{ details.name }}</h2>
+      <font-awesome-icon
+        class="share-icon"
+        :icon="['fas', 'share']"
+        @click.prevent="share"
+      />
       <div class="description">
         <p>{{ details.description }}</p>
       </div>
@@ -240,28 +238,26 @@ export default {
   overflow: auto;
   .wrapper {
     .hero {
-      padding: 4em 0;
+      margin: 4em 0 0;
+      padding: 1em 1em 1em;
       background: var(--thumbnail);
       background-size: cover;
       min-width: 325px;
       min-height: 25vh;
-      .name {
-        display: inline-flex;
-        min-width: 0;
-        min-height: 0;
-        color: #fff;
-        margin: 1em;
-        background-color: rgba($color-primary-4, 0.4);
-        border-radius: 5%;
-        border: none;
-        line-height: 0.8;
-      }
-      .share-icon {
-        color: #fff;
-        font-size: 24px;
-        margin: 0 0.5em;
-        cursor: pointer;
-      }
+    }
+    .name {
+      display: inline-flex;
+      min-width: 0;
+      min-height: 0;
+      margin: 1em 0.5em 0;
+      border: none;
+      line-height: 0.8;
+    }
+    .share-icon {
+      color: #aaa;
+      font-size: 24px;
+      margin: 0 0.5em;
+      cursor: pointer;
     }
     .description {
       margin: 1em;
