@@ -113,8 +113,6 @@ export default {
 
 <style lang="scss">
 .admin {
-  max-width: 1200px;
-  margin: 4em auto;
   .order {
     display: flex;
     border: solid 1px black;
