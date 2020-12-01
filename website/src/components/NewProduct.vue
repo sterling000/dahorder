@@ -62,13 +62,18 @@
         </li>
         <li>
           <label for="date">Date Available</label>
-          <input
+          <!-- <input
             v-model="date"
             type="date"
             name="date"
             @blur="$v.date.$touch()"
-          />
-          <p v-if="$v.date.$dirty && $v.date.$invalid">{{ dateErrors }}</p>
+          /> 
+          <p v-if="$v.date.$dirty && $v.date.$invalid">{{ dateErrors }}</p> -->
+          <date-picker
+            :option="timeOption"
+            :date="date"
+            :limit="limit"
+          ></date-picker>
         </li>
         <!-- Preset Delivery Time -->
         <li>
@@ -110,7 +115,10 @@ export default {
     return {
       name: "",
       description: "",
-      date: "",
+      date: {
+        Type: "String",
+        time: "",
+      },
       thumbnail: "",
       price: 0,
       quantity: 0,
@@ -119,62 +127,93 @@ export default {
       photoFilename: "",
       delivery: "Delivery",
       shop: "",
+      timeOption: {
+        type: "min",
+        week: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+        month: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ],
+        format: "YYYY-MM-DD HH:mm",
+      },
     };
   },
   methods: {
+    log: function(val) {
+      this.time = val;
+      console.log(val);
+    },
     thumbnailRendered: function(e) {
       this.thumbnail = e;
     },
-    submit: function() {
+    submit: async function() {
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
       }
-
-      this.$http
-        .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`)
-        .then((res) => {
-          this.$refs.imageUploader.uploadImage(res.data.uploadURL);
-          const params = {
-            name: this.name,
-            description: this.description,
-            thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${res.data.photoFilename}`,
-            price: this.price,
-            quantity: this.quantity,
-            available: this.date,
-            delivery: this.delivery,
-            shop: this.$route.params.id,
-          };
-          this.$store.commit("loading/start");
-          const options = {
-            headers: {
-              Authorization: `Bearer ${this.$store.state.account.token}`,
-            },
-          };
-          this.$http
-            .post(
-              `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
-              params,
-              options
-            )
-            .then(() => {
-              this.$router.push(
-                `/products/${this.shop}/${this.$route.params.owner}`
-              );
-            })
-            .catch((error) => {
-              console.error("Oh No! An Error!", error);
-            })
-            .finally(() => {
-              this.$store.commit("loading/stop");
-            });
-        })
-        .catch((error) => {
-          console.error("Oh No! An Error!", error);
-        })
-        .finally(() => {
-          // console.log('Do this always... or else...');
-        });
+      this.$store.commit("loading/start");
+      // request a signedUrl to upload the image to.
+      let imageResponse;
+      try {
+        imageResponse = await this.$http.get(
+          `${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`
+        );
+      } catch (error) {
+        console.error(error);
+        this.$store.commit("loading/stop");
+        return;
+      }
+      // upload the image.
+      try {
+        await this.$refs.imageUploader.uploadImage(
+          imageResponse.data.uploadURL
+        );
+      } catch (error) {
+        console.error(error);
+        this.$store.commit("loading/stop");
+        return;
+      }
+      const splitString = this.date.time.split(" ");
+      const deliveryDateTime = new Date(`${splitString[0]}T${splitString[1]}`);
+      // add the product to the database.
+      const params = {
+        name: this.name,
+        description: this.description,
+        thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${imageResponse.data.photoFilename}`,
+        price: this.price,
+        quantity: this.quantity,
+        available: deliveryDateTime,
+        delivery: this.delivery,
+        shop: this.$route.params.id,
+      };
+      const options = {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.account.token}`,
+        },
+      };
+      try {
+        await this.$http.post(
+          `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
+          params,
+          options
+        );
+      } catch (error) {
+        console.error("Oh No! An Error!", error);
+        this.$store.commit("loading/stop");
+        return;
+      }
+      this.$router.push(`/products/${this.shop}/${this.$route.params.owner}`);
+      this.$store.commit("loading/stop");
     },
   },
   validations: {
@@ -183,7 +222,6 @@ export default {
     thumbnail: { required },
     price: { required }, // todo: needs validation
     quantity: { required }, // todo: needs validation
-    date: { required }, // todo: needs validation
     delivery: { required }, // todo: needs validation
   },
   computed: {
@@ -215,8 +253,8 @@ export default {
     },
     dateErrors() {
       const errors = [];
-      if (!this.$v.date.$dirty && !this.$v.date.$dirty) return errors;
-      !this.$v.date.required && errors.push("Date is required.");
+      // if (!this.$v.date.$dirty && !this.$v.date.$dirty) return errors;
+      // !this.$v.date.required && errors.push("Date is required.");
       return errors;
     },
     thumbnailErrors() {
@@ -224,6 +262,26 @@ export default {
       if (!this.$v.thumbnail.$dirty && !this.$v.thumbnail.$dirty) return errors;
       !this.$v.thumbnail.required && errors.push("Thumbnail is required.");
       return errors;
+    },
+    limit() {
+      const from = new Date();
+      const fromDate = new Date(
+        from.getTime() - from.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
+      const to = new Date(from);
+      to.setDate(to.getDate() + 90); // 90 days is the furthest out we should let people book to start.
+      const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
+      return [
+        {
+          type: "fromto",
+          from: fromDate,
+          to: toDate,
+        },
+      ];
     },
   },
   mounted() {
