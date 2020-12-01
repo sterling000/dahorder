@@ -63,6 +63,12 @@ module.exports.login = async (event, context) => {
   }
 
   return {
-    statusCode: 404,
+    statusCode: 401,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "Authorization",
+    },
+    body: 'That phone/password combination does not match our records',
   };
 };

@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { mapState } from "vuex";
 export default {
   data() {
@@ -69,7 +68,7 @@ export default {
           date: order.date,
           isConfirmed: isConfirmed,
         };
-        await axios.post(
+        await this.$http.post(
           `${process.env.VUE_APP_ADMIN_SERVICE}/purchase/confirm`,
           params,
           options
@@ -92,7 +91,7 @@ export default {
       this.orders = [];
       this.$store.commit("loading/start");
       try {
-        const res = await axios.get(
+        const res = await this.$http.get(
           `${process.env.VUE_APP_ADMIN_SERVICE}/orders`,
           {
             headers: {

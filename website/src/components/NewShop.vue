@@ -54,8 +54,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
@@ -77,7 +75,7 @@ export default {
         return;
       }
 
-      axios
+      this.$http
         .get(`${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`)
         .then((res) => {
           this.$refs.imageUploader.uploadImage(res.data.uploadURL);
@@ -93,7 +91,7 @@ export default {
               Authorization: `Bearer ${this.$store.state.account.token}`,
             },
           };
-          axios
+          this.$http
             .post(
               `${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`,
               params,

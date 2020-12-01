@@ -105,7 +105,6 @@
 </template>
 
 <script>
-import axios from "axios";
 // import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
@@ -160,7 +159,7 @@ export default {
       console.log("Saving changes to: ", params);
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
-        const resUrl = await axios.get(
+        const resUrl = await this.$http.get(
           `${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`
         );
         const resUpload = await this.$refs.imageUploader.uploadImage(
@@ -176,7 +175,7 @@ export default {
       };
 
       try {
-        await axios.put(
+        await this.$http.put(
           `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
           params,
           options
@@ -194,7 +193,7 @@ export default {
             id: this.$route.params.id,
           },
         };
-        const res = await axios.get(
+        const res = await this.$http.get(
           `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/product`,
           options
         );

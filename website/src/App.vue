@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Vue from "vue";
 import { mapState } from "vuex";
 import Header from "./components/Header.vue";
@@ -42,6 +41,20 @@ export default {
           id: Math.random(),
           info: message,
           error: "",
+          timeout: 6 * 1000, // 4 seconds
+        });
+      }
+    };
+    console.error = (...args) => {
+      if (this.notifications !== null) {
+        let message = "";
+        for (let i = 0; i < args.length; i++) {
+          message += ` ${args[i]}`;
+        }
+        this.notifications.push({
+          id: Math.random(),
+          info: "",
+          error: message,
           timeout: 6 * 1000, // 4 seconds
         });
       }
@@ -84,7 +97,7 @@ export default {
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
-      const res = await axios.get(
+      const res = await this.$http.get(
         `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
         options
       );

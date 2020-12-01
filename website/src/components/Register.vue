@@ -103,8 +103,6 @@
 </template>
 
 <script>
-import axios from "axios";
-axios.defaults.headers.post["Content-Type"] = "application/json";
 import { required, minLength, email, sameAs } from "vuelidate/lib/validators";
 
 import { validPhone, validApartment } from "../validators/validators";
@@ -140,13 +138,14 @@ export default {
         phone: "+6" + this.phone,
         role: this.role,
       };
-      const res = await axios.post(
+      const res = await this.$http.post(
         `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
         params
       );
+      console.debug(res);
       if (res.status === 202) {
         this.$store.commit("loading/stop");
-        throw "Another user exists with that phone.";
+        console.error("Another user exists with that phone.");
       } else {
         this.$store.commit("account/login", res.data.token);
         const options = {
@@ -154,7 +153,7 @@ export default {
             Authorization: `Bearer ${this.$store.state.account.token}`,
           },
         };
-        const res1 = await axios.get(
+        const res1 = await this.$http.get(
           `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
           options
         );

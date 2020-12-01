@@ -36,7 +36,6 @@
 <script>
 import { mapState } from "vuex";
 import { required } from "vuelidate/lib/validators";
-import axios from "axios";
 export default {
   data() {
     return {
@@ -50,7 +49,7 @@ export default {
   methods: {
     submit: async function() {
       console.log("Confirming: ", this.$route.params.orderId);
-      const imageUrl = await axios.get(
+      const imageUrl = await this.$http.get(
         `${process.env.VUE_APP_IMAGE_SERVICE_URL}/image/url`
       );
       this.$refs.imageUploader.uploadImage(imageUrl.data.uploadURL);
@@ -63,7 +62,7 @@ export default {
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
-      await axios.post(
+      await this.$http.post(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/payment`,
         params,
         options
@@ -81,7 +80,7 @@ export default {
       console.debug("getOrderDetails", this.orders);
       const order = this.orders[this.orderId];
       console.debug("order:", order);
-      const shopResponse = await axios.get(
+      const shopResponse = await this.$http.get(
         `${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`,
         {
           params: {

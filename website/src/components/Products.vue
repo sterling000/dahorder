@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -51,7 +50,7 @@ export default {
           shop: this.$route.params.id,
         },
       };
-      const res = await axios.get(
+      const res = await this.$http.get(
         `${process.env.VUE_APP_PRODUCT_SERVICE_URL}/products`,
         options
       );

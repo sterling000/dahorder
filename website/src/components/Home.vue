@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -31,7 +30,7 @@ export default {
       this.$router.push(`/products/${event.id}/${event.pk}`);
     },
     getShops: async function() {
-      this.shops = await axios.get(
+      this.shops = await this.$http.get(
         `${process.env.VUE_APP_SHOP_SERVICE_URL}/listshops`
       );
       this.$store.commit("loading/stop");

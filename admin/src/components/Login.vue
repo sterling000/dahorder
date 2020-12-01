@@ -32,12 +32,11 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   methods: {
     async login() {
       try {
-        const res = await axios.post(
+        const res = await this.$http.post(
           `${process.env.VUE_APP_ADMIN_SERVICE}/login`,
           {
             username: this.username,

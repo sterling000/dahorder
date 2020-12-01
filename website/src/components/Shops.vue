@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -40,7 +39,7 @@ export default {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
 
-      const res = await axios.get(
+      const res = await this.$http.get(
         `${process.env.VUE_APP_SHOP_SERVICE_URL}/myshops`,
         options
       );

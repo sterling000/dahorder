@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import MegaPixImage from "../utils/MegaPixImage";
 export default {
   data() {
@@ -82,7 +81,7 @@ export default {
         headers: { "Content-Type": "image/jpeg", "x-amz-acl": "public-read" },
       };
       try {
-        await axios.put(presignedURL, this.thumbnail, options);
+        await this.$http.put(presignedURL, this.thumbnail, options);
       } catch (error) {
         console.error("Upload Error...", error);
       }

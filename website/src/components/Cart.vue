@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { mapState } from "vuex";
 export default {
   methods: {
@@ -76,7 +75,7 @@ export default {
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
-      const order = await axios.post(
+      const order = await this.$http.post(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/order`,
         params,
         options
@@ -107,7 +106,7 @@ export default {
           undefined
         ) {
           promises.push(
-            axios.get(`${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`, {
+            this.$http.get(`${process.env.VUE_APP_SHOP_SERVICE_URL}/shop`, {
               params: { owner: shop.owner, id: shop.id },
             })
           );

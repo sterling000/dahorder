@@ -70,7 +70,7 @@ module.exports.createUser = async (event) => {
           "Access-Control-Allow-Credentials": true,
           "Access-Control-Allow-Headers": "Authorization",
         },
-        body: "Did not give a valid phone number.",
+        body: "A user already exists with that phone number.",
       };
     }
     console.log("There was an error putting a new user");

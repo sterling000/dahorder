@@ -62,7 +62,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { mapState } from "vuex";
 export default {
   data() {
@@ -97,7 +96,7 @@ export default {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
       };
 
-      const res = await axios.get(
+      const res = await this.$http.get(
         `${process.env.VUE_APP_SHOP_SERVICE_URL}/myshops`,
         options
       );
@@ -107,7 +106,7 @@ export default {
     },
     getReceipts: async function() {
       this.$store.commit("loading/start");
-      const receiptResponse = await axios.get(
+      const receiptResponse = await this.$http.get(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/receipts`,
         {
           headers: {
@@ -121,7 +120,7 @@ export default {
     },
     getOrders: async function(shopId) {
       this.$store.commit("loading/start");
-      const orderResponse = await axios.get(
+      const orderResponse = await this.$http.get(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/orders`,
         {
           params: {

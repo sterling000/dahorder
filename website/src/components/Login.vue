@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { required } from "vuelidate/lib/validators";
 import { validPhone } from "../validators/validators";
 import { mapState } from "vuex";
@@ -76,22 +75,32 @@ export default {
         phone: `+6${this.phone}`,
         password: this.password,
       };
+      let res = {};
+      try {
+        res = await this.$http.post(
+          `${process.env.VUE_APP_USER_SERVICE_URL}/user/login`,
+          params
+        );
+        console.debug(JSON.stringify(res));
+      } catch (error) {
+        console.debug("login error", error);
+      }
 
-      const res = await axios.post(
-        `${process.env.VUE_APP_USER_SERVICE_URL}/user/login`,
-        params
-      );
-      if (res.status === 404) {
-        throw "That phone/password combination does not match our records.";
+      if (res.status === undefined || res.status === 401) {
+        this.$store.commit("loading/stop");
+        console.error(
+          "That phone/password combination does not match our records."
+        );
       } else {
         console.log("Success!");
+        console.debug(res);
         this.$store.commit("account/login", res.data.token);
         const options = {
           headers: {
             Authorization: `Bearer ${this.$store.state.account.token}`,
           },
         };
-        const res2 = await axios.get(
+        const res2 = await this.$http.get(
           `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
           options
         );
