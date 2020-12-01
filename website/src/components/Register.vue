@@ -126,6 +126,7 @@ export default {
   },
   methods: {
     register: async function() {
+      this.$store.commit("loading/start");
       this.$v.$touch();
       if (this.$v.$anyError) {
         return;
@@ -144,9 +145,9 @@ export default {
         params
       );
       if (res.status === 202) {
+        this.$store.commit("loading/stop");
         throw "Another user exists with that phone.";
       } else {
-        console.log("Success! You've signed up!");
         this.$store.commit("account/login", res.data.token);
         const options = {
           headers: {
@@ -157,7 +158,7 @@ export default {
           `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
           options
         );
-
+        console.log("Success! You've signed up!");
         this.$store.commit("account/user", res1.data);
         this.$store.commit("loading/stop");
         if (this.from.name !== null) {
