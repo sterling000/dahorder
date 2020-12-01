@@ -1,7 +1,15 @@
 <template>
   <div class="products">
     <div class="category">
-      <h2>Products</h2>
+      <div class="title">
+        <h2>Products</h2>
+        <font-awesome-icon
+          class="share-icon"
+          :icon="['fas', 'share']"
+          @click.prevent="share"
+        />
+      </div>
+
       <div class="noProducts" v-show="products.length < 1">
         <h3>
           The Owner of this shop has not added any products yet.
@@ -39,6 +47,10 @@ export default {
     };
   },
   methods: {
+    share: async function() {
+      await navigator.clipboard.writeText(window.location);
+      console.log("Link copied to clipboard.");
+    },
     newProduct: function() {
       this.$router.push(
         `/newproduct/${this.$route.params.id}/${this.$route.params.owner}`
@@ -55,7 +67,14 @@ export default {
         options
       );
       this.$store.commit("loading/stop");
-      this.products = res.data;
+
+      this.products = res.data.filter((product) => {
+        const date = new Date(product.date);
+        const now = new Date();
+        return (
+          date > now || product.owner === this.$store.state.account.user.pk
+        );
+      });
     },
     selectProduct: function(event) {
       this.$router.push(`/product/${event.id}`);
@@ -76,6 +95,14 @@ export default {
 <style lang="scss">
 @import "../assets/styles/config.scss";
 .products {
+  .title {
+    display: flex;
+  }
+  .share-icon {
+    font-size: 24px;
+    margin: 0 1em;
+    cursor: pointer;
+  }
   overflow-y: auto;
   padding: 10vh 5vh 15vh;
   .noProducts {

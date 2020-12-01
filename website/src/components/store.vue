@@ -34,6 +34,10 @@ export default {
   height: 167px;
   border-radius: 5%;
   background-color: $color-primary-0;
+  .shortcut-icon {
+    float: right;
+    margin: 0 0.4em 0 0;
+  }
   h2 {
     font-size: 18px;
   }

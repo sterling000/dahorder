@@ -3,7 +3,13 @@
     <div class="wrapper" v-show="!edit">
       <div class="hero" ref="thumbnail">
         <h2 class="name">{{ details.name }}</h2>
+        <font-awesome-icon
+          class="share-icon"
+          :icon="['fas', 'share']"
+          @click.prevent="share"
+        />
       </div>
+
       <div class="description">
         <p>{{ details.description }}</p>
       </div>
@@ -117,6 +123,10 @@ export default {
     };
   },
   methods: {
+    async share() {
+      await navigator.clipboard.writeText(window.location);
+      console.log("Link copied to clipboard.");
+    },
     thumbnailRendered: function(e) {
       this.thumbnail = e;
     },
@@ -241,6 +251,12 @@ export default {
         border-radius: 5%;
         border: none;
         line-height: 0.8;
+      }
+      .share-icon {
+        color: #fff;
+        font-size: 24px;
+        margin: 0 0.5em;
+        cursor: pointer;
       }
     }
     .description {
