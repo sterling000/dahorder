@@ -30,7 +30,9 @@
         </li>
         <li>
           <h2>Quantity</h2>
-          <p v-show="!edit">{{ details.quantity }}</p>
+          <p v-show="!edit">
+            <span>{{ details.remaining }} remaining</span>
+          </p>
           <input
             type="text"
             name="quantity"
@@ -261,7 +263,7 @@ export default {
 @import "../assets/styles/toggle.scss";
 
 .product {
-  padding: 4em 0 10em;
+  padding: 4em 0 5em;
   .hero {
     // margin: 4em 0 0;
     background: var(--thumbnail);
@@ -327,7 +329,7 @@ export default {
     }
     .save,
     .addToCart {
-      margin: 1em 0;
+      margin: 1em 0 0;
       min-width: 340px;
       min-height: 2em;
       background-color: $color-primary-0;

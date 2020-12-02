@@ -188,6 +188,7 @@ export default {
         thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${imageResponse.data.photoFilename}`,
         price: this.price,
         quantity: this.quantity,
+        remaining: this.quantity,
         available: deliveryDateTime,
         delivery: this.delivery,
         shop: this.$route.params.id,

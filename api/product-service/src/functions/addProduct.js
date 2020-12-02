@@ -21,8 +21,9 @@ module.exports.handler = async (event) => {
   const thumbnail = body.thumbnail;
   const price = Number(body.price);
   const quantity = Number(body.quantity);
+  const remaining = Number(body.remaining);
   const available = body.available;
-  const delivery = body.delivery;
+  const delivery = body.delivery == 'true';
   const shop = body.shop;
 
   const newProductParams = {
@@ -35,6 +36,7 @@ module.exports.handler = async (event) => {
       thumbnail: thumbnail,
       price: price,
       quantity: quantity,
+      remaining: remaining,
       available: available,
       delivery: delivery,
       shop: shop,

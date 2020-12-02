@@ -85,7 +85,6 @@ export default {
       } catch (error) {
         console.error("Upload Error...", error);
       }
-      this.$store.commit("loading/stop");
     },
     validate: function() {
       if (this.validation !== null) {
