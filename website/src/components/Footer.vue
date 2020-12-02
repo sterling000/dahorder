@@ -6,6 +6,7 @@
         id="orders"
         class="shortcut"
         @click="shortcut('/orders')"
+        ref="orders"
       >
         <font-awesome-icon class="shortcut-icon" :icon="['fas', 'list']" />
         <p>ORDERS</p>
@@ -13,8 +14,9 @@
       <li
         v-show="signedIn"
         id="buy"
-        class="shortcut current"
+        class="shortcut"
         @click="shortcut('/buy')"
+        ref="buy"
       >
         <font-awesome-icon class="shortcut-icon" :icon="['fas', 'utensils']" />
         <p>BUY</p>
@@ -24,6 +26,7 @@
         id="shops"
         class="shortcut"
         @click="shortcut('/shops')"
+        ref="sell"
       >
         <font-awesome-icon
           class="shortcut-icon"
@@ -36,6 +39,7 @@
         id="cart"
         class="shortcut"
         @click="shortcut('/cart')"
+        ref="cart"
       >
         <font-awesome-icon
           class="shortcut-icon"
@@ -69,12 +73,6 @@ export default {
       if (route === this.$router.history.current.path) {
         return;
       }
-      const shortcuts = document.querySelectorAll(".shortcut");
-      shortcuts.forEach((shortcut) => shortcut.classList.remove("current"));
-
-      const id = route.substring(1);
-      const shortcut = document.querySelector("#" + id);
-      shortcut.classList.add("current");
       this.$router.push(route);
     },
     signIn() {
@@ -128,6 +126,26 @@ export default {
         this.$refs["login"].classList.add("current");
       } else {
         this.$refs["login"].classList.remove("current");
+      }
+      if (to.name === "Home" || to.name === "Buy") {
+        this.$refs["buy"].classList.add("current");
+      } else {
+        this.$refs["buy"].classList.remove("current");
+      }
+      if (to.name === "Shops") {
+        this.$refs["sell"].classList.add("current");
+      } else {
+        this.$refs["sell"].classList.remove("current");
+      }
+      if (to.name === "Cart") {
+        this.$refs["cart"].classList.add("current");
+      } else {
+        this.$refs["cart"].classList.remove("current");
+      }
+      if (to.name === "Orders") {
+        this.$refs["orders"].classList.add("current");
+      } else {
+        this.$refs["orders"].classList.remove("current");
       }
     },
   },
