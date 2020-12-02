@@ -41,7 +41,6 @@
       type="file"
       name="thumbnail"
       accept="image/*"
-      capture="camera"
       @change="loadImage($event)"
     />
   </div>
