@@ -60,7 +60,7 @@
         </li>
         <li>
           <image-uploader
-            validation="$v.thumbnail"
+            :validation="$v.thumbnail"
             @render="thumbnailRendered"
             ref="imageUploader"
           />
@@ -256,7 +256,7 @@ export default {
     },
     thumbnailErrors() {
       const errors = [];
-      if (!this.$v.thumbnail.$dirty && !this.$v.thumbnail.$dirty) return errors;
+      if (!this.$v.thumbnail.$dirty) return errors;
       !this.$v.thumbnail.required && errors.push("Thumbnail is required.");
       return errors;
     },

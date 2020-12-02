@@ -37,6 +37,17 @@ module.exports.handler = async (event) => {
       const requestedProduct = body.products.find(
         (product) => product.id === response.Item.id
       );
+      if(requestedProduct.remaining < response.Item.remaining){
+        return {
+          statusCode: 203,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Headers": "Authorization",
+          },
+          body: JSON.stringify({success: false, message: 'Can not order more products than shop has remaining.'}),
+        };
+      }
       products.push({
         product: response.Item,
         subtotal: requestedProduct.quantity * response.Item.price,

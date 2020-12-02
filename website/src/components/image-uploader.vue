@@ -1,89 +1,123 @@
 <template>
   <div class="image-uploader">
-    <label for="thumbnail" id="thumbnailLabel"
-      ><p class="thumbnail">Image</p>
+    <label for="thumbnail" id="thumbnailLabel">
+      <p class="thumbnail">Image</p>
       <div class="wrapper">
-        <div class="camera" v-if="this.thumbnail === ''">
+        <div class="camera" v-if="image === null">
           <font-awesome-icon :icon="['fas', 'camera']" />
           <p>Camera</p>
         </div>
-        <p class="or" v-if="this.thumbnail === ''">Or</p>
-        <div class="custom-file-upload" v-if="this.thumbnail === ''">
+        <p class="or" v-if="image === ''">Or</p>
+        <div class="custom-file-upload" v-if="image === null">
           <font-awesome-icon :icon="['fas', 'file-upload']" />
           <p>Upload</p>
         </div>
       </div>
       <canvas id="imagePreview" />
     </label>
-
+    <cropper
+      id="imagePreview"
+      class="cropper"
+      :src="image"
+      :stencil-props="{ aspectRatio: 10 / 6 }"
+      ref="cropper"
+    />
+    <font-awesome-icon
+      class="share-icon"
+      :icon="['fas', 'share']"
+      @click.prevent="rotate"
+      v-show="image !== null"
+    />
     <input
       id="camera"
       name="camera"
       type="file"
       accept="image/*"
       capture="camera"
-      @change="thumbnailChanged"
-      @blur="validate"
+      @change="loadImage($event)"
     />
     <input
       id="thumbnail"
       type="file"
       name="thumbnail"
       accept="image/*"
-      @change="thumbnailChanged"
-      @blur="validate"
+      capture="camera"
+      @change="loadImage($event)"
     />
   </div>
 </template>
 
 <script>
-import MegaPixImage from "../utils/MegaPixImage";
 export default {
   data() {
     return {
-      thumbnail: "",
-      imagePreview: {},
+      image: null,
     };
   },
-  mounted() {
-    this.imagePreview = document.getElementById("imagePreview");
-  },
   methods: {
-    thumbnailChanged: function(e) {
-      if (e.target.files.length === 0) {
-        return;
-      }
-      const file = e.target.files[0];
-      const mpImg = new MegaPixImage(file);
-      // Render resized image into canvas element.
-      const ctx = this.imagePreview.getContext("2d");
-      ctx.fillStyle = "#000";
-      this.imagePreview.classList.add("show");
-      mpImg.render(
-        this.imagePreview,
-        { maxWidth: 680, maxHeight: 360 },
-        this.renderCallback
-      );
+    rotate() {
+      var image = document.createElement("img");
+      image.crossOrigin = "anonymous";
+      image.src = this.image;
+      image.onload = () => {
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+
+        if (image.width > image.height) {
+          canvas.width = image.height;
+          canvas.height = image.width;
+          ctx.translate(image.height, image.width / image.height);
+        } else {
+          canvas.height = image.width;
+          canvas.width = image.height;
+          ctx.translate(image.height, image.width / image.height);
+        }
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(image, 0, 0);
+        this.image = canvas.toDataURL();
+      };
     },
-    renderCallback: function() {
-      this.imagePreview.toBlob(
-        (blob) => {
-          this.thumbnail = blob;
-          this.$emit("render", this.thumbnail);
-        },
-        "image/jpeg",
-        0.9
-      );
+    loadImage(event) {
+      // Reference to the DOM input element
+      var input = event.target;
+      // Ensure that you have a file before attempting to read it
+      if (input.files && input.files[0]) {
+        // create a new FileReader to read this image and convert to base64 format
+        var reader = new FileReader();
+        // Define a callback function to run, when FileReader finishes its job
+        reader.onload = (e) => {
+          // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+          // Read image as base64 and set to imageData
+          this.image = e.target.result;
+          this.$emit("render", this.image);
+          this.validate();
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(input.files[0]);
+      }
     },
     uploadImage: async function(presignedURL) {
       this.$store.commit("loading/start");
-      var options = {
-        headers: { "Content-Type": "image/jpeg", "x-amz-acl": "public-read" },
-      };
-      try {
-        await this.$http.put(presignedURL, this.thumbnail, options);
-      } catch (error) {
-        console.error("Upload Error...", error);
+      const { canvas } = this.$refs.cropper.getResult();
+      if (canvas) {
+        const form = new FormData();
+        canvas.toBlob(async (blob) => {
+          form.append("file", blob);
+
+          // You can use axios, superagent and other libraries instead here
+          var options = {
+            headers: {
+              "Content-Type": "image/jpeg",
+              "x-amz-acl": "public-read",
+            },
+          };
+          try {
+            await this.$http.put(presignedURL, blob, options);
+          } catch (error) {
+            console.error("Upload Error...", error);
+          }
+          // Perhaps you should add the setting appropriate file format here
+        }, "image/jpeg");
       }
     },
     validate: function() {
