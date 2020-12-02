@@ -21,6 +21,8 @@
       :src="image"
       :stencil-props="{ aspectRatio: 10 / 6 }"
       ref="cropper"
+      :wheelResize="false"
+      :touchResize="false"
     />
     <font-awesome-icon
       class="share-icon"

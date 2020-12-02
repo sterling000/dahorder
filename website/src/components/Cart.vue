@@ -65,7 +65,7 @@ export default {
     },
     placeOrder: async function(shop) {
       this.$store.commit("loading/start");
-      console.log("Submitting: ", this.products);
+      console.log("Submitting...");
       const params = {
         shop: shop.id,
         owner: shop.owner,
@@ -81,10 +81,15 @@ export default {
         options
       );
       this.$store.commit("loading/stop");
-      console.log("Order Submitted", order.data);
+      console.debug(order);
+      if (order.status === 203) {
+        console.error(
+          "There aren't enough of that product left for you to purchase that many!"
+        );
+        return;
+      }
+      console.log("Order Submitted");
       this.$store.commit("cart/clearProducts", shop.id);
-      // this.$router.push(`/checkout/${shop.id}/${shop.owner}`);
-      // this.$router.push(`/checkout/${order.id}`);
       this.$router.push(`/orders`);
     },
     total(products) {

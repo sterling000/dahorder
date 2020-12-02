@@ -45,20 +45,20 @@ export default {
         });
       }
     };
-    // console.error = (...args) => {
-    //   if (this.notifications !== null) {
-    //     let message = "";
-    //     for (let i = 0; i < args.length; i++) {
-    //       message += ` ${args[i]}`;
-    //     }
-    //     this.notifications.push({
-    //       id: Math.random(),
-    //       info: "",
-    //       error: message,
-    //       timeout: 6 * 1000, // 4 seconds
-    //     });
-    //   }
-    // };
+    console.error = (...args) => {
+      if (this.notifications !== null) {
+        let message = "";
+        for (let i = 0; i < args.length; i++) {
+          message += ` ${args[i]}`;
+        }
+        this.notifications.push({
+          id: Math.random(),
+          info: "",
+          error: message,
+          timeout: 6 * 1000, // 4 seconds
+        });
+      }
+    };
     Vue.config.errorHandler = (...args) => {
       if (this.notifications !== null) {
         let message = "";

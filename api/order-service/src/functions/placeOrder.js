@@ -2,7 +2,6 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-
 module.exports.handler = async (event) => {
   console.log(event);
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -31,30 +30,36 @@ module.exports.handler = async (event) => {
     console.log("productParams", productParams);
     productPromises.push(dynamodb.get(productParams).promise());
   });
+  let orderTooMany = [];
   await Promise.all(productPromises).then((result) => {
     result.forEach((response) => {
       console.log("Product Get Response:", response);
       const requestedProduct = body.products.find(
         (product) => product.id === response.Item.id
       );
-      if(requestedProduct.remaining < response.Item.remaining){
-        return {
-          statusCode: 203,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-            "Access-Control-Allow-Headers": "Authorization",
-          },
-          body: JSON.stringify({success: false, message: 'Can not order more products than shop has remaining.'}),
-        };
-      }
-      products.push({
+      console.log('requestedProduct', requestedProduct);
+      console.log('responseItem', response.Item);
+      if(requestedProduct.quantity > response.Item.remaining){
+        orderTooMany.push(requestedProduct);
+      }else
+      {products.push({
         product: response.Item,
         subtotal: requestedProduct.quantity * response.Item.price,
-      });
+      });}
     });
   });
 
+  if(orderTooMany.length > 0){
+    return {
+      statusCode: 203,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: JSON.stringify({success: false, message: 'There are not enough products to fulfil your order.'}),
+    };
+  }
   const subtotals = products.map((productSubtotal) => productSubtotal.subtotal);
   const total = subtotals.reduce((acc, cur) => acc + cur);
   console.log("Total: ", total);
@@ -75,7 +80,44 @@ module.exports.handler = async (event) => {
     },
     ConditionExpression: "attribute_not_exists(orderId)",
   };
-
+  console.log('products', JSON.stringify(products));
+    const updatePromises = [];
+   body.products.forEach(product => {
+     const dbProductFound = products.find(dbProduct => dbProduct.product.id == product.id);
+     console.log('product found: ',product.id, dbProductFound);
+   
+    const productParams = {
+      TableName: process.env.DYNAMODB_PRODUCT_TABLE,
+      Key: {
+        id: product.id,
+      },
+      UpdateExpression: 'set #remaining = :remaining',
+      ExpressionAttributeValues: {
+        ':remaining': dbProductFound.product.remaining - product.quantity
+      },
+      ExpressionAttributeNames: {
+        '#remaining': 'remaining'
+      },
+      ReturnValues: "UPDATED_NEW"
+    };
+    console.log("productParams", productParams);
+    updatePromises.push(dynamodb.update(productParams).promise());
+  });
+  try{
+    await Promise.all(updatePromises);
+  } catch(error){
+    console.log('There was an error trying to update the remaining amount for a product.')
+    return {
+      statusCode: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: 'There was a problem updating the remaining quantity, please contact support.',
+    };
+  }
+  
   try {
     console.log(newOrderParams);
     const dynamodb = new AWS.DynamoDB.DocumentClient();
