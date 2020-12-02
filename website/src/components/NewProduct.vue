@@ -70,11 +70,7 @@
         </li>
         <li>
           <label for="date">Date Available</label>
-          <date-picker
-            :option="timeOption"
-            :date="date"
-            :limit="limit"
-          ></date-picker>
+          <date-picker :option="timeOption" :date="date" :limit="limit" />
         </li>
         <li>
           <div class="can-toggle">
@@ -125,7 +121,7 @@ export default {
       croppedImage: {},
       presignedURL: "",
       photoFilename: "",
-      delivery: "Delivery",
+      delivery: true,
       shop: "",
       timeOption: {
         type: "min",

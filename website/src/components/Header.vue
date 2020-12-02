@@ -121,6 +121,7 @@ header {
   display: flex;
   justify-content: space-between;
   position: fixed;
+  top: 0;
   margin: 0 auto;
   max-width: 1200px;
   min-width: 100vw;

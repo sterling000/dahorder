@@ -1,88 +1,58 @@
 <template>
   <div class="product">
-    <div class="wrapper" v-show="!edit">
-      <div class="hero" ref="thumbnail"></div>
+    <div class="hero" ref="thumbnail"></div>
+    <div class="wrapper">
       <h2 class="name">{{ details.name }}</h2>
       <font-awesome-icon
         class="share-icon"
         :icon="['fas', 'share']"
         @click.prevent="share"
+        v-show="!edit"
       />
       <div class="description">
-        <p>{{ details.description }}</p>
+        <p v-show="!edit">{{ details.description }}</p>
+        <textarea
+          name="description"
+          :placeholder="details.description"
+          v-show="edit"
+        ></textarea>
       </div>
       <ul>
         <li>
           <h2>Price</h2>
-          <p>{{ details.price }} RM</p>
+          <p v-show="!edit">{{ details.price }} RM</p>
+          <input
+            type="text"
+            name="price"
+            :placeholder="details.price"
+            v-show="edit"
+          />
         </li>
         <li>
           <h2>Quantity</h2>
-          <p>{{ details.quantity }}</p>
+          <p v-show="!edit">{{ details.quantity }}</p>
+          <input
+            type="text"
+            name="quantity"
+            :placeholder="details.quantity"
+            v-show="edit"
+          />
         </li>
         <li>
           <h2>Date Available</h2>
 
-          <p>{{ localeTime(details.available) }}</p>
-        </li>
-        <li>
-          <h2>Delivery</h2>
-
-          <p>{{ details.delivery }}</p>
-        </li>
-        <li v-show="!this.edit && this.isOwner()">
-          <button class="edit" @click="toggleEdit">
-            Edit
-          </button>
-        </li>
-        <li v-show="!this.isOwner()">
-          <button class="addToCart" @click="addToCart">
-            <p v-show="this.$store.state.account.token !== null">Add To Cart</p>
-            <p v-show="this.$store.state.account.token === null">
-              Sign In to Add To Cart
-            </p>
-          </button>
-        </li>
-      </ul>
-    </div>
-    <form action="submit" v-show="edit" class="editForm">
-      <ul>
-        <li class="price">
-          <div class="flex-wrapper">
-            <label for="price">Price</label>
-            <input v-model="changes.price" name="price" class="price" />RM
-          </div>
-        </li>
-        <li class="quantity">
-          <div class="wrapper">
-            <label for="quantity">Quantity</label>
-            <input
-              v-model="changes.quantity"
-              name="quantity"
-              class="quantity"
-            />
-          </div>
-        </li>
-        <!-- Add option for On-Demand -->
-        <li>
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            v-model="changes.description"
-            name="description"
-            placeholder="Enter a description here..."
+          <p v-show="!edit">{{ localeTime(details.available) }}</p>
+          <date-picker
+            v-show="edit"
+            :option="timeOption"
+            :date="date"
+            :limit="limit"
           />
         </li>
         <li>
-          <image-uploader @render="thumbnailRendered" ref="imageUploader" />
-        </li>
-        <li>
-          <label for="date">Date Available</label>
-          <input v-model="changes.date" type="date" name="date" />
-        </li>
-        <!-- Preset Delivery Time -->
-        <li>
-          <div class="can-toggle">
+          <h2>Delivery</h2>
+          <p v-show="!edit">{{ details.delivery }}</p>
+          <div v-show="edit" class="can-toggle">
             <input type="checkbox" id="delivery" v-model="changes.delivery" />
             <label for="delivery">
               <div
@@ -92,32 +62,65 @@
               ></div>
             </label>
           </div>
-
-          <label for="deliveryTime">
-            Set Delivery Time
-            <input
-              type="checkbox"
-              id="setDeliveryTime"
-              v-model="changes.setDeliveryTime"
-            />
-          </label>
+        </li>
+        <li v-show="this.isOwner()">
+          <button v-show="!this.edit" class="edit" @click="toggleEdit">
+            Edit
+          </button>
+          <button v-show="this.edit" class="save" @click="save">
+            Save
+          </button>
+          <button v-show="this.edit" class="cancel" @click="toggleEdit">
+            Cancel
+          </button>
+        </li>
+        <li v-show="!this.isOwner()">
+          <button class="addToCart" @click="addToCart">
+            <p v-show="this.$store.state.account.token !== null">
+              Add To Cart
+            </p>
+            <p v-show="this.$store.state.account.token === null">
+              Sign In to Add To Cart
+            </p>
+          </button>
         </li>
       </ul>
-      <button class="save" v-show="this.edit" @click="save">Save</button>
-    </form>
+    </div>
   </div>
 </template>
 
 <script>
-// import { required, minLength } from "vuelidate/lib/validators";
-
 export default {
   data() {
     return {
       details: {},
-      changes: {},
+      changes: {
+        delivery: true,
+      },
       edit: false,
       thumbnail: "",
+      date: {
+        time: "",
+      },
+      timeOption: {
+        type: "min",
+        week: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+        month: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ],
+        format: "YYYY-MM-DD HH:mm",
+      },
     };
   },
   methods: {
@@ -168,7 +171,7 @@ export default {
         params[key] = this.changes[key];
       });
       params["id"] = this.$route.params.id;
-      console.log("Saving changes to: ", params);
+      console.log("Saving changes.");
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
         const resUrl = await this.$http.get(
@@ -195,6 +198,7 @@ export default {
       } catch (putError) {
         console.error(putError);
       }
+      this.details = this.changes;
       this.$store.commit("loading/stop");
       this.toggleEdit();
     },
@@ -210,6 +214,7 @@ export default {
           options
         );
         this.details = res.data[0];
+        this.details.delivery = this.details.delivery == "true";
         this.changes = { ...this.details };
         this.$refs["thumbnail"].style.setProperty(
           "--thumbnail",
@@ -222,7 +227,28 @@ export default {
     },
   },
   validations: {},
-  computed: {},
+  computed: {
+    limit() {
+      const from = new Date();
+      const fromDate = new Date(
+        from.getTime() - from.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
+      const to = new Date(from);
+      to.setDate(to.getDate() + 90); // 90 days is the furthest out we should let people book to start.
+      const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
+      return [
+        {
+          type: "fromto",
+          from: fromDate,
+          to: toDate,
+        },
+      ];
+    },
+  },
   mounted() {
     this.$store.commit("loading/start");
     this.getProduct();
@@ -230,21 +256,20 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/styles/config.scss";
 @import "../assets/styles/toggle.scss";
 
 .product {
-  overflow: auto;
+  padding: 4em 0 10em;
+  .hero {
+    // margin: 4em 0 0;
+    background: var(--thumbnail);
+    background-size: cover;
+    min-width: 325px;
+    min-height: 25vh;
+  }
   .wrapper {
-    .hero {
-      margin: 4em 0 0;
-      padding: 1em 1em 1em;
-      background: var(--thumbnail);
-      background-size: cover;
-      min-width: 325px;
-      min-height: 25vh;
-    }
     .name {
       display: inline-flex;
       min-width: 0;
@@ -262,9 +287,32 @@ export default {
     .description {
       margin: 1em;
     }
-
+    textarea {
+      resize: none;
+      font-size: 1.5em;
+      height: 8em;
+      padding: 0.5em;
+      text-align: left;
+      margin-top: 0;
+      width: 100%;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      overflow: auto;
+    }
     ul {
       margin: 1em;
+      input {
+        height: 1.5em;
+
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5%;
+        border: solid 1px $color-primary-0;
+        text-indent: 0.25em;
+        font-size: 1.5em;
+      }
     }
 
     .edit {
@@ -291,86 +339,18 @@ export default {
         background-color: rgb(143, 143, 143);
       }
     }
-  }
-  .editForm {
-    padding: 5em 1em;
-    ul {
-      li {
-        margin: 1em 0;
-        .flex-wrapper {
-          display: flex;
-        }
-        label {
-          display: inline-block;
-          width: 350px;
-          margin: 0 0 0.5em;
-          font-weight: 600;
-
-          .price,
-          .quantity {
-            width: 175px;
-          }
-        }
-      }
-      input {
-        display: block;
-        width: 100%;
-        height: 3em;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-          0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-radius: 5%;
-        border: solid 1px $color-primary-0;
-        text-indent: 1em;
-
-        .price,
-        .quantity {
-          width: 50%;
-        }
-      }
-      .price,
-      .quantity {
-        text-align: right;
-        font-size: 24px;
-        height: 1em;
-        width: 50%;
-        margin-right: 0.5em;
-        .error {
-          display: inline-block;
-        }
-      }
-
-      textarea {
-        resize: none;
-        height: 8em;
-        padding: 0.5em;
-        text-align: left;
-        margin-top: 0;
-        width: 100%;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-          0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-radius: 5%;
-        border: solid 1px $color-primary-0;
-        overflow: auto;
-      }
-    }
-  }
-
-  input#submit {
-    display: block;
-    background-color: $color-primary-0;
-    color: $color-primary-3;
-    width: 100%;
-    height: 2em;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 5%;
-    border: solid 1px $color-primary-0;
-    font-size: 40px;
-    font-weight: 600;
-    margin-bottom: 1em;
-    padding: 0.5em;
-    &:disabled {
+    .cancel {
+      margin: 1em 0;
+      min-width: 340px;
+      min-height: 2em;
       background-color: rgb(143, 143, 143);
-      color: #000;
+      border-radius: 5%;
+      border: solid 1px $color-primary-4;
+      color: $color-primary-1;
+      font-size: 24px;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+      }
     }
   }
 }

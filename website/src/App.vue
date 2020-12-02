@@ -153,5 +153,6 @@ ul {
 
 router-view {
   overflow: scroll;
+  margin: 4em 0 0;
 }
 </style>
