@@ -10,7 +10,7 @@
         </li>
         <li>
           <image-uploader
-            validation="$v.thumbnail"
+            :validation="$v.thumbnail"
             @render="thumbnailRendered"
             ref="imageUploader"
           />

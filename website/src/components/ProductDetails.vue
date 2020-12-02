@@ -81,6 +81,18 @@
             <p v-show="this.$store.state.account.token !== null">
               Add To Cart
             </p>
+            <p
+              v-show="
+                this.$store.state.account.token !== null &&
+                  details.remaining == 0
+              "
+              :disabled="
+                this.$store.state.account.token !== null &&
+                  details.remaining == 0
+              "
+            >
+              Sold Out
+            </p>
             <p v-show="this.$store.state.account.token === null">
               Sign In to Add To Cart
             </p>
@@ -141,6 +153,7 @@ export default {
       if (this.$store.state.account.token === null) {
         this.$router.push("/login");
       }
+
       this.$store.commit("cart/addProduct", this.details);
       console.log(`Added ${this.details.name} to Cart!`);
     },

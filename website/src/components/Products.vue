@@ -69,7 +69,7 @@ export default {
       this.$store.commit("loading/stop");
 
       this.products = res.data.filter((product) => {
-        const date = new Date(product.date);
+        const date = new Date(product.available);
         const now = new Date();
         return (
           date > now || product.owner === this.$store.state.account.user.pk
