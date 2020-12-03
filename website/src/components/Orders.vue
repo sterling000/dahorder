@@ -12,7 +12,11 @@
       </div>
       <ul>
         <li class="purchase" v-for="orderId in orderIds" :key="orderId">
-          <h6>Date:</h6>
+          <purchase
+            :date="localDateTime(receipts[orderId].date)"
+            :order="receipts[orderId]"
+          />
+          <!-- <h6>Date:</h6>
           {{ localDateTime(receipts[orderId].date) }}
           <h6>Total:</h6>
           {{ receipts[orderId].total }} RM
@@ -24,7 +28,7 @@
             v-show="receipts[orderId].status === 'pending'"
           >
             Check Out
-          </button>
+          </button> -->
         </li>
       </ul>
     </div>
@@ -47,13 +51,6 @@
             <p class="total">{{ sale.total }} RM</p>
             <h6>Status:</h6>
             <p class="status">{{ sale.status }}</p>
-            <!-- <button
-              class="complete"
-              @click="complete(sale)"
-              v-show="sale.status === 'paid'"
-            >
-              Check Out
-            </button> -->
           </li>
         </ul>
       </li>
@@ -115,7 +112,7 @@ export default {
         }
       );
       console.debug("receiptResponse", receiptResponse);
-      this.$store.commit("cart/addOrders", receiptResponse.data);
+      this.$store.commit("cart/setOrders", receiptResponse.data);
       this.$store.commit("loading/stop");
     },
     getOrders: async function(shopId) {
@@ -143,7 +140,7 @@ export default {
     localDateTime(utc) {
       console.debug("date from response: ", utc);
       const date = new Date(utc);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      return `${date.toLocaleDateString()} `; //${date.toLocaleTimeString()}
     },
     checkout(purchase) {
       this.$router.push(`/checkout/${purchase.orderId}`);
@@ -161,14 +158,6 @@ export default {
   }
   ul {
     margin: 2em 1em;
-    li.purchase {
-      margin: 0.25em;
-      border-top: 1px solid grey;
-      &:last-child {
-        border-top: 1px solid grey;
-        border-bottom: 1px solid grey;
-      }
-    }
     li.sale {
       margin: 0.25em;
       border-top: 1px solid grey;

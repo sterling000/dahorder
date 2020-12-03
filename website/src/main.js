@@ -22,6 +22,7 @@ import ImageUploader from "./components/image-uploader.vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import Notification from "./components/notification.vue";
 import {Cropper} from 'vue-advanced-cropper';
+import purchase from './components/purchase.vue';
 library.add(
   faList,
   faUtensils,
@@ -39,6 +40,7 @@ Vue.component("image-uploader", ImageUploader);
 Vue.component("pulse-loader", PulseLoader);
 Vue.component("notification", Notification);
 Vue.component('cropper', Cropper);
+Vue.component('purchase', purchase);
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios
 Vue.use(Vuelidate);

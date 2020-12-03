@@ -1,10 +1,8 @@
-import Vue from 'vue';
+import Vue from "vue";
 
 const state = {
-  products: {
-  },
-  orders: {
-  }
+  products: {},
+  orders: {},
 };
 
 const mutations = {
@@ -35,25 +33,27 @@ const mutations = {
         shopProductsForNewProduct = [...shopProductsForNewProduct, cartItem];
       }
     } else {
-      state.products = {...state.products, [cartItem.shop]: [cartItem]};
+      state.products = { ...state.products, [cartItem.shop]: [cartItem] };
     }
   },
   clearProducts(state, storeId) {
     Vue.delete(state.products, storeId);
   },
   logout(state) {
-    Object.keys(state.products).forEach(key => Vue.delete(state.products, key));
+    Object.keys(state.products).forEach((key) =>
+      Vue.delete(state.products, key)
+    );
   },
-  addOrders(state, orders){
-    console.debug('cart:orders', orders);
-    orders.forEach(order => {
-      state.orders = {...state.orders, [order.orderId]: order};
-    })
-    
-  },
-  clearOrders(state){
+  setOrders(state, orders) {
+    console.debug("cart:orders", orders);
     state.orders = {};
-  }
+    orders.forEach((order) => {
+      state.orders = { ...state.orders, [order.orderId]: order };
+    });
+  },
+  clearOrders(state) {
+    state.orders = {};
+  },
 };
 
 export default {
