@@ -7,29 +7,32 @@
           <font-awesome-icon :icon="['fas', 'camera']" />
           <p>Camera</p>
         </div>
-        <p class="or" v-if="image === ''">Or</p>
+        <p class="or" v-if="image === null">Or</p>
         <div class="custom-file-upload" v-if="image === null">
           <font-awesome-icon :icon="['fas', 'file-upload']" />
           <p>Upload</p>
         </div>
       </div>
-      <canvas id="imagePreview" />
     </label>
-    <cropper
-      id="imagePreview"
-      class="cropper"
-      :src="image"
-      :stencil-props="{ aspectRatio: 10 / 6 }"
-      ref="cropper"
-      :wheelResize="false"
-      :touchResize="false"
-    />
-    <font-awesome-icon
-      class="share-icon"
-      :icon="['fas', 'share']"
-      @click.prevent="rotate"
-      v-show="image !== null"
-    />
+    <div class="cropper-wrapper">
+      <cropper
+        class="cropper"
+        :src="image"
+        :stencil-props="{ aspectRatio: 10 / 6 }"
+        ref="cropper"
+        :wheelResize="false"
+        :touchResize="false"
+      />
+    </div>
+    <div class="image-actions">
+      <font-awesome-icon
+        class="share-icon"
+        :icon="['fas', 'share']"
+        @click.prevent="rotate"
+        v-show="image !== null"
+      />
+    </div>
+
     <input
       id="camera"
       name="camera"
@@ -135,63 +138,64 @@ export default {
 @import "../assets/styles/config.scss";
 .image-uploader {
   margin: 1em 0;
-  label {
-    width: 350px;
-    margin: 0 0 0.5em;
-    font-weight: 600;
 
-    .or {
-      margin: 5em 1em;
+  .image-actions {
+    text-align: center;
+    font-size: 3em;
+  }
+  label {
+    .thumbnail {
+      font-size: 1.5em;
     }
-    .custom-file-upload {
-      width: 100px;
-      margin: 0.75em 0.5em 0 0;
-      height: 2em;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-        0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      border-radius: 5%;
-      border: solid 1px $color-primary-0;
-      cursor: pointer;
-      text-align: center;
-      font-size: 48px;
-      padding: 0.2em 0;
-      line-height: 1;
-      p {
-        font-size: 18px;
-        font-weight: 600;
+    .wrapper {
+      width: 350px;
+      margin: 0 0 0.5em;
+      font-weight: 600;
+      display: flex;
+      .or {
+        margin: 3em 1em;
       }
-      font-awesome-icon {
-        font-weight: 600;
+      .custom-file-upload {
+        width: 100px;
+        margin: 0.75em 0.5em 0 0;
+        height: 2em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5%;
+        border: solid 1px $color-primary-0;
+        cursor: pointer;
+        text-align: center;
+        font-size: 48px;
+        padding: 0.2em 0;
+        line-height: 1;
+        p {
+          font-size: 18px;
+          font-weight: 600;
+        }
+        font-awesome-icon {
+          font-weight: 600;
+        }
       }
-    }
-    .camera {
-      width: 175px;
-      margin: 0.25em 0 0 0;
-      height: 3em;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-        0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      border-radius: 5%;
-      border: solid 1px $color-primary-0;
-      cursor: pointer;
-      text-align: center;
-      font-size: 48px;
-      padding: 0.5em 0;
-      line-height: 1.5;
-      p {
-        font-size: 24px;
-        font-weight: 600;
-      }
-      font-awesome-icon {
-        font-weight: 600;
-      }
-    }
-    canvas {
-      position: absolute;
-      top: -9999px;
-      &.show {
-        position: unset;
-        top: 0px;
-        display: block;
+      .camera {
+        width: 175px;
+        margin: 0.25em 0 0 0;
+        height: 3em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5%;
+        border: solid 1px $color-primary-0;
+        cursor: pointer;
+        text-align: center;
+        font-size: 48px;
+        padding: 0.5em 0;
+        line-height: 1.5;
+        p {
+          font-size: 24px;
+          font-weight: 600;
+        }
+        font-awesome-icon {
+          font-weight: 600;
+        }
       }
     }
   }

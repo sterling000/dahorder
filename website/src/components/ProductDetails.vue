@@ -44,12 +44,7 @@
           <h2>Date Available</h2>
 
           <p v-show="!edit">{{ localeTime(details.available) }}</p>
-          <date-picker
-            v-show="edit"
-            :option="timeOption"
-            :date="date"
-            :limit="limit"
-          />
+          <input v-show="edit" type="datetime-local" name="date" id="date" />
         </li>
         <li>
           <h2>Delivery</h2>
@@ -113,28 +108,7 @@ export default {
       },
       edit: false,
       thumbnail: "",
-      date: {
-        time: "",
-      },
-      timeOption: {
-        type: "min",
-        week: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-        month: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
-        format: "YYYY-MM-DD HH:mm",
-      },
+      date: "",
     };
   },
   methods: {
@@ -241,29 +215,6 @@ export default {
       }
     },
   },
-  validations: {},
-  computed: {
-    limit() {
-      const from = new Date();
-      const fromDate = new Date(
-        from.getTime() - from.getTimezoneOffset() * 60000
-      )
-        .toISOString()
-        .split("T")[0];
-      const to = new Date(from);
-      to.setDate(to.getDate() + 90); // 90 days is the furthest out we should let people book to start.
-      const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split("T")[0];
-      return [
-        {
-          type: "fromto",
-          from: fromDate,
-          to: toDate,
-        },
-      ];
-    },
-  },
   mounted() {
     this.$store.commit("loading/start");
     this.getProduct();
@@ -327,6 +278,10 @@ export default {
         border: solid 1px $color-primary-0;
         text-indent: 0.25em;
         font-size: 1.5em;
+      }
+      #date {
+        font-size: 1em;
+        width: 85%;
       }
     }
 

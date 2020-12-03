@@ -18,4 +18,10 @@ const validApartment = (value) => {
   return regex.test(value);
 };
 
-export { validPhone, validApartment };
+const dateInFuture = (value) => {
+    const now = new Date();
+    const date = new Date(value);
+    return date > now;
+}
+
+export { validPhone, validApartment, dateInFuture };

@@ -70,7 +70,17 @@
         </li>
         <li>
           <label for="date">Date Available</label>
-          <date-picker :option="timeOption" :date="date" :limit="limit" />
+          <!-- <date-picker :option="timeOption" :date="date" :limit="limit" /> -->
+          <input
+            type="datetime-local"
+            name="date"
+            id="date"
+            v-model="date"
+            @change="$v.date.$touch()"
+          />
+          <p v-if="$v.date.$dirty && $v.date.$invalid">
+            {{ dateErrors }}
+          </p>
         </li>
         <li>
           <div class="can-toggle">
@@ -104,51 +114,32 @@
 </template>
 
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  minValue,
+  numeric,
+  integer,
+} from "vuelidate/lib/validators";
+import { dateInFuture } from "../validators/validators";
 
 export default {
   data() {
     return {
       name: "",
       description: "",
-      date: {
-        Type: "String",
-        time: "",
-      },
+      date: "",
       thumbnail: "",
-      price: 0,
-      quantity: 0,
+      price: null,
+      quantity: null,
       croppedImage: {},
       presignedURL: "",
       photoFilename: "",
       delivery: true,
       shop: "",
-      timeOption: {
-        type: "min",
-        week: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-        month: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
-        format: "YYYY-MM-DD HH:mm",
-      },
     };
   },
   methods: {
-    log: function(val) {
-      this.time = val;
-      console.log(val);
-    },
     thumbnailRendered: function(e) {
       this.thumbnail = e;
     },
@@ -214,18 +205,21 @@ export default {
     },
   },
   validations: {
-    name: { required },
+    name: { required, minLength: minLength(3) },
     description: { required, minLength: minLength(8) },
     thumbnail: { required },
-    price: { required }, // todo: needs validation
-    quantity: { required }, // todo: needs validation
-    delivery: { required }, // todo: needs validation
+    price: { required, minValue: minValue(0), numeric },
+    quantity: { required, minValue: minValue(1), integer },
+    delivery: { required },
+    date: { required, dateInFuture },
   },
   computed: {
     nameErrors() {
       const errors = [];
-      if (!this.$v.name.$dirty && !this.$v.name.$dirty) return errors;
+      if (!this.$v.name.$dirty) return errors;
       !this.$v.name.required && errors.push("Name is required.");
+      !this.$v.name.minLength &&
+        errors.push("Name must be at least 3 characters long.");
       return errors;
     },
     descriptionErrors() {
@@ -238,20 +232,26 @@ export default {
     },
     priceErrors() {
       const errors = [];
-      if (!this.$v.price.$dirty && !this.$v.price.$dirty) return errors;
+      if (!this.$v.price.$dirty) return errors;
       !this.$v.price.required && errors.push("Price is required.");
+      !this.$v.price.minValue && errors.push("Price cannot be below zero.");
+      !this.$v.price.numeric && errors.push("Price must be a number.");
+
       return errors;
     },
     quantityErrors() {
       const errors = [];
-      if (!this.$v.quantity.$dirty && !this.$v.quantity.$dirty) return errors;
+      if (!this.$v.quantity.$dirty) return errors;
       !this.$v.quantity.required && errors.push("Quantity is required.");
+      !this.$v.quantity.minValue && errors.push("Quantity must be at least 1.");
       return errors;
     },
     dateErrors() {
       const errors = [];
-      // if (!this.$v.date.$dirty && !this.$v.date.$dirty) return errors;
-      // !this.$v.date.required && errors.push("Date is required.");
+      if (!this.$v.date.$dirty) return errors;
+      !this.$v.date.required && errors.push("Date is required.");
+      !this.$v.date.dateInFuture &&
+        errors.push("Date must not be in the past.");
       return errors;
     },
     thumbnailErrors() {
@@ -259,26 +259,6 @@ export default {
       if (!this.$v.thumbnail.$dirty) return errors;
       !this.$v.thumbnail.required && errors.push("Thumbnail is required.");
       return errors;
-    },
-    limit() {
-      const from = new Date();
-      const fromDate = new Date(
-        from.getTime() - from.getTimezoneOffset() * 60000
-      )
-        .toISOString()
-        .split("T")[0];
-      const to = new Date(from);
-      to.setDate(to.getDate() + 90); // 90 days is the furthest out we should let people book to start.
-      const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split("T")[0];
-      return [
-        {
-          type: "fromto",
-          from: fromDate,
-          to: toDate,
-        },
-      ];
     },
   },
   mounted() {
@@ -326,6 +306,10 @@ export default {
         border: solid 1px $color-primary-0;
         text-indent: 0.25em;
         font-size: 1.5em;
+      }
+      #date {
+        font-size: 1em;
+        width: 85%;
       }
       .price,
       .quantity {

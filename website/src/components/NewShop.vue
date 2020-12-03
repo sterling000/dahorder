@@ -173,16 +173,19 @@ export default {
         width: 350px;
         margin: 0 0 0.5em;
         font-weight: 600;
+        font-size: 1.5em;
       }
 
       input {
         display: block;
         width: 100%;
-        height: 3em;
+        height: 1.5em;
+        text-indent: 0.5em;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
           0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 5%;
         border: solid 1px $color-primary-0;
+        font-size: 1.5em;
       }
       textarea {
         resize: none;
@@ -196,6 +199,10 @@ export default {
         border-radius: 5%;
         border: solid 1px $color-primary-0;
         overflow: auto;
+        font-size: 1.5em;
+      }
+      select {
+        font-size: 1.5em;
       }
     }
   }

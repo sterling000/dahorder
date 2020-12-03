@@ -21,7 +21,6 @@ import Product from "./components/product.vue";
 import ImageUploader from "./components/image-uploader.vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import Notification from "./components/notification.vue";
-import DatePicker from "vue-datepicker";
 import {Cropper} from 'vue-advanced-cropper';
 library.add(
   faList,
@@ -39,7 +38,6 @@ Vue.component("product", Product);
 Vue.component("image-uploader", ImageUploader);
 Vue.component("pulse-loader", PulseLoader);
 Vue.component("notification", Notification);
-Vue.component("date-picker", DatePicker);
 Vue.component('cropper', Cropper);
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios
