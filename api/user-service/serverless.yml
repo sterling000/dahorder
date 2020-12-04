@@ -48,7 +48,6 @@ functions:
           path: /user
           method: get
           cors: true
-          authorizer: validate
   validate:
     handler: src/functions/validate.validate
   login:

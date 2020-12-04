@@ -41,8 +41,15 @@
               <p>x{{ value.quantity }}</p>
               <p>{{ pickupDelivery(value.product.delivery) }}</p>
               <p class="subtotal">{{ value.subtotal }} RM</p>
+              <font-awesome-icon
+                class="directions-icon"
+                :icon="['fas', 'directions']"
+                @click.prevent="directions"
+                v-show="!value.product.delivery"
+              />
             </li>
           </ul>
+
           <button
             class="checkout"
             @click="checkout"
@@ -58,7 +65,23 @@
 
 <script>
 export default {
+  data() {
+    return {
+      address: "",
+    };
+  },
   props: ["order", "date"],
+  async mounted() {
+    const owner = await this.$http.get(
+      `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+      {
+        params: { user: this.order.owner },
+      }
+    );
+    if (owner.status === 200) {
+      this.address = `${owner.data.condo} - ${owner.data.apartment}`;
+    }
+  },
   methods: {
     localDate(utc) {
       const date = new Date(utc);
@@ -91,6 +114,10 @@ export default {
       } else {
         return "Pick Up";
       }
+    },
+    async directions() {
+      await navigator.clipboard.writeText(this.address);
+      console.log(`${this.address} - Copied to clipboard!`);
     },
   },
 };

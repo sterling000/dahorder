@@ -14,6 +14,7 @@ import {
   faFileUpload,
   faCamera,
   faShare,
+  faDirections,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Store from "./components/store.vue";
@@ -31,7 +32,8 @@ library.add(
   faPlus,
   faFileUpload,
   faCamera,
-  faShare
+  faShare,
+  faDirections
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("store", Store);

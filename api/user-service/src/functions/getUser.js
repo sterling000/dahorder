@@ -2,13 +2,13 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 
-module.exports.handler = async (event, context) => {
+const getMyUserParams = (event) => {
   const authorizerToken = event.headers.Authorization;
   const authorizerArr = authorizerToken.split(" ");
   const token = authorizerArr[1];
   let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
   console.log(decodedJwt);
-  const queryUserParams = {
+  return {
     TableName: process.env.DYNAMODB_USER_TABLE,
     KeyConditionExpression: "#pk = :pk",
     ExpressionAttributeNames: {
@@ -18,19 +18,41 @@ module.exports.handler = async (event, context) => {
       ":pk": `${decodedJwt.phone}`,
     },
   };
+};
 
-  let shopsResult = {};
+const getAnyUserParams = (event) => {
+  return {
+    TableName: process.env.DYNAMODB_USER_TABLE,
+    KeyConditionExpression: "#pk = :pk",
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+    },
+    ExpressionAttributeValues: {
+      ":pk": `${event.queryStringParameters.user}`,
+    },
+  };
+};
+
+module.exports.handler = async (event, context) => {
+  let queryUserParams;
+  if (event.headers.Authorization !== undefined) {
+    queryUserParams = getMyUserParams(event);
+  } else {
+    queryUserParams = getAnyUserParams(event);
+  }
+
+  let userResult = {};
   try {
     console.log(queryUserParams);
     const dynamodb = new AWS.DynamoDB.DocumentClient();
-    shopsResult = await dynamodb.query(queryUserParams).promise();
+    userResult = await dynamodb.query(queryUserParams).promise();
   } catch (queryError) {
     console.log("There was an error attempting to retrieve the user.");
     console.log("queryError", queryError);
     console.log("queryUserParams", queryUserParams);
     return new Error("There was an error retrieving the user.");
   }
-  if (shopsResult.Items.length === 0) {
+  if (userResult.Items.length === 0) {
     return {
       statusCode: 404,
       headers: {
@@ -41,7 +63,7 @@ module.exports.handler = async (event, context) => {
       body: "Could not find a user with those params.",
     };
   }
-  const { password, ...noPassword } = shopsResult.Items[0];
+  const { password, ...noPassword } = userResult.Items[0];
   return {
     statusCode: 200,
     headers: {
