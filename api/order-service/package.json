@@ -3,8 +3,8 @@
   "description": "",
   "version": "0.1.0",
   "dependencies": {
-    "jsonwebtoken": "^8.5.1",
-    "uuid": "^8.3.1"
+    "generate-password": "^1.5.1",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "aws-sdk": "^2.797.0",

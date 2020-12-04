@@ -30,7 +30,17 @@ module.exports.handler = async (event, context) => {
     console.log("queryParams", queryParams);
     return new Error(err);
   }
-
+  if (queryResult.Items.length < 1) {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: JSON.stringify(queryResult.Items),
+    };
+  }
   let shopIds = queryResult.Items.map((result) => {
     return {
       shop: result.shopId,

@@ -1,7 +1,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require("uuid");
+const generator = require("generate-password");
 module.exports.handler = async (event) => {
   console.log(event);
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -13,9 +13,14 @@ module.exports.handler = async (event) => {
 
   const body = JSON.parse(event.body);
 
-  const orderId = uuidv4();
   const shopId = body.shop;
   const owner = body.owner;
+  const orderId = `${owner.substring(2)}-${generator.generate({
+    length: 8,
+    numbers: true,
+    uppercase: true,
+  })}`;
+
   const customerId = decodedJwt.phone;
 
   const products = [];

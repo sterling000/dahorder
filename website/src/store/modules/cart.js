@@ -51,9 +51,11 @@ const mutations = {
   setOrders(state, orders) {
     console.debug("cart:orders", orders);
     state.orders = {};
-    orders.forEach((order) => {
-      state.orders = { ...state.orders, [order.orderId]: order };
-    });
+    if (orders.length > 0) {
+      orders.forEach((order) => {
+        state.orders = { ...state.orders, [order.orderId]: order };
+      });
+    }
   },
   clearOrders(state) {
     state.orders = {};

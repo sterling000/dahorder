@@ -39,7 +39,7 @@
               <p>{{ value.product.name }}</p>
               <p>{{ value.product.price }} RM</p>
               <p>x{{ value.quantity }}</p>
-              <p>{{ value.product.delivery }}</p>
+              <p>{{ pickupDelivery(value.product.delivery) }}</p>
               <p class="subtotal">{{ value.subtotal }} RM</p>
             </li>
           </ul>
@@ -84,6 +84,13 @@ export default {
     },
     checkout() {
       this.$emit("checkout", this.order);
+    },
+    pickupDelivery(delivery) {
+      if (delivery) {
+        return "Delivery";
+      } else {
+        return "Pick Up";
+      }
     },
   },
 };

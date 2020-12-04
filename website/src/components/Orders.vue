@@ -70,8 +70,11 @@ export default {
   },
   async mounted() {
     if (this.isSignedin) {
-      await this.getReceipts();
+      this.$store.commit("loading/start");
+      this.getReceipts();
       await this.getShops();
+
+      this.$store.commit("loading/stop");
     }
   },
   computed: {
@@ -99,11 +102,13 @@ export default {
         options
       );
       this.shops = res.data.shops;
-      this.shops.forEach(async (shop) => await this.getOrders(shop.id));
-      // this.$store.commit("loading/stop");
+      await Promise.all(
+        this.shops.map(async (shop) => {
+          await this.getOrders(shop.id);
+        })
+      );
     },
     getReceipts: async function() {
-      this.$store.commit("loading/start");
       const receiptResponse = await this.$http.get(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/receipts`,
         {
@@ -114,10 +119,8 @@ export default {
       );
       console.debug("receiptResponse", receiptResponse);
       this.$store.commit("cart/setOrders", receiptResponse.data);
-      this.$store.commit("loading/stop");
     },
     getOrders: async function(shopId) {
-      this.$store.commit("loading/start");
       const orderResponse = await this.$http.get(
         `${process.env.VUE_APP_ORDER_SERVICE_URL}/orders`,
         {
@@ -133,13 +136,11 @@ export default {
       if (orderResponse.data.length > 0) {
         const orderByStore = orderResponse.data;
         this.sales = { ...this.sales, [shopId]: orderByStore };
-        // this.sales[shopId] = orderByStore;
       }
-
-      this.$store.commit("loading/stop");
     },
+
     localDateTime(utc) {
-      console.debug("date from response: ", utc);
+      // console.debug("date from response: ", utc);
       const date = new Date(utc);
       return `${date.toLocaleDateString()} `; //${date.toLocaleTimeString()}
     },

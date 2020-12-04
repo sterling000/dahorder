@@ -68,7 +68,9 @@ export default {
         params,
         options
       );
-      console.log("Payment Details Submitted.");
+      console.log("Upload of payment successful.");
+      this.$store.commit("loading/stop");
+      this.$router.push("/orders");
     },
     paymentRendered(e) {
       this.payment = e;
