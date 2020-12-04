@@ -11,10 +11,14 @@
         <p>You have not placed any orders yet.</p>
       </div>
       <ul>
-        <li class="purchase" v-for="orderId in orderIds" :key="orderId">
+        <li
+          class="purchase"
+          v-for="order in sortable(receipts).sort(sortOrders)"
+          :key="order.orderId"
+        >
           <purchase
-            :date="localDateTime(receipts[orderId].date)"
-            :order="receipts[orderId]"
+            :date="localDateTime(order.date)"
+            :order="order"
             @checkout="checkout"
           />
         </li>
@@ -133,6 +137,33 @@ export default {
     },
     checkout(purchase) {
       this.$router.push(`/checkout/${purchase.orderId}`);
+    },
+    sortable(obj) {
+      let result = [];
+      const keys = Object.keys(obj);
+      keys.map((key) => {
+        result.push(obj[key]);
+      });
+      return result;
+    },
+    sortOrders(a, b) {
+      if (a.updated !== undefined && b.updated === undefined) {
+        return -1;
+      } else if (a.updated === undefined && b.updated !== undefined) {
+        return 1;
+      } else if (a.updated !== undefined && b.updated !== undefined) {
+        if (a.updated > b.updated) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else {
+        if (a.date > b.date) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
     },
   },
 };

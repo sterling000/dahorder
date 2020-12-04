@@ -85,6 +85,7 @@ module.exports.handler = async (event) => {
       products: products,
       delivery: delivery,
       date: date,
+      updated: date,
       total: total,
       status: "pending",
     },
