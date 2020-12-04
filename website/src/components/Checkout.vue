@@ -13,7 +13,7 @@
     <form>
       <label>Upload a screenshot of your DuitNow payment.</label>
       <image-uploader
-        validation="$v.payment"
+        :validation="$v.payment"
         @render="paymentRendered"
         ref="imageUploader"
       />
@@ -44,6 +44,7 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit("loading/start");
     this.getOrderDetails();
   },
   methods: {
@@ -91,6 +92,7 @@ export default {
       );
       console.debug(shopResponse.data);
       this.shop = shopResponse.data[0];
+      this.$store.commit("loading/stop");
     },
   },
   computed: {
@@ -98,18 +100,7 @@ export default {
       orders: (state) => state.orders,
     }),
     total() {
-      if (
-        this.order !== undefined &&
-        this.order.products !== undefined &&
-        this.order.products.length > 0
-      ) {
-        return this.order.products.reduce(
-          (acc, curr) => acc + curr.price * curr.quantity,
-          0
-        );
-      } else {
-        return 0;
-      }
+      return this.orders[this.orderId].total;
     },
     owner() {
       return `${this.shop.name} @${this.shop.pk}`;

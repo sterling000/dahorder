@@ -18,7 +18,7 @@
       <cropper
         class="cropper"
         :src="image"
-        :stencil-props="{ aspectRatio: 10 / 6 }"
+        :stencil-props="this.stencilProps"
         ref="cropper"
         :wheelResize="false"
         :touchResize="false"
@@ -130,7 +130,7 @@ export default {
       }
     },
   },
-  props: ["validation"],
+  props: ["validation", "stencilProps"],
 };
 </script>
 

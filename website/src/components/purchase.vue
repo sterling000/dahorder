@@ -5,21 +5,23 @@
       ref="collapsible"
       @click.prevent="collapsibleClicked"
     >
-      <p>{{ localDate(order.date) }}</p>
       <p id="shopName">{{ order.shopName }}</p>
       <p>{{ order.total }} RM</p>
-      <p>{{ order.status }}</p>
+      <p id="status">{{ order.status }}</p>
     </div>
     <div class="content">
       <ul>
         <li class="item">
           <div class="itemInfo">
-            <strong>Time</strong>
-            <p>{{ localTime(order.date) }}</p>
-          </div>
-          <div class="itemInfo">
             <strong>Order</strong>
             <p @click="clipboard">{{ order.orderId }}</p>
+          </div>
+          <div class="itemInfo">
+            <strong>Time</strong>
+            <div class="wrapper">
+              <p>{{ localTime(order.date) }}</p>
+              <p>{{ localDate(order.date) }}</p>
+            </div>
           </div>
           <div class="itemInfo">
             <strong>Recipient</strong>
@@ -27,20 +29,27 @@
           </div>
           <div class="itemInfo">
             <strong>Products</strong>
-            <ul class="products">
-              <li
-                class="product"
-                v-for="(value, index) in order.products"
-                :key="index"
-              >
-                <p>{{ value.product.name }}</p>
-                <p>{{ value.product.price }} RM</p>
-                <p>x{{ value.product.quantity }}</p>
-                <!-- <p>{{ value.product.delivery }}</p> -->
-                <p class="subtotal">{{ value.subtotal }} RM</p>
-              </li>
-            </ul>
           </div>
+          <ul class="products-list">
+            <li
+              class="product-entry"
+              v-for="(value, index) in order.products"
+              :key="index"
+            >
+              <p>{{ value.product.name }}</p>
+              <p>{{ value.product.price }} RM</p>
+              <p>x{{ value.quantity }}</p>
+              <p>{{ value.product.delivery }}</p>
+              <p class="subtotal">{{ value.subtotal }} RM</p>
+            </li>
+          </ul>
+          <button
+            class="checkout"
+            @click="checkout"
+            v-show="order.status === 'pending'"
+          >
+            Check Out
+          </button>
         </li>
       </ul>
     </div>
@@ -73,6 +82,9 @@ export default {
       await navigator.clipboard.writeText(this.order.orderId);
       console.log("Order Number copied to clipboard.");
     },
+    checkout() {
+      this.$emit("checkout", this.order);
+    },
   },
 };
 </script>
@@ -81,14 +93,20 @@ export default {
 @import "../assets/styles/config.scss";
 .purchase {
   margin: 0.5em 0;
-  border: solid 1px grey;
+  // border: solid 1px grey;
   #shopName {
     text-transform: capitalize;
+  }
+  #status {
+    text-transform: uppercase;
+    font-weight: 600;
   }
   .collapsible {
     cursor: pointer;
     outline: none;
     background-color: #fff;
+    padding: 1em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   .active {
     background-color: $color-primary-0;
@@ -98,10 +116,10 @@ export default {
     ul {
       margin: 0.5em;
     }
-    .products {
+    .products-list {
       margin: 0;
     }
-    .product {
+    .product-entry {
       display: flex;
       justify-content: space-between;
       p {
@@ -120,6 +138,33 @@ export default {
       padding: 0.25em 0;
       display: flex;
       justify-content: space-between;
+      .wrapper {
+        display: flex;
+        justify-content: space-between;
+        p {
+          text-align: center;
+          margin: 0 0.25em;
+        }
+      }
+    }
+    button.checkout {
+      display: block;
+      background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 1.5em;
+      font-weight: 600;
+      padding: 0.25em;
+      text-transform: uppercase;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #000;
+      }
     }
   }
   .wrapper {

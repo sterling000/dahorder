@@ -13,6 +13,7 @@
             :validation="$v.thumbnail"
             @render="thumbnailRendered"
             ref="imageUploader"
+            :stencilProps="{ aspectRatio: 10 / 6 }"
           />
           <p v-if="$v.thumbnail.$dirty && $v.thumbnail.$invalid">
             {{ thumbnailErrors }}

@@ -72,16 +72,23 @@
           </button>
         </li>
         <li v-show="!this.isOwner()">
-          <button class="addToCart" @click="addToCart">
-            <p v-show="this.$store.state.account.token !== null">
+          <button
+            class="addToCart"
+            @click="addToCart"
+            :disabled="
+              this.$store.state.account.token !== null && details.remaining == 0
+            "
+          >
+            <p
+              v-show="
+                this.$store.state.account.token !== null &&
+                  details.remaining > 0
+              "
+            >
               Add To Cart
             </p>
             <p
               v-show="
-                this.$store.state.account.token !== null &&
-                  details.remaining == 0
-              "
-              :disabled="
                 this.$store.state.account.token !== null &&
                   details.remaining == 0
               "

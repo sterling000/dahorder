@@ -30,10 +30,14 @@ const mutations = {
       if (increment !== undefined) {
         increment.quantity++;
       } else {
-        shopProductsForNewProduct = [...shopProductsForNewProduct, cartItem];
+        shopProductsForNewProduct.push(cartItem);
       }
     } else {
-      state.products = { ...state.products, [cartItem.shop]: [cartItem] };
+      if (state.products[cartItem.shop] !== undefined) {
+        state.products[cartItem.shop].push(cartItem);
+      } else {
+        state.products = { ...state.products, [cartItem.shop]: [cartItem] };
+      }
     }
   },
   clearProducts(state, storeId) {

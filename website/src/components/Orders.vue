@@ -15,6 +15,7 @@
           <purchase
             :date="localDateTime(receipts[orderId].date)"
             :order="receipts[orderId]"
+            @checkout="checkout"
           />
           <!-- <h6>Date:</h6>
           {{ localDateTime(receipts[orderId].date) }}

@@ -63,6 +63,7 @@
             :validation="$v.thumbnail"
             @render="thumbnailRendered"
             ref="imageUploader"
+            :stencilProps="{ aspectRatio: 10 / 6 }"
           />
           <p v-if="$v.thumbnail.$dirty && $v.thumbnail.$invalid">
             {{ thumbnailErrors }}
@@ -170,8 +171,6 @@ export default {
         this.$store.commit("loading/stop");
         return;
       }
-      const splitString = this.date.time.split(" ");
-      const deliveryDateTime = new Date(`${splitString[0]}T${splitString[1]}`);
       // add the product to the database.
       const params = {
         name: this.name,
@@ -180,7 +179,7 @@ export default {
         price: this.price,
         quantity: this.quantity,
         remaining: this.quantity,
-        available: deliveryDateTime,
+        available: this.date,
         delivery: this.delivery,
         shop: this.$route.params.id,
       };
