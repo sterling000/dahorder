@@ -1,6 +1,6 @@
-'use strict';
-const AWS = require('aws-sdk');
-const jwt = require('jsonwebtoken');
+"use strict";
+const AWS = require("aws-sdk");
+const jwt = require("jsonwebtoken");
 module.exports.handler = async (event, context) => {
   const authorizerToken = event.headers.Authorization;
   const authorizerArr = authorizerToken.split(" ");
@@ -12,16 +12,16 @@ module.exports.handler = async (event, context) => {
   const getAdminParams = {
     TableName: process.env.DYNAMODB_ADMIN_TABLE,
     Key: {
-      pk: decodedJwt.pk
-    }
-  }
-  let adminResult = {}
-  try{
+      pk: decodedJwt.pk,
+    },
+  };
+  let adminResult = {};
+  try {
     adminResult = await dynamodb.get(getAdminParams).promise();
-  }catch(error){
+  } catch (error) {
     return new Error(error);
   }
-  if(adminResult.Item === undefined){
+  if (adminResult.Item === undefined) {
     return {
       statusCode: 400,
       headers: {
@@ -29,37 +29,39 @@ module.exports.handler = async (event, context) => {
         "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Headers": "Authorization",
       },
-      body: 'Your user is not an admin!' 
+      body: "Your user is not an admin!",
     };
   }
 
   const body = JSON.parse(event.body);
-  const {shopId, date, isConfirmed} = body;
+  const { shopId, date, isConfirmed } = body;
 
   let status;
-  if(isConfirmed){
-    status = 'confirmed';
-  } else{
-    status = 'denied';
+  if (isConfirmed) {
+    status = "confirmed";
+  } else {
+    status = "denied";
   }
   const updateParams = {
     TableName: process.env.DYNAMODB_ORDER_TABLE,
     Key: {
-      'shopId': shopId,
-      'date': date
+      shopId: shopId,
+      date: date,
     },
-    UpdateExpression: 'set #status = :status',
+    UpdateExpression: "set #status = :status",
     ExpressionAttributeNames: {
-      '#status': 'status'
+      "#status": "status",
+      "#updated": "updated",
     },
     ExpressionAttributeValues: {
-      ':status': status
-    }
-  }
-  let updateResponse = {};
-  try{
-    const updateResponse = await dynamodb.update(updateParams).promise();
-  }catch(error){
+      ":status": status,
+      ":updated": new Date().toISOString(),
+    },
+  };
+
+  try {
+    await dynamodb.update(updateParams).promise();
+  } catch (error) {
     return error;
   }
 
@@ -70,6 +72,6 @@ module.exports.handler = async (event, context) => {
       "Access-Control-Allow-Credentials": true,
       "Access-Control-Allow-Headers": "Authorization",
     },
-    body: 'Status Updated.',
-  }
+    body: "Status Updated.",
+  };
 };

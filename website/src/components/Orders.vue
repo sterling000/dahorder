@@ -17,19 +17,6 @@
             :order="receipts[orderId]"
             @checkout="checkout"
           />
-          <!-- <h6>Date:</h6>
-          {{ localDateTime(receipts[orderId].date) }}
-          <h6>Total:</h6>
-          {{ receipts[orderId].total }} RM
-          <h6>Status:</h6>
-          {{ receipts[orderId].status }}
-          <button
-            class="checkout"
-            @click="checkout(receipts[orderId])"
-            v-show="receipts[orderId].status === 'pending'"
-          >
-            Check Out
-          </button> -->
         </li>
       </ul>
     </div>

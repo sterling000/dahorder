@@ -1,7 +1,7 @@
-'use strict';
-const { AlexaForBusiness } = require('aws-sdk');
-const AWS = require('aws-sdk');
-const jwt = require('jsonwebtoken');
+"use strict";
+const { AlexaForBusiness } = require("aws-sdk");
+const AWS = require("aws-sdk");
+const jwt = require("jsonwebtoken");
 module.exports.handler = async (event, context) => {
   const dynamodb = new AWS.DynamoDB.DocumentClient();
   const authorizerToken = event.headers.Authorization;
@@ -15,27 +15,30 @@ module.exports.handler = async (event, context) => {
   const updateParams = {
     TableName: process.env.DYNAMODB_ORDER_TABLE,
     Key: {
-      'shopId': body.shop,
-      'date': date
+      shopId: body.shop,
+      date: date,
     },
-    UpdateExpression: 'set #status = :status, #payment = :payment',
-    ConditionExpression: '#customerId = :customerId',
+    UpdateExpression:
+      "set #status = :status, #payment = :payment, #updated = :updated",
+    ConditionExpression: "#customerId = :customerId",
     ExpressionAttributeNames: {
-      '#status': 'status',
-      '#payment': 'payment',
-      '#customerId': 'customerId'
+      "#status": "status",
+      "#payment": "payment",
+      "#customerId": "customerId",
+      "#updated": "updated",
     },
     ExpressionAttributeValues: {
-      ':status': 'paid',
-      ':payment': body.payment,
-      ':customerId': decodedJwt.phone
-    }
-  }
-let updateResult = {};
-  try{
+      ":status": "paid",
+      ":payment": body.payment,
+      ":customerId": decodedJwt.phone,
+      ":updated": new Date().toISOString(),
+    },
+  };
+  let updateResult = {};
+  try {
     const updateResult = await dynamodb.update(updateParams).promise();
     console.log(updateResult);
-  } catch(error) {
+  } catch (error) {
     console.log("updateParams", updateParams);
     console.error("Couldn't update the item.", error);
     return new Error(error);
@@ -49,5 +52,5 @@ let updateResult = {};
       "Access-Control-Allow-Headers": "Authorization",
     },
     body: JSON.stringify(updateResult),
-  }
+  };
 };
