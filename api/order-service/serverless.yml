@@ -15,6 +15,7 @@ provider:
     DYNAMODB_ORDER_TABLE: ${self:custom.dynamodb.orderTable}
     DYNAMODB_PRODUCT_TABLE: ${self:custom.dynamodb.productTable}
     DYNAMODB_SHOP_TABLE: ${self:custom.dynamodb.shopTable}
+    DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
     JWT_SECRET: ${param:JWT_SECRET}
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
@@ -37,6 +38,9 @@ provider:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/pk
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.shopTable}/index/id
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}/index/pk
+
 
 functions:
   submitPayment:
@@ -113,6 +117,7 @@ custom:
     orderTable: order-${self:provider.stage}-${self:provider.region}
     productTable: product-${self:provider.stage}-${self:provider.region}
     shopTable: shop-${self:provider.stage}-${self:provider.region}
+    userTable: user-${self:provider.stage}-${self:provider.region}
   serverless-mocha-plugin:
     testTemplate: ../templates/test-template.ejs
     functionTemplate: ../templates/function-template.ejs

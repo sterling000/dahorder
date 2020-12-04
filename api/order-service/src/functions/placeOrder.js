@@ -15,11 +15,42 @@ module.exports.handler = async (event) => {
 
   const shopId = body.shop;
   const owner = body.owner;
-  const orderId = `${owner.substring(2)}-${generator.generate({
-    length: 8,
-    numbers: true,
-    uppercase: true,
-  })}`;
+
+  const getOwnerParams = {
+    TableName: process.env.DYNAMODB_USER_TABLE,
+    Key: {
+      pk: owner,
+    },
+  };
+
+  let ownerResponse;
+  try {
+    ownerResponse = await dynamodb.get(getOwnerParams).promise();
+  } catch (error) {
+    console.error("Couldn't get the owner's user info.");
+    return new Error("There was a problem getting the owners user info.");
+  }
+  let orderId;
+  if (ownerResponse.Item !== undefined) {
+    orderId = `${ownerResponse.Item.apartment}-${generator.generate({
+      length: 4,
+      numbers: true,
+      uppercase: true,
+    })}`;
+  } else {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "Could not find the owner of the shop for this order.",
+      }),
+    };
+  }
 
   const customerId = decodedJwt.phone;
 

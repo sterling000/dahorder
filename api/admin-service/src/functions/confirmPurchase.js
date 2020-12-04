@@ -48,7 +48,7 @@ module.exports.handler = async (event, context) => {
       shopId: shopId,
       date: date,
     },
-    UpdateExpression: "set #status = :status",
+    UpdateExpression: "set #status = :status, #updated = :updated",
     ExpressionAttributeNames: {
       "#status": "status",
       "#updated": "updated",
