@@ -1,7 +1,7 @@
 <template>
   <div class="orders">
     <h2>Orders</h2>
-    <div class="noSignin" v-show="!isSignedin">
+    <div class="noSignin" v-if="!isSignedin">
       <p>Sign in to view your order history.</p>
     </div>
     <div class="can-toggle">
@@ -14,9 +14,9 @@
         ></div>
       </label>
     </div>
-    <div class="purchases" v-show="!mode">
+    <div class="purchases" v-if="!mode">
       <h3>Purchases</h3>
-      <div class="noReceipts" v-show="this.receipts && orderIds.length < 1">
+      <div class="noReceipts" v-if="this.receipts && orderIds.length < 1">
         <p>You have not placed any orders yet.</p>
       </div>
       <ul>
@@ -30,6 +30,7 @@
             :order="order"
             @checkout="checkout"
             :mode="mode"
+            v-if="order !== undefined"
           />
         </li>
       </ul>
@@ -51,6 +52,7 @@
                 :date="localDateTime(sale.date)"
                 :order="sale"
                 :mode="mode"
+                v-if="sale !== undefined"
               />
               <!-- @complete="complete" -->
             </li>

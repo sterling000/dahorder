@@ -1,6 +1,12 @@
 <template>
   <div id="app">
-    <app-header />
+    <router-view v-show="!this.$store.state.loading.loading" />
+
+    <ul class="notices" v-show="this.notifications.length > 0">
+      <li v-for="notice in this.notifications" :key="notice.id">
+        <notification :notice="notice" @destroy="destroyNotification" />
+      </li>
+    </ul>
     <div
       class="overlay"
       @click.prevent=""
@@ -8,12 +14,7 @@
     >
       <pulse-loader class="loader" :color="loaderColor" />
     </div>
-    <router-view v-show="!this.$store.state.loading.loading" />
-    <ul class="notices" v-show="this.notifications.length > 0">
-      <li v-for="notice in this.notifications" :key="notice.id">
-        <notification :notice="notice" @destroy="destroyNotification" />
-      </li>
-    </ul>
+    <app-header />
     <app-footer />
   </div>
 </template>
@@ -45,20 +46,20 @@ export default {
         });
       }
     };
-    console.error = (...args) => {
-      if (this.notifications !== null) {
-        let message = "";
-        for (let i = 0; i < args.length; i++) {
-          message += ` ${args[i]}`;
-        }
-        this.notifications.push({
-          id: Math.random(),
-          info: "",
-          error: message,
-          timeout: 6 * 1000, // 4 seconds
-        });
-      }
-    };
+    // console.error = (...args) => {
+    //   if (this.notifications !== null) {
+    //     let message = "";
+    //     for (let i = 0; i < args.length; i++) {
+    //       message += ` ${args[i]}`;
+    //     }
+    //     this.notifications.push({
+    //       id: Math.random(),
+    //       info: "",
+    //       error: message,
+    //       timeout: 6 * 1000, // 4 seconds
+    //     });
+    //   }
+    // };
     Vue.config.errorHandler = (...args) => {
       if (this.notifications !== null) {
         let message = "";

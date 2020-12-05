@@ -3,7 +3,7 @@
   background-color: $color-primary-3;
   padding: 1em;
   margin: 0.25em;
-  z-index: 3;
+  z-index: 999;
   cursor: pointer;
   @include easeOut;
 
@@ -45,7 +45,7 @@
   width: 100%;
   opacity: 0.9;
   visibility: hidden;
-  z-index: 2;
+  z-index: 998;
   &.show {
     visibility: visible;
   }

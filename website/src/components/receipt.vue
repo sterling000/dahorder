@@ -5,8 +5,10 @@
       ref="collapsible"
       @click.prevent="collapsibleClicked"
     >
-      <p id="shopName" v-show="!mode">{{ order.shopName }}</p>
-      <p id="shopName" v-show="mode">{{ order.userName.name }}</p>
+      <p id="shopName" v-if="!mode">{{ order.shopName }}</p>
+      <p id="shopName" v-if="mode && order !== undefined">
+        {{ order.userName.name }}
+      </p>
       <p id="total">{{ order.total }} RM</p>
       <p id="status">{{ order.status }}</p>
     </div>
