@@ -44,7 +44,13 @@
           <h2>Date Available</h2>
 
           <p v-show="!edit">{{ localeTime(details.available) }}</p>
-          <input v-show="edit" type="datetime-local" name="date" id="date" />
+          <input
+            v-show="edit"
+            type="datetime-local"
+            name="date"
+            id="date"
+            v-model="changes.available"
+          />
         </li>
         <li>
           <h2>Delivery</h2>
