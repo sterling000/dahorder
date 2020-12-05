@@ -1,12 +1,13 @@
 <template>
-  <div class="purchase">
+  <div class="receipt">
     <div
       class="wrapper collapsible"
       ref="collapsible"
       @click.prevent="collapsibleClicked"
     >
-      <p id="shopName">{{ order.shopName }}</p>
-      <p>{{ order.total }} RM</p>
+      <p id="shopName" v-show="!mode">{{ order.shopName }}</p>
+      <p id="shopName" v-show="mode">{{ order.userName.name }}</p>
+      <p id="total">{{ order.total }} RM</p>
       <p id="status">{{ order.status }}</p>
     </div>
     <div class="content">
@@ -45,7 +46,7 @@
                 class="directions-icon"
                 :icon="['fas', 'directions']"
                 @click.prevent="directions"
-                v-show="!value.product.delivery"
+                v-show="(value.product.delivery == 'true') == mode"
               />
             </li>
           </ul>
@@ -57,6 +58,13 @@
           >
             Check Out
           </button>
+          <!-- <button
+            class="complete"
+            @click="complete"
+            v-show="order.status === 'confirmed'"
+          >
+            Complete
+          </button> -->
         </li>
       </ul>
     </div>
@@ -70,8 +78,9 @@ export default {
       address: "",
     };
   },
-  props: ["order", "date"],
+  props: ["order", "date", "mode"],
   async mounted() {
+    // todo: every receipt shouldn't be looking up this data it should be passed down in a prop.
     const owner = await this.$http.get(
       `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
       {
@@ -108,6 +117,9 @@ export default {
     checkout() {
       this.$emit("checkout", this.order);
     },
+    complete() {
+      this.$emit("complete", this.order);
+    },
     pickupDelivery(delivery) {
       if (delivery) {
         return "Delivery";
@@ -116,6 +128,7 @@ export default {
       }
     },
     async directions() {
+      // todo: if !this.mode give this.address else give customer.address
       await navigator.clipboard.writeText(this.address);
       console.log(`${this.address} - Copied to clipboard!`);
     },
@@ -125,15 +138,21 @@ export default {
 
 <style lang="scss" scoped>
 @import "../assets/styles/config.scss";
-.purchase {
+.receipt {
   margin: 0.5em 0;
+  font-size: 0.75em;
   // border: solid 1px grey;
   #shopName {
     text-transform: capitalize;
+    margin: 0 0.25em;
   }
   #status {
     text-transform: uppercase;
     font-weight: 600;
+    font-size: 0.75em;
+  }
+  #total {
+    margin: 0 0.25em;
   }
   .collapsible {
     cursor: pointer;
@@ -184,6 +203,25 @@ export default {
     button.checkout {
       display: block;
       background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 1.5em;
+      font-weight: 600;
+      padding: 0.25em;
+      text-transform: uppercase;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #000;
+      }
+    }
+    button.complete {
+      display: block;
+      background-color: green;
       color: #fff;
       width: 100%;
 

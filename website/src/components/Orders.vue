@@ -4,8 +4,17 @@
     <div class="noSignin" v-show="!isSignedin">
       <p>Sign in to view your order history.</p>
     </div>
-
-    <div class="purchases">
+    <div class="can-toggle">
+      <input type="checkbox" id="toggle" v-model="mode" />
+      <label for="toggle">
+        <div
+          class="can-toggle__switch"
+          data-checked="Sales"
+          data-unchecked="Purchases"
+        ></div>
+      </label>
+    </div>
+    <div class="purchases" v-show="!mode">
       <h3>Purchases</h3>
       <div class="noReceipts" v-show="this.receipts && orderIds.length < 1">
         <p>You have not placed any orders yet.</p>
@@ -16,37 +25,39 @@
           v-for="order in sortable(receipts).sort(sortOrders)"
           :key="order.orderId"
         >
-          <purchase
+          <receipt
             :date="localDateTime(order.date)"
             :order="order"
             @checkout="checkout"
+            :mode="mode"
           />
         </li>
       </ul>
     </div>
-    <div class="sales"></div>
-    <h3>Sales</h3>
-    <div class="noReceipts" v-show="saleIds.length < 1">
-      <p>You have not sold any products yet.</p>
+    <div class="sales" v-show="mode">
+      <h3>Sales</h3>
+      <div class="noReceipts" v-show="saleIds.length < 1">
+        <p>You have not sold any products yet.</p>
+      </div>
+      <ul>
+        <li
+          class="shop"
+          v-for="(shop, propertyName) in this.sales"
+          :key="propertyName"
+        >
+          <ul>
+            <li class="sale" v-for="sale in shop" :key="sale.orderId">
+              <receipt
+                :date="localDateTime(sale.date)"
+                :order="sale"
+                :mode="mode"
+              />
+              <!-- @complete="complete" -->
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
-    <ul>
-      <li
-        class="shop"
-        v-for="(shop, propertyName) in this.sales"
-        :key="propertyName"
-      >
-        <ul>
-          <li class="sale" v-for="sale in shop" :key="sale.orderId">
-            <h6>Date:</h6>
-            <p class="date">{{ localDateTime(sale.date) }}</p>
-            <h6>Total:</h6>
-            <p class="total">{{ sale.total }} RM</p>
-            <h6>Status:</h6>
-            <p class="status">{{ sale.status }}</p>
-          </li>
-        </ul>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -57,6 +68,7 @@ export default {
     return {
       sales: {},
       shops: [],
+      mode: false,
     };
   },
   async mounted() {
@@ -131,13 +143,15 @@ export default {
     },
 
     localDateTime(utc) {
-      // console.debug("date from response: ", utc);
       const date = new Date(utc);
       return `${date.toLocaleDateString()} `; //${date.toLocaleTimeString()}
     },
-    checkout(purchase) {
-      this.$router.push(`/checkout/${purchase.orderId}`);
+    checkout(order) {
+      this.$router.push(`/checkout/${order.orderId}`);
     },
+    // complete(order){
+    //   console.log("")
+    // }
     sortable(obj) {
       let result = [];
       const keys = Object.keys(obj);
@@ -171,6 +185,7 @@ export default {
 
 <style lang="scss">
 @import "../assets/styles/config.scss";
+@import "../assets/styles/toggle.scss";
 .orders {
   padding: 4em 1em;
   h2 {
@@ -180,11 +195,6 @@ export default {
     margin: 2em 1em;
     li.sale {
       margin: 0.25em;
-      border-top: 1px solid grey;
-      &:last-child {
-        border-top: 1px solid grey;
-        border-bottom: 1px solid grey;
-      }
       .status {
         text-transform: uppercase;
         font-size: 18px;
