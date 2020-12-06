@@ -60,7 +60,7 @@ resources:
                 - Content-Type
                 - Content-Length
               Id: ImageServiceCorsRule
-              MaxAge: '3600'      
+              MaxAge: 3600     
 
 plugins:
   - serverless-pseudo-parameters
