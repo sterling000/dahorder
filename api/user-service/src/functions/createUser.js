@@ -49,6 +49,14 @@ module.exports.createUser = async (event) => {
       },
       process.env.JWT_SECRET
     );
+
+    const sns = await new AWS.SNS()
+      .publish({
+        Message: `User Created - name: ${name} - phone: ${phone} - condo: ${condo} - apartment: ${apartment} email: ${email} role: ${role}`,
+        TopicArn: "arn:aws:sns:ap-southeast-1:222008606357:userRegistered",
+        Subject: "Dah Order - User Created",
+      })
+      .promise();
     return {
       statusCode: 201,
       headers: {

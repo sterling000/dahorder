@@ -22,9 +22,13 @@ provider:
         - "dynamodb:PutItem"
         - "dynamodb:UpdateItem"
         - "dynamodb:GetItem"
+        - "sns:Publish"
+        - "sns:Subscribe"
+        - "sns:ConfirmSubscription"
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}/index/pk
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:userRegistered
   
   environment:
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
@@ -85,6 +89,16 @@ resources:
           - AttributeName: pk
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    userRegisteredTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: userRegistered
+    userRegisteredSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: EMAIL
+        Endpoint: sterling000@gmail.com
+        TopicArn: {"Ref": "userRegisteredTopic"}
 
 plugins:
   - serverless-pseudo-parameters
