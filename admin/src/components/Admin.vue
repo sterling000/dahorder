@@ -31,7 +31,9 @@
         <div class="confirm">
           <h3>Confirm</h3>
           <button @click.prevent="confirm(order, true)">Confirm</button>
-          <button @click.prevent="confirm(order, false)">Deny</button>
+          <button @click.prevent="confirm(order, false)">
+            Back to Pending
+          </button>
         </div>
       </li>
     </ul>
