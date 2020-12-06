@@ -40,7 +40,7 @@ module.exports.handler = async (event, context) => {
   if (isConfirmed) {
     status = "confirmed";
   } else {
-    status = "denied";
+    status = "pending";
   }
   const updateParams = {
     TableName: process.env.DYNAMODB_ORDER_TABLE,
