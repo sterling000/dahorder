@@ -1,7 +1,7 @@
 service: order-service
 
 app: dah-order
-org: sterling000
+org: dahorder
 
 frameworkVersion: '2'
 
@@ -10,6 +10,9 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'ap-southeast-1'}
+  profile: dahorder
+  apiGateway:
+    shouldStartNameWithService: true
 
   environment:
     DYNAMODB_ORDER_TABLE: ${self:custom.dynamodb.orderTable}

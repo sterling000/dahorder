@@ -1,7 +1,7 @@
 service: user-service
 # app and org for use with dashboard.serverless.com
 app: dah-order
-org: sterling000
+org: dahorder
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -10,10 +10,13 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: nodejs12.x
+  profile: dahorder
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'ap-southeast-1'}
   httpApi:
     cors: true
+  apiGateway:
+    shouldStartNameWithService: true
 
   iamRoleStatements:
     - Effect: Allow

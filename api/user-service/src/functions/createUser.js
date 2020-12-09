@@ -53,7 +53,7 @@ module.exports.createUser = async (event) => {
     const sns = await new AWS.SNS()
       .publish({
         Message: `User Created - name: ${name} - phone: ${phone} - condo: ${condo} - apartment: ${apartment} email: ${email} role: ${role}`,
-        TopicArn: "arn:aws:sns:ap-southeast-1:222008606357:userRegistered",
+        TopicArn: "arn:aws:sns:ap-southeast-1:716876784284:userRegistered",
         Subject: "Dah Order - User Created",
       })
       .promise();

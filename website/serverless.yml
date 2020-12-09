@@ -1,4 +1,4 @@
-org: sterling000
+org: dahorder
 app: dah-order
 name: website
 component: website
@@ -9,3 +9,5 @@ inputs:
     hook: npm run build
     dist: ./dist
   region: ap-southeast-1
+  bucketName: dahorder.my
+  domain: dahorder.my

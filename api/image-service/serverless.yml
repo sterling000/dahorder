@@ -1,6 +1,6 @@
 service: image-service
 app: dah-order
-org: sterling000
+org: dahorder
 frameworkVersion: '2'
 
 provider:
@@ -8,8 +8,11 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'ap-southeast-1'}
+  profile: dahorder
   httpApi:
     cors: true
+  apiGateway:
+    shouldStartNameWithService: true
   
   iamRoleStatements:
     - Effect: Allow
@@ -68,7 +71,7 @@ plugins:
 
 custom:
   s3:
-    bucket: dah-order-images-${self:provider.stage}-${self:provider.region}
+    bucket: dah-order-images-prod-${self:provider.stage}-${self:provider.region}
   serverless-mocha-plugin:
     testTemplate: ../templates/test-template.ejs
     functionTemplate: ../templates/function-template.ejs
