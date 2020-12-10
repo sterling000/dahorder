@@ -31,6 +31,11 @@
           Edit
         </button>
       </li>
+      <li v-show="!this.edit">
+        <button class="logout" @click="logout">
+          Log Out
+        </button>
+      </li>
     </ul>
     <form @submit="save" method="PUT" v-show="this.edit">
       <ul>
@@ -90,6 +95,9 @@ export default {
     toggleEdit() {
       this.edit = !this.edit;
     },
+    logout() {
+      this.$router.push("/logout");
+    },
     save: async function() {
       const originalKeys = Object.keys(this.user);
       const filtered = originalKeys.filter((key) => {
@@ -98,6 +106,10 @@ export default {
           this.user[key] !== this.changes[key];
         return result;
       });
+      if (filtered.length == 0) {
+        this.toggleEdit();
+        return;
+      }
       const params = {};
       filtered.forEach((key) => {
         params[key] = this.changes[key];
@@ -142,6 +154,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../assets/styles/config.scss";
 .account {
   padding: 4em 1em;
   h3 {
@@ -152,6 +165,35 @@ export default {
     margin: 1em;
     label {
       margin: 0 0.5em 0 0;
+    }
+    button.edit,
+    button.save {
+      display: block;
+      background-color: $color-primary-0;
+      color: $color-primary-4;
+      width: 100%;
+      height: 2em;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 40px;
+      font-weight: 600;
+      margin: 0.5em 0;
+    }
+    button.logout {
+      display: block;
+      background-color: rgb(143, 143, 143);
+      color: #fff;
+      width: 100%;
+      height: 2em;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px #fff;
+      font-size: 40px;
+      font-weight: 600;
+      margin: 0.5em 0;
     }
   }
 }
