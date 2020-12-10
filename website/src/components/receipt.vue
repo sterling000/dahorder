@@ -52,13 +52,28 @@
               />
             </li>
           </ul>
+          <div class="itemInfo">
+            <strong>Notes:</strong>
+            <p>{{ order.notes }}</p>
+          </div>
 
           <button
             class="checkout"
             @click="checkout"
-            v-show="order.status === 'pending'"
+            v-if="order.status === 'pending' && !mode"
           >
             Check Out
+          </button>
+          <button
+            class="cancel"
+            @click="cancel"
+            v-if="
+              order.status !== 'cancelled' &&
+                order.status !== 'completed' &&
+                !mode
+            "
+          >
+            Cancel Order
           </button>
           <!-- <button
             class="complete"
@@ -118,6 +133,9 @@ export default {
     },
     checkout() {
       this.$emit("checkout", this.order);
+    },
+    cancel() {
+      this.$emit("cancel", this.order);
     },
     complete() {
       this.$emit("complete", this.order);
@@ -205,6 +223,25 @@ export default {
     button.checkout {
       display: block;
       background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 1.5em;
+      font-weight: 600;
+      padding: 0.25em;
+      text-transform: uppercase;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #000;
+      }
+    }
+    button.cancel {
+      display: block;
+      background-color: #f00;
       color: #fff;
       width: 100%;
 

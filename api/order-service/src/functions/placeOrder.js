@@ -15,7 +15,7 @@ module.exports.handler = async (event) => {
 
   const shopId = body.shop;
   const owner = body.owner;
-
+  const notes = body.notes;
   const getOwnerParams = {
     TableName: process.env.DYNAMODB_USER_TABLE,
     Key: {
@@ -119,6 +119,7 @@ module.exports.handler = async (event) => {
       updated: date,
       total: total,
       status: "pending",
+      notes: notes,
     },
     ConditionExpression: "attribute_not_exists(orderId)",
   };

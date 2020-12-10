@@ -43,9 +43,11 @@ export default {
       shop: {},
     };
   },
-  mounted() {
+  async mounted() {
     this.$store.commit("loading/start");
-    this.getOrderDetails();
+    await this.getOrderDetails();
+
+    this.$store.commit("loading/stop");
   },
   methods: {
     submit: async function() {
@@ -94,7 +96,6 @@ export default {
       );
       console.debug(shopResponse.data);
       this.shop = shopResponse.data[0];
-      this.$store.commit("loading/stop");
     },
   },
   computed: {
