@@ -80,6 +80,57 @@
         </li>
       </ul>
     </form>
+    <button
+      v-if="!edit && !changePassword"
+      class="changePassword"
+      @click="editPassword"
+    >
+      Change Password
+    </button>
+    <form>
+      <div class="wrapper">
+        <label v-if="!edit && changePassword" for="password"
+          >New Password</label
+        >
+        <input
+          v-if="!edit && changePassword"
+          type="password"
+          name="password"
+          autocomplete="new-password"
+          v-model="newPassword"
+        />
+      </div>
+      <div class="wrapper">
+        <label v-if="!edit && changePassword" for="confirmPassword"
+          >Confirm Password</label
+        >
+        <input
+          v-if="!edit && changePassword"
+          type="password"
+          name="confirmPassword"
+          v-model="confirmPassword"
+        />
+      </div>
+
+      <button
+        v-if="!edit && changePassword"
+        class="changePassword"
+        @click.prevent="savePassword"
+        :disabled="
+          this.newPassword != this.confirmPassword &&
+            this.newPassword.length < 8
+        "
+      >
+        Save Password
+      </button>
+      <button
+        v-if="!edit && changePassword"
+        class="cancelPassword"
+        @click.prevent="cancelPassword"
+      >
+        Cancel Password Changes
+      </button>
+    </form>
   </div>
 </template>
 
@@ -88,12 +139,41 @@ export default {
   data() {
     return {
       edit: false,
+      changePassword: false,
       changes: {},
+      newPassword: "",
+      confirmPassword: "",
     };
   },
   methods: {
     toggleEdit() {
       this.edit = !this.edit;
+    },
+    editPassword() {
+      this.changePassword = true;
+    },
+    async savePassword() {
+      this.$store.commit("loading/start");
+      console.log("Changing Password");
+      await this.$http.put(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user/password`,
+        {
+          newPassword: this.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.account.token}`,
+          },
+        }
+      );
+      console.log("Password Changed.");
+      this.$store.commit("loading/stop");
+      this.changePassword = false;
+    },
+    cancelPassword() {
+      this.newPassword = "";
+      this.confirmPassword = "";
+      this.changePassword = false;
     },
     logout() {
       this.$router.push("/logout");
@@ -157,6 +237,15 @@ export default {
 @import "../assets/styles/config.scss";
 .account {
   padding: 4em 1em;
+  margin: 0 0 4em;
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    label {
+      font-weight: 600;
+    }
+  }
+
   h3 {
     display: flex;
     text-transform: capitalize;
@@ -195,6 +284,32 @@ export default {
       font-weight: 600;
       margin: 0.5em 0;
     }
+  }
+  button.changePassword {
+    display: block;
+    background-color: $color-primary-0;
+    color: $color-primary-4;
+    width: 100%;
+    height: 2em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5%;
+    border: solid 1px $color-primary-0;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0.5em 0;
+  }
+  button.cancelPassword {
+    display: block;
+    background-color: rgb(143, 143, 143);
+    color: #fff;
+    width: 100%;
+    height: 2em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5%;
+    border: solid 1px #fff;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0.5em 0;
   }
 }
 </style>
