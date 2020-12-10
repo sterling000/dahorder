@@ -33,6 +33,21 @@
           </p>
         </li>
         <li>
+          <label for="category">Category</label>
+          <select
+            v-model="category"
+            name="category"
+            @blur="$v.category.$touch()"
+          >
+            <option selected>Food</option>
+            <option>Groceries</option>
+            <option>Other</option>
+          </select>
+          <p v-if="$v.category.$dirty && $v.category.$invalid">
+            {{ categoryErrors }}
+          </p>
+        </li>
+        <li>
           <label for="condo">Condo</label>
           <select v-model="condo" name="condo" @blur="$v.condo.$touch()">
             <option selected>Armanee Terrace</option>
@@ -64,6 +79,7 @@ export default {
       description: "",
       condo: "Armanee Terrace",
       thumbnail: "",
+      category: "Food",
     };
   },
   methods: {
@@ -86,6 +102,7 @@ export default {
             description: this.description,
             thumbnail: `${process.env.VUE_APP_IMAGE_S3_BUCKET}/${res.data.photoFilename}`,
             condo: this.condo,
+            category: this.category,
           };
           const options = {
             headers: {
@@ -125,6 +142,7 @@ export default {
     description: { required, minLength: minLength(8) },
     condo: { required },
     thumbnail: { required },
+    category: { required },
   },
   computed: {
     nameErrors() {
@@ -145,6 +163,12 @@ export default {
       const errors = [];
       if (!this.$v.condo.$dirty && !this.$v.condo.$dirty) return errors;
       !this.$v.condo.required && errors.push("Condo is required.");
+      return errors;
+    },
+    categoryErrors() {
+      const errors = [];
+      if (!this.$v.category.$dirty && !this.$v.category.$dirty) return errors;
+      !this.$v.category.required && errors.push("Category is required.");
       return errors;
     },
     thumbnailErrors() {
