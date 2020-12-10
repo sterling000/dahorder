@@ -63,6 +63,12 @@ const routes = [
     beforeEnter: boot,
   },
   {
+    path: "/cancel/:orderId",
+    name: "Cancel",
+    component: () => import("../components/Cancel.vue"),
+    beforeEnter: boot,
+  },
+  {
     path: "/orders",
     name: "Orders",
     component: () => import("../components/Orders.vue"),

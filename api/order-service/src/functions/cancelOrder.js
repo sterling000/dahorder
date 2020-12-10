@@ -17,17 +17,17 @@ module.exports.handler = async (event, context) => {
       date: body.date,
     },
     UpdateExpression:
-      "set #status = :status, #payment = :payment, #updated = :updated",
+      "set #status = :status, #reason = :reason, #updated = :updated",
     ConditionExpression: "#customerId = :customerId",
     ExpressionAttributeNames: {
       "#status": "status",
-      "#payment": "payment",
+      "#reason": "reason",
       "#customerId": "customerId",
       "#updated": "updated",
     },
     ExpressionAttributeValues: {
-      ":status": "paid",
-      ":payment": body.payment,
+      ":status": "cancelled",
+      ":reason": body.reason,
       ":customerId": decodedJwt.phone,
       ":updated": new Date().toISOString(),
     },

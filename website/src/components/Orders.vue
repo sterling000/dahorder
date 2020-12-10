@@ -31,6 +31,7 @@
             @checkout="checkout"
             :mode="mode"
             v-if="order !== undefined"
+            @cancel="cancel"
           />
         </li>
       </ul>
@@ -150,6 +151,9 @@ export default {
     },
     checkout(order) {
       this.$router.push(`/checkout/${order.orderId}`);
+    },
+    cancel(order) {
+      this.$router.push(`/cancel/${order.orderId}`);
     },
     // complete(order){
     //   console.log("")
