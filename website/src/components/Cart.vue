@@ -27,11 +27,29 @@
         <tr v-for="product in productsByShop(shop.id)" :key="product.id">
           <td>{{ product.name }}</td>
           <td>
-            {{ product.quantity }}
+            <p v-if="!edit">{{ product.quantity }}</p>
+            <a v-if="!edit" href="#" class="edit" @click.prevent="toggleEdit"
+              >Edit</a
+            >
+            <input
+              v-if="edit"
+              type="text"
+              class="editQuantity"
+              v-model="product.quantity"
+              @blur="toggleEdit"
+            />
           </td>
           <td>{{ product.price }} RM</td>
         </tr>
       </table>
+
+      <label for="notes">Notes</label>
+      <textarea
+        id="notes"
+        name="notes"
+        placeholder="No onions, less spicy, buzzer #, please leave inside gate..."
+        v-model="notes[shop.id]"
+      />
 
       <h3 class="total">
         Total:
@@ -57,11 +75,13 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { mapState } from "vuex";
 export default {
   methods: {
     clear(shop) {
       this.$store.commit("cart/clearProducts", shop.id);
+      Vue.delete(this.notes, shop.id);
     },
     placeOrder: async function(shop) {
       this.$store.commit("loading/start");
@@ -71,6 +91,7 @@ export default {
         owner: shop.owner,
         products: this.products[shop.id],
         delivery: true,
+        notes: this.notes[shop.id],
       };
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
@@ -130,6 +151,9 @@ export default {
       }
       return shop;
     },
+    toggleEdit() {
+      this.edit = !this.edit;
+    },
     shopNameById(id) {
       const shop = this.shopById(id);
       if (shop !== null) {
@@ -141,6 +165,8 @@ export default {
   data() {
     return {
       shopDetails: [],
+      notes: {},
+      edit: false,
     };
   },
   computed: {
@@ -181,6 +207,24 @@ export default {
   .totalNum {
     margin: 0 2em;
     color: #55ff55;
+  }
+  .editQuantity {
+    font-size: 1.5em;
+    max-width: 5em;
+    text-align: right;
+  }
+  textarea {
+    resize: none;
+    height: 8em;
+    padding: 0.5em;
+    text-align: left;
+    margin-top: 0;
+    width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5%;
+    border: solid 1px $color-primary-0;
+    overflow: auto;
+    font-size: 1.5em;
   }
 
   button.checkout {
