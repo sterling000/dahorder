@@ -111,6 +111,7 @@ export default {
       }
       console.log("Order Submitted");
       this.$store.commit("cart/clearProducts", shop.id);
+      this.$store.commit("recent/rememberShop", this.shopById(shop.id));
       this.$router.push(`/orders`);
     },
     total(products) {
