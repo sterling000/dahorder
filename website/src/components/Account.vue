@@ -236,8 +236,8 @@ export default {
 <style lang="scss">
 @import "../assets/styles/config.scss";
 .account {
-  padding: 4em 1em;
-  margin: 0 0 4em;
+  padding: 4em 1em 6em;
+
   .wrapper {
     display: flex;
     justify-content: space-between;

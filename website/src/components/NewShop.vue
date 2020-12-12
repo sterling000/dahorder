@@ -40,7 +40,7 @@
             @blur="$v.category.$touch()"
           >
             <option selected>Food</option>
-            <option>Groceries</option>
+            <option>Grocery</option>
             <option>Other</option>
           </select>
           <p v-if="$v.category.$dirty && $v.category.$invalid">

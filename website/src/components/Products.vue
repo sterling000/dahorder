@@ -67,13 +67,17 @@ export default {
         options
       );
       this.$store.commit("loading/stop");
-
+      console.debug(this.$store.state.account);
       this.products = res.data.filter((product) => {
         const date = new Date(product.available);
         const now = new Date();
-        return (
-          date > now || product.owner === this.$store.state.account.user.pk
-        );
+        if (this.$store.state.account.user === null) {
+          return date > now;
+        } else if (product.owner === this.$store.state.account.user.pk) {
+          return true;
+        } else {
+          return date > now;
+        }
       });
     },
     selectProduct: function(event) {

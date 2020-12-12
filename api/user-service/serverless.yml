@@ -100,7 +100,7 @@ resources:
     userRegisteredTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: userRegistered
+        TopicName: userRegistered-${self:provider.stage}
     userRegisteredSubscription:
       Type: AWS::SNS::Subscription
       Properties:
