@@ -24,5 +24,8 @@
         "vue",
         "vue-html",
         "vue-postcss"
+    ],
+    "remote.containers.defaultExtensions": [
+        "mutantdino.resourcemonitor"
     ]
 }

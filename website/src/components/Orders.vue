@@ -22,7 +22,9 @@
       <ul>
         <li
           class="purchase"
-          v-for="order in sortable(receipts).sort(sortOrders)"
+          v-for="order in sortable(receipts)
+            .sort(sortOrders)
+            .slice(0, numOrdersToShow)"
           :key="order.orderId"
         >
           <receipt
@@ -35,6 +37,13 @@
           />
         </li>
       </ul>
+      <p
+        v-if="sortable(receipts).length > numOrdersToShow"
+        class="clickable"
+        @click.prevent="numOrdersToShow += 10"
+      >
+        More
+      </p>
     </div>
     <div class="sales" v-show="mode">
       <h3>Sales</h3>
@@ -47,8 +56,15 @@
           v-for="(shop, propertyName) in this.sales"
           :key="propertyName"
         >
+          <h5>
+            {{ shops.find((stateShop) => stateShop.id == propertyName).name }}
+          </h5>
           <ul>
-            <li class="sale" v-for="sale in shop" :key="sale.orderId">
+            <li
+              class="sale"
+              v-for="sale in shop.slice(0, numOrdersToShow)"
+              :key="sale.orderId"
+            >
               <receipt
                 :date="localDateTime(sale.date)"
                 :order="sale"
@@ -58,6 +74,13 @@
               <!-- @complete="complete" -->
             </li>
           </ul>
+          <p
+            v-if="shop.length > numOrdersToShow"
+            class="clickable"
+            @click.prevent="numOrdersToShow += 10"
+          >
+            More
+          </p>
         </li>
       </ul>
     </div>
@@ -72,6 +95,7 @@ export default {
       sales: {},
       shops: [],
       mode: false,
+      numOrdersToShow: 10,
     };
   },
   async mounted() {
@@ -193,12 +217,12 @@ export default {
 @import "../assets/styles/config.scss";
 @import "../assets/styles/toggle.scss";
 .orders {
-  padding: 4em 1em;
+  padding: 4em 1em 6em;
   h2 {
     margin: 0 0 0.5em;
   }
   ul {
-    margin: 2em 1em;
+    margin: 0.5em 0;
     li.sale {
       margin: 0.25em;
       .status {
@@ -207,6 +231,10 @@ export default {
         font-weight: 600;
       }
     }
+  }
+  .clickable {
+    cursor: pointer;
+    margin: 0 0 1em 1em;
   }
 }
 </style>

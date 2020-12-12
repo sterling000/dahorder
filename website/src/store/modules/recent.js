@@ -9,6 +9,9 @@ const mutations = {
     }
     state.recentShops = [shop, ...state.recentShops];
   },
+  clear(state) {
+    state.recentShops = [];
+  },
 };
 
 const actions = {};

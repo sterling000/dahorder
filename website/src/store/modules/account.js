@@ -22,6 +22,7 @@ const actions = {
     context.commit("cart/logout", null, { root: true });
     context.commit("cart/clearOrders", null, { root: true });
     context.commit("loading/stop", null, { root: true });
+    context.commit("recent/clear", null, { root: true });
   },
 };
 
