@@ -4,14 +4,14 @@
       <div class="wrapper">
         <h3>Recent</h3>
         <p
-          v-if="!showAllRecent"
+          v-if="!showAllRecent && recentShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllRecent')"
         >
           More
         </p>
         <p
-          v-if="showAllRecent"
+          v-if="showAllRecent && recentShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllRecent')"
         >
@@ -31,14 +31,14 @@
       <div class="wrapper">
         <h3>Food</h3>
         <p
-          v-if="!showAllFood"
+          v-if="!showAllFood && foodShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllFood')"
         >
           More
         </p>
         <p
-          v-if="showAllFood"
+          v-if="showAllFood && foodShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllFood')"
         >
@@ -65,14 +65,14 @@
       <div class="wrapper">
         <h3>Grocery</h3>
         <p
-          v-if="!showAllGrocery"
+          v-if="!showAllGrocery && groceryShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllGrocery')"
         >
           More
         </p>
         <p
-          v-if="showAllGrocery"
+          v-if="showAllGrocery && groceryShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllGrocery')"
         >
@@ -99,14 +99,14 @@
       <div class="wrapper">
         <h3>Other</h3>
         <p
-          v-if="!showAllOther"
+          v-if="!showAllOther && otherShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllOther')"
         >
           More
         </p>
         <p
-          v-if="showAllOther"
+          v-if="showAllOther && otherShops.length > 5"
           class="showall"
           @click.prevent="toggleShowAll('showAllOther')"
         >
