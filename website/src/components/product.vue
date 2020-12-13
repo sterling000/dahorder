@@ -1,5 +1,5 @@
 <template>
-  <div class="product" @click="onClick">
+  <div class="product" @click="onClick" ref="component">
     <div id="product-thumbnail" ref="thumbnail"></div>
     <div class="wrapper">
       <h2>{{ product.name }}</h2>
@@ -19,6 +19,9 @@ export default {
     this.$refs[
       "thumbnail"
     ].style.backgroundImage = `url(${this.product.thumbnail})`;
+    if (this.product.status != "active") {
+      this.$el.classList.add("cancelled");
+    }
   },
   props: ["product"],
   methods: {
@@ -39,6 +42,7 @@ export default {
   height: 167px;
   border-radius: 5%;
   background-color: $color-primary-0;
+
   .wrapper {
     display: flex;
     justify-content: space-between;
@@ -61,5 +65,8 @@ export default {
     background-size: cover;
     display: block;
   }
+}
+.cancelled {
+  background-color: grey;
 }
 </style>

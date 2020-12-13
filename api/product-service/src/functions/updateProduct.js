@@ -1,7 +1,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = async (event) => {
   console.log(event);
   const body = JSON.parse(event.body);
 

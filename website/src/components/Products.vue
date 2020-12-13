@@ -10,7 +10,7 @@
         />
       </div>
 
-      <div class="noProducts" v-show="products.length < 1">
+      <div class="noProducts" v-if="products.length < 1">
         <h3>
           The Owner of this shop has not added any products yet.
           <br /><br />Check back later.
@@ -72,11 +72,11 @@ export default {
         const date = new Date(product.available);
         const now = new Date();
         if (this.$store.state.account.user === null) {
-          return date > now;
+          return date > now && product.status != "cancelled";
         } else if (product.owner === this.$store.state.account.user.pk) {
           return true;
         } else {
-          return date > now;
+          return date > now && product.status != "cancelled";
         }
       });
     },
@@ -118,18 +118,18 @@ export default {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(1fr);
-    .product {
-      padding: 0.5em 0;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-        0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      width: 260px;
-      height: 167px;
-      border-radius: 5%;
-      background-color: $color-primary-0;
-      h2 {
-        font-size: 18px;
-      }
-    }
+    // .product {
+    //   padding: 0.5em 0;
+    //   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    //     0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    //   width: 260px;
+    //   height: 167px;
+    //   border-radius: 5%;
+    //   background-color: $color-primary-0;
+    //   h2 {
+    //     font-size: 18px;
+    //   }
+    // }
 
     .new {
       padding: 0.5em 0;

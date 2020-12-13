@@ -19,6 +19,19 @@
       </div>
       <ul>
         <li>
+          <h2>Status</h2>
+          <p class="status" v-show="!edit">{{ details.status }}</p>
+          <select
+            v-show="edit"
+            :placeholder="details.status"
+            v-model="changes.status"
+            name="condo"
+          >
+            <option>active</option>
+            <option>cancelled</option>
+          </select>
+        </li>
+        <li>
           <h2>Price</h2>
           <p v-show="!edit">{{ details.price }} RM</p>
           <input
@@ -28,6 +41,7 @@
             v-show="edit"
           />
         </li>
+
         <li>
           <h2>Quantity</h2>
           <p v-show="!edit">
@@ -49,6 +63,7 @@
             type="datetime-local"
             name="date"
             id="date"
+            :placeholder="details.available"
             v-model="changes.available"
           />
         </li>
@@ -116,12 +131,11 @@ export default {
   data() {
     return {
       details: {},
-      changes: {
-        delivery: true,
-      },
+      changes: {},
       edit: false,
       thumbnail: "",
       date: "",
+      removed: "",
     };
   },
   methods: {
@@ -168,11 +182,33 @@ export default {
       const filtered = originalKeys.filter(
         (key) => this.details[key] !== this.changes[key]
       );
+      if (filtered.length == 0) {
+        console.log("No changes.");
+        this.toggleEdit();
+        return;
+      }
       const params = {};
       filtered.forEach((key) => {
         params[key] = this.changes[key];
       });
       params["id"] = this.$route.params.id;
+      const { status } = params;
+      console.debug(status);
+      if (status !== undefined && status == "active") {
+        console.debug("status is changed to active");
+        const now = new Date();
+
+        const then = new Date(this.details.available);
+
+        if (params.available != undefined) {
+          const changedDate = new Date(params.available);
+          if (changedDate <= now) {
+            throw "To change a product status to Active, you must select a date that is not in the past.";
+          }
+        } else if (then <= now) {
+          throw "To change a product status to Active, you must select a date that is not in the past.";
+        }
+      }
       console.log("Saving changes.");
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
@@ -235,7 +271,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/styles/config.scss";
 @import "../assets/styles/toggle.scss";
 
@@ -249,6 +285,9 @@ export default {
     min-height: 25vh;
   }
   .wrapper {
+    .status {
+      text-transform: capitalize;
+    }
     .name {
       display: inline-flex;
       min-width: 0;
@@ -295,6 +334,10 @@ export default {
       #date {
         font-size: 1em;
         width: 85%;
+      }
+      select {
+        font-size: 1.5em;
+        text-transform: capitalize;
       }
     }
 

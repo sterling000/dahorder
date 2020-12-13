@@ -83,7 +83,7 @@ export default {
         console.error(error);
         this.$store.commit("loading/stop");
       }
-      this.getOrders();
+      setTimeout(() => this.getOrders(), 1000);
     },
     localDateTime: (utc) => {
       console.debug("date from response: ", utc);
