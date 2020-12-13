@@ -26,7 +26,7 @@
               <p>{{ localDate(order.date) }}</p>
             </div>
           </div>
-          <div class="itemInfo">
+          <div v-if="!mode" class="itemInfo">
             <strong>Recipient</strong>
             <p>{{ order.owner }}</p>
           </div>
@@ -98,14 +98,26 @@ export default {
   props: ["order", "date", "mode"],
   async mounted() {
     // todo: every receipt shouldn't be looking up this data it should be passed down in a prop.
-    const owner = await this.$http.get(
-      `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
-      {
-        params: { user: this.order.owner },
+    if (!this.mode) {
+      const owner = await this.$http.get(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        {
+          params: { user: this.order.owner },
+        }
+      );
+      if (owner.status === 200) {
+        this.address = `${owner.data.condo} - ${owner.data.apartment}`;
       }
-    );
-    if (owner.status === 200) {
-      this.address = `${owner.data.condo} - ${owner.data.apartment}`;
+    } else {
+      const customer = await this.$http.get(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        {
+          params: { user: this.order.customerId },
+        }
+      );
+      if (customer.status === 200) {
+        this.address = `${customer.data.condo} - ${customer.data.apartment}`;
+      }
     }
   },
   methods: {
@@ -149,6 +161,7 @@ export default {
     },
     async directions() {
       // todo: if !this.mode give this.address else give customer.address
+
       await navigator.clipboard.writeText(this.address);
       console.log(`${this.address} - Copied to clipboard!`);
     },

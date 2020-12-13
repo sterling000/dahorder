@@ -3,8 +3,14 @@
     <div id="product-thumbnail" ref="thumbnail"></div>
     <div class="wrapper">
       <h2>{{ product.name }}</h2>
-      <p class="remaining" v-show="product.remaining <= 10">
+      <p
+        class="remaining"
+        v-show="product.remaining <= 10 && product.remaining > 0"
+      >
         Only {{ product.remaining }} left
+      </p>
+      <p class="remaining" v-show="product.remaining == 0">
+        Sold Out
       </p>
     </div>
   </div>

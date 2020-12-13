@@ -1,7 +1,7 @@
 <template>
   <div class="orders">
     <h2>Orders</h2>
-    <div class="noSignin" v-if="!isSignedin">
+    <div class="noSignin" v-if="!isSignedIn">
       <p>Sign in to view your order history.</p>
     </div>
     <div class="can-toggle">
@@ -99,7 +99,7 @@ export default {
     };
   },
   async mounted() {
-    if (this.isSignedin) {
+    if (this.isSignedIn) {
       this.$store.commit("loading/start");
       this.getReceipts();
       await this.getShops();
@@ -114,7 +114,7 @@ export default {
     orderIds() {
       return Object.keys(this.receipts);
     },
-    isSignedin() {
+    isSignedIn() {
       return this.$store.state.account.token !== null;
     },
     saleIds() {

@@ -27,6 +27,8 @@ Once you've logged into the dashboard and created an org, you'll want to make su
 
 when you deploy your own services you'll be given your own api gateway endpoints, something like https://0rbglqxm0g.execute-api.ap-southeast-1.amazonaws.com/dev, you'll need to create a .env.dev file in the website directory and the admin directory so that the urls can be loaded by the vuejs code by environment variables. Once you've deployed the user-service, shop-service, product-service, image-service, and admin-service, you can deploy the order-service, and put each of those URL's into your .env files.
 
+Also, don't forget the VUE_APP_IMAGE_S3_BUCKET env variable, it needs to match the value defined in the image service that creates the bucket. Warning: bucket names are global for everyone, not just your account, so it needs to be globally unique, i suggest something that incorporates the project name, stage, and even region to avoid conflicts.
+
 Lastly, until I can figure out how to have your AWS AccountId dynamically put into lambda code (i'll probably use environment variables) each "validator" and "authorizer" lambda has hard coded AccountId's in the policy document statements.
 
 You also need to be running node v14.15.1 (latest breaks some things)

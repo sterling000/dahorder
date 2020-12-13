@@ -23,7 +23,7 @@ module.exports.handler = async (event) => {
   const quantity = Number(body.quantity);
   const remaining = Number(body.remaining);
   const available = body.available;
-  const delivery = body.delivery == "true";
+  const delivery = body.delivery;
   const shop = body.shop;
 
   const newProductParams = {

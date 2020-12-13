@@ -14,6 +14,7 @@
         <textarea
           name="description"
           :placeholder="details.description"
+          v-model="changes.description"
           v-show="edit"
         ></textarea>
       </div>
@@ -29,6 +30,7 @@
           >
             <option>active</option>
             <option>cancelled</option>
+            <option>sold out</option>
           </select>
         </li>
         <li>
@@ -38,6 +40,7 @@
             type="text"
             name="price"
             :placeholder="details.price"
+            v-model="changes.price"
             v-show="edit"
           />
         </li>
@@ -51,6 +54,7 @@
             type="text"
             name="quantity"
             :placeholder="details.quantity"
+            v-model="changes.quantity"
             v-show="edit"
           />
         </li>
@@ -71,7 +75,12 @@
           <h2>Delivery</h2>
           <p v-show="!edit">{{ details.delivery }}</p>
           <div v-show="edit" class="can-toggle">
-            <input type="checkbox" id="delivery" v-model="changes.delivery" />
+            <input
+              type="checkbox"
+              id="delivery"
+              :placeholder="details.delivery"
+              v-model="changes.delivery"
+            />
             <label for="delivery">
               <div
                 class="can-toggle__switch"
@@ -192,14 +201,21 @@ export default {
         params[key] = this.changes[key];
       });
       params["id"] = this.$route.params.id;
-      const { status } = params;
-      console.debug(status);
+      const { status, quantity } = params;
+      console.debug(status, quantity);
+      if (quantity != undefined) {
+        params["remaining"] = quantity;
+        this.changes["remaining"] = quantity;
+        if (quantity == 0) {
+          params["status"] = "sold out";
+          this.changes["status"] = "sold out";
+        }
+      }
       if (status !== undefined && status == "active") {
         console.debug("status is changed to active");
+        // validate date is in the future
         const now = new Date();
-
         const then = new Date(this.details.available);
-
         if (params.available != undefined) {
           const changedDate = new Date(params.available);
           if (changedDate <= now) {
@@ -208,7 +224,18 @@ export default {
         } else if (then <= now) {
           throw "To change a product status to Active, you must select a date that is not in the past.";
         }
+
+        // validate quantity will not be zero, and reset remaining
+        if (this.details.remaining < 1 && quantity == undefined) {
+          this.changes["quantity"] = this.details.quantity;
+          params["quantity"] = this.details.quantity;
+          params["remaining"] = quantity;
+          this.changes["remaining"] = quantity;
+        } else if (this.details.remaining < 1 && quantity < 1) {
+          throw "To change a product status to Active, you must have quantity greater than zero.";
+        }
       }
+
       console.log("Saving changes.");
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
@@ -236,7 +263,7 @@ export default {
       } catch (putError) {
         console.error(putError);
       }
-      this.details = this.changes;
+      this.details = { ...this.changes };
       this.$store.commit("loading/stop");
       this.toggleEdit();
     },
@@ -252,7 +279,7 @@ export default {
           options
         );
         this.details = res.data[0];
-        this.details.delivery = this.details.delivery == "true";
+
         this.changes = { ...this.details };
         this.$refs["thumbnail"].style.setProperty(
           "--thumbnail",

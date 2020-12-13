@@ -130,19 +130,27 @@ module.exports.handler = async (event) => {
       (dbProduct) => dbProduct.product.id == product.id
     );
     console.log("product found: ", product.id, dbProductFound);
-
+    const newRemaining = dbProductFound.product.remaining - product.quantity;
+    let updateExpression = "set #remaining = :remaining";
+    let expressionAttributeNames = {
+      "#remaining": "remaining",
+    };
+    let expressionAttributeValues = {
+      ":remaining": newRemaining,
+    };
+    if (newRemaining == 0) {
+      updateExpression += ", #status = :status";
+      expressionAttributeNames["#status"] = "status";
+      expressionAttributeValues[":status"] = "sold out";
+    }
     const productParams = {
       TableName: process.env.DYNAMODB_PRODUCT_TABLE,
       Key: {
         id: product.id,
       },
-      UpdateExpression: "set #remaining = :remaining",
-      ExpressionAttributeValues: {
-        ":remaining": dbProductFound.product.remaining - product.quantity,
-      },
-      ExpressionAttributeNames: {
-        "#remaining": "remaining",
-      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ExpressionAttributeNames: expressionAttributeNames,
       ReturnValues: "UPDATED_NEW",
     };
     console.log("productParams", productParams);
