@@ -69,7 +69,7 @@ const routes = [
     beforeEnter: boot,
   },
   {
-    path: "/orders",
+    path: "/orders/:id?",
     name: "Orders",
     component: () => import("../components/Orders.vue"),
     beforeEnter: boot,

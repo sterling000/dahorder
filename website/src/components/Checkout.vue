@@ -2,7 +2,8 @@
   <div class="checkout">
     <h2>Check Out</h2>
     <h3 class="number">
-      Order #: <span class="orderNum">{{ orderId }}</span>
+      Order #:
+      <span class="orderNum" @click.prevent="backToOrder">{{ orderId }}</span>
     </h3>
     <h3 class="total">
       Total: <span class="totalNum">{{ total }} RM</span>
@@ -76,6 +77,9 @@ export default {
     },
     paymentRendered(e) {
       this.payment = e;
+    },
+    backToOrder() {
+      this.$router.push(`/orders/${this.orderId}`);
     },
     getOrderDetails: async function() {
       console.debug(this.orderId);

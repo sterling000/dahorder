@@ -119,6 +119,10 @@ export default {
         this.address = `${customer.data.condo} - ${customer.data.apartment}`;
       }
     }
+    console.debug("receipt debug:", this.$route.params.id, this.order.orderId);
+    if (this.$route.params.id == this.order.orderId) {
+      setTimeout(() => this.collapsibleClicked(), 500);
+    }
   },
   methods: {
     localDate(utc) {
@@ -133,6 +137,7 @@ export default {
       this.$refs["collapsible"].classList.toggle("active");
 
       var content = this.$refs["collapsible"].nextElementSibling;
+      console.debug("collapsible content", content);
       if (content.style.maxHeight) {
         content.style.maxHeight = null;
       } else {
