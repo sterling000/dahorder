@@ -118,18 +118,6 @@ export default {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(1fr);
-    // .product {
-    //   padding: 0.5em 0;
-    //   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-    //     0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    //   width: 260px;
-    //   height: 167px;
-    //   border-radius: 5%;
-    //   background-color: $color-primary-0;
-    //   h2 {
-    //     font-size: 18px;
-    //   }
-    // }
 
     .new {
       padding: 0.5em 0;
