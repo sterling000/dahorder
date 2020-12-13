@@ -160,8 +160,6 @@ export default {
       }
     },
     async directions() {
-      // todo: if !this.mode give this.address else give customer.address
-
       await navigator.clipboard.writeText(this.address);
       console.log(`${this.address} - Copied to clipboard!`);
     },
