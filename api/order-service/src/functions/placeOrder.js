@@ -2,6 +2,7 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const generator = require("generate-password");
+const http = require("https");
 module.exports.handler = async (event) => {
   console.log(event);
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -53,6 +54,37 @@ module.exports.handler = async (event) => {
   }
 
   const customerId = decodedJwt.phone;
+  const getCustomerParams = {
+    TableName: process.env.DYNAMODB_USER_TABLE,
+    Key: {
+      pk: customerId,
+    },
+  };
+
+  let customerResponse;
+  try {
+    customerResponse = await dynamodb.get(getCustomerParams).promise();
+  } catch (error) {
+    console.error("Couldn't get the customer's user info.");
+    return new Error("There was a problem getting the customer user info.");
+  }
+  let customerName;
+  if (customerResponse.Item !== undefined) {
+    customerName = customerResponse.Item.name;
+  } else {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "Could not find the customer of the order.",
+      }),
+    };
+  }
 
   const products = [];
   const productPromises = [];
@@ -113,6 +145,7 @@ module.exports.handler = async (event) => {
       shopId: shopId,
       owner: owner,
       customerId: customerId,
+      customer: customerResponse.Item,
       products: products,
       delivery: delivery,
       date: date,
@@ -178,6 +211,46 @@ module.exports.handler = async (event) => {
     console.log(newOrderParams);
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const putResult = await dynamodb.put(newOrderParams).promise();
+
+    const orderPage = `${event.headers.origin}/orders/${orderId}`;
+    const message = `Yay! ${customerName} has placed an order from your shop. Please click here ${orderPage} to check`;
+    const requestBody = {
+      phone: owner,
+      message: message,
+    };
+    const options = {
+      host: "sawit.wablas.com",
+      port: 443,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: process.env.WABLAS_TOKEN,
+      },
+      path: "/api/send-message",
+      method: "POST",
+    };
+
+    console.log("options:", options);
+    let wablasPromise = new Promise((resolve, reject) => {
+      const req = http.request(options, (res) => {
+        res.setEncoding("utf8");
+        let responseBody = "";
+        res.on("data", (chunk) => {
+          responseBody += chunk;
+        });
+        res.on("end", () => {
+          resolve(JSON.parse(responseBody));
+        });
+        res.on("error", (err) => {
+          reject(err);
+        });
+      });
+
+      req.write(JSON.stringify(requestBody));
+      req.end();
+    });
+    console.log("Sending wablas request...");
+    const wabResponse = await wablasPromise;
+    console.log(wabResponse);
     return {
       statusCode: 201,
       headers: {

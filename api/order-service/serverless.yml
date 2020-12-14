@@ -17,6 +17,7 @@ provider:
     DYNAMODB_SHOP_TABLE: ${self:custom.dynamodb.shopTable}
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    WABLAS_TOKEN: ${param:WABLAS_TOKEN}
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
 

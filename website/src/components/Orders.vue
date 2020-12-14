@@ -103,7 +103,7 @@ export default {
       this.$store.commit("loading/start");
       this.getReceipts();
       await this.getShops();
-
+      this.getOrderMode();
       this.$store.commit("loading/stop");
     }
   },
@@ -137,6 +137,20 @@ export default {
           await this.getOrders(shop.id);
         })
       );
+    },
+    getOrderMode() {
+      const orderId = this.$route.params.id;
+      if (orderId !== undefined) {
+        this.saleIds.forEach((shopId) => {
+          const sale = this.sales[shopId].find(
+            (sale) => sale.orderId == orderId
+          );
+          if (sale != undefined) {
+            this.mode = true;
+            return;
+          }
+        });
+      }
     },
     getReceipts: async function() {
       const receiptResponse = await this.$http.get(

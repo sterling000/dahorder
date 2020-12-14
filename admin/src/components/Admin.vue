@@ -24,7 +24,9 @@
           class="image"
           :style="{ backgroundImage: 'url(' + order.payment + ')' }"
           @click.prevent="viewImage(order.payment)"
+          v-if="order.payment != 'cash'"
         />
+        <p v-if="order.payment == 'cash'" class="cash">Cash</p>
         <div class="status">
           <h3>Status</h3>
           <p>{{ order.status }}</p>
@@ -133,6 +135,10 @@ export default {
     }
     .total {
       margin: 0.5em;
+    }
+    .cash {
+      text-align: center;
+      padding: 2em;
     }
     .image {
       margin: 0.5em;

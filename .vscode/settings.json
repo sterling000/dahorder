@@ -3,7 +3,9 @@
         "Armanee",
         "Vuelidate",
         "fontawesome",
-        "fortawesome"
+        "fortawesome",
+        "sawit",
+        "wablas"
     ],
     "cSpell.enableFiletypes": [
         "!asciidoc",
