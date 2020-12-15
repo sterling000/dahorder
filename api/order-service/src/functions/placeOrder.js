@@ -138,6 +138,7 @@ module.exports.handler = async (event) => {
   console.log("Total: ", total);
   const delivery = body.delivery;
   const date = new Date().toISOString();
+  const { password, ...customer } = customerResponse.Item;
   const newOrderParams = {
     TableName: process.env.DYNAMODB_ORDER_TABLE,
     Item: {
@@ -145,7 +146,7 @@ module.exports.handler = async (event) => {
       shopId: shopId,
       owner: owner,
       customerId: customerId,
-      customer: customerResponse.Item,
+      customer: customer,
       products: products,
       delivery: delivery,
       date: date,

@@ -29,6 +29,12 @@ const routes = [
     beforeEnter: boot,
   },
   {
+    path: "/sales",
+    name: "Sales",
+    component: () => import("../components/Sales.vue"),
+    beforeEnter: boot,
+  },
+  {
     path: "/products/:id/:owner",
     name: "Products",
     component: () => import("../components/Products.vue"),
