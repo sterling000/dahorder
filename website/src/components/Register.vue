@@ -25,16 +25,21 @@
           <p class="error">{{ error }}</p>
         </li>
       </ul>
-      <label for="phone">Phone:</label>
-      <p class="countrycode">+6</p>
-      <input
-        class="phone"
-        v-model.trim="phone"
-        name="phone"
-        autocomplete="username"
-        @blur="$v.phone.$touch"
-        @change="$v.phone.$touch"
-      />
+      <div class="wrapper">
+        <div>
+          <label for="phone">Phone:</label>
+          <p class="countrycode">+6</p>
+        </div>
+        <input
+          class="phone"
+          v-model.trim="phone"
+          name="phone"
+          autocomplete="username"
+          @blur="$v.phone.$touch"
+          @change="$v.phone.$touch"
+        />
+      </div>
+
       <ul>
         <li class="error" v-for="error in phoneErrors" :key="error">
           <p class="error">{{ error }}</p>
@@ -239,7 +244,9 @@ export default {
       if (!this.$v.apartment.$dirty) return errors;
       !this.$v.apartment.required && errors.push("Apartment is required.");
       !this.$v.apartment.validApartment &&
-        errors.push("Apartment is in the wrong format.");
+        errors.push(
+          "Apartment is in the wrong format. The format should be A12-C05"
+        );
       return errors;
     },
   },
@@ -253,7 +260,12 @@ export default {
 @import "../assets/styles/config.scss";
 .register {
   overflow: auto;
+  margin: auto;
   form {
+    .wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
     li {
       .error {
         margin: 0;
@@ -266,19 +278,33 @@ export default {
       font-weight: 600;
     }
     input,
-    select,
-    button {
+    select {
       display: block;
-      width: 275px;
+      width: 100%;
       height: 2em;
-      margin: 0 0 0.5em;
+      margin: 0 0 1em;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
         0 6px 20px 0 rgba(0, 0, 0, 0.19);
       border-radius: 5%;
       border: none;
-      &#submit {
-        font-size: 36px;
-        font-weight: 600;
+    }
+    button#submit {
+      display: block;
+      background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+      height: 2em;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 1em;
+      // padding: 0.5em;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #fff;
       }
     }
     .error {
@@ -298,7 +324,7 @@ export default {
     }
     input.phone {
       display: inline-block;
-      width: 175px;
+      width: 65%;
     }
   }
   .forgot-password {

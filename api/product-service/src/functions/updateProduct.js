@@ -11,11 +11,12 @@ module.exports.handler = async (event) => {
   const filtered = Object.keys(body).filter((key) => key !== "id");
   let keysLength = filtered.length;
   for (let i = 0; i < keysLength; i++) {
+    console.log("typeof:", typeof body[filtered[i]], body[filtered[i]]);
     if (i > 0) {
       UpdateExpression += ", ";
     }
     UpdateExpression += `#${filtered[i]} = :${filtered[i]}`;
-    ExpressionAttributeValues[`:${filtered[i]}`] = `${body[filtered[i]]}`;
+    ExpressionAttributeValues[`:${filtered[i]}`] = body[filtered[i]];
     ExpressionAttributeNames[`#${filtered[i]}`] = `${filtered[i]}`;
   }
   const updateParams = {

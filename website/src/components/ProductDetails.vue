@@ -73,7 +73,8 @@
         </li>
         <li>
           <h2>Delivery</h2>
-          <p v-show="!edit">{{ details.delivery }}</p>
+          <p v-show="!edit && details.delivery">Seller to notify delivery</p>
+          <p v-show="!edit && !details.delivery">Pick up at seller's unit</p>
           <div v-show="edit" class="can-toggle">
             <input
               type="checkbox"

@@ -50,7 +50,7 @@
       </li>
 
       <li v-show="!signedIn" id="login" class="cta" @click="signIn" ref="login">
-        <div>Sign In</div>
+        <div>Log In</div>
       </li>
       <li
         v-show="!signedIn"
