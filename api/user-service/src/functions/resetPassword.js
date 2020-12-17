@@ -4,17 +4,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 module.exports.handler = async (event, context) => {
   console.log(event);
-  const authorizerToken = event.headers.Authorization;
-  const authorizerArr = authorizerToken.split(" ");
-  const token = authorizerArr[1];
-  let decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
+
   const body = JSON.parse(event.body);
   console.log("body", body);
   let UpdateExpression = "set password = :password";
   let ExpressionAttributeValues = {
     ":password": bcrypt.hashSync(body.newPassword, 10),
   };
-
+  const decodedJwt = jwt.verify(body.token, process.env.JWT_SECRET);
   const updateParams = {
     TableName: process.env.DYNAMODB_USER_TABLE,
     Key: {

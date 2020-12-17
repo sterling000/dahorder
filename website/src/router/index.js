@@ -101,6 +101,16 @@ const routes = [
     name: "Register",
     component: () => import("../components/Register.vue"),
   },
+  {
+    path: "/reset/:token",
+    name: "Reset",
+    component: () => import("../components/Reset.vue"),
+  },
+  {
+    path: "/request-reset",
+    name: "Request Reset",
+    component: () => import("../components/RequestReset.vue"),
+  },
 ];
 
 const router = new VueRouter({

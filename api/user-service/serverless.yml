@@ -33,18 +33,25 @@ provider:
   environment:
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    WABLAS_TOKEN: ${param:WABLAS_TOKEN}
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
 
 functions:
-  changePassword:
-    handler: src/functions/changePassword.handler
+  requestReset:
+    handler: src/functions/requestReset.handler
+    events:
+      - http:
+          path: /user/reset
+          method: get
+          cors: true
+  resetPassword:
+    handler: src/functions/resetPassword.handler
     events:
       - http:
           path: /user/password
           method: put
           cors: true
-          authorizer: validate
   updateUser:
     handler: src/functions/updateUser.handler
     events:
