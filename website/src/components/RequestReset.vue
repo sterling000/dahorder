@@ -1,7 +1,7 @@
 <template>
   <div class="request-reset">
     <h2>Reset Password</h2>
-    <p v-if="!sent">
+    <p class="instructions" v-if="!sent">
       Enter your phone number. We will Whatsapp you a link to reset your
       password.
     </p>
@@ -25,7 +25,12 @@
           <p class="error">{{ error }}</p>
         </li>
       </ul>
-      <button type="submit" @click.prevent="sendResetLink">
+      <button
+        id="submit"
+        type="submit"
+        @click.prevent="sendResetLink"
+        :disabled="$v.phone.invalid"
+      >
         Request Reset
       </button>
     </form>
@@ -81,9 +86,65 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../assets/styles/config.scss";
 .request-reset {
-  margin: auto;
+  // margin: auto;
   max-width: 1200px;
-  padding: 4em 0 0;
+  padding: 5em 2.5em 0;
+  .instructions {
+    margin: 0.5em 0;
+  }
+  form {
+    .wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+    label {
+      width: 275px;
+      margin: 0 0 0.5em;
+      font-weight: 600;
+    }
+    input,
+    select {
+      display: block;
+      width: 100%;
+      height: 2em;
+      margin: 0 0 1em;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: none;
+    }
+    button#submit {
+      display: block;
+      background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+      height: 2em;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 1em;
+      // padding: 0.5em;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #fff;
+      }
+    }
+    .countrycode {
+      display: inline-block;
+      width: 40px;
+      color: #aaa;
+      padding: 1.5em 0.5em;
+    }
+    input.phone {
+      display: inline-block;
+      width: 65%;
+      margin: 1.5em 0;
+    }
+  }
 }
 </style>
