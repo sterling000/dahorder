@@ -15,21 +15,24 @@
       v-for="shop in shops"
       :key="shop.id"
     >
-      <h3 class="shop">{{ shopNameById(shop.id) }}</h3>
+      <h2 class="shop">{{ shopNameById(shop.id) }}</h2>
       <table>
         <thead>
-          <tr>
+          <tr id="headers">
             <th>Item</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Price (RM)</th>
           </tr>
         </thead>
-        <tr v-for="product in productsByShop(shop.id)" :key="product.id">
+        <tr
+          class="item"
+          v-for="product in productsByShop(shop.id)"
+          :key="product.id"
+        >
           <td>{{ product.name }}</td>
           <td>
-            <p v-if="!edit">{{ product.quantity }}</p>
             <a v-if="!edit" href="#" class="edit" @click.prevent="toggleEdit"
-              >Edit</a
+              >{{ product.quantity }} Edit</a
             >
             <input
               v-if="edit"
@@ -39,11 +42,11 @@
               @blur="toggleEdit"
             />
           </td>
-          <td>{{ product.price }} RM</td>
+          <td>{{ product.price }}</td>
         </tr>
       </table>
 
-      <label for="notes">Notes</label>
+      <label id="notesLabel" for="notes">Notes</label>
       <textarea
         id="notes"
         name="notes"
@@ -51,10 +54,10 @@
         v-model="notes[shop.id]"
       />
 
-      <h3 class="total">
+      <h2 class="total">
         Total:
         <span class="totalNum">{{ total(productsByShop(shop.id)) }} RM</span>
-      </h3>
+      </h2>
 
       <button
         class="checkout"
@@ -196,36 +199,57 @@ export default {
 @import "../assets/styles/config.scss";
 .cart {
   padding: 4em 1em;
-  .shop {
-    font-size: 24px;
-    text-align: center;
-    margin: 1em 0 0;
+  .byShop {
+    padding: 2em 0 2em;
+    border-bottom: solid 3px $color-primary-0;
   }
-  td {
-    padding: 1em;
-    text-align: right;
+  table {
+    width: 100%;
+    margin: 0.5em 0;
+    #headers {
+      text-align: left;
+      th {
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+    a {
+      color: green;
+      text-decoration: underline;
+    }
+    .editQuantity {
+      display: inline;
+      width: 98px;
+    }
+    .item {
+      text-align: left;
+      td {
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
   }
   .totalNum {
     margin: 0 2em;
     color: #55ff55;
   }
-  .editQuantity {
-    font-size: 1.5em;
-    max-width: 5em;
-    text-align: right;
+  #notesLabel {
+    font-weight: 600;
   }
   textarea {
     resize: none;
     height: 8em;
     padding: 0.5em;
     text-align: left;
-    margin-top: 0;
+    margin: 0 0 0.5em;
     width: 100%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: 5%;
     border: solid 1px $color-primary-0;
     overflow: auto;
-    font-size: 1.5em;
+    font-size: 1.2em;
   }
 
   button.checkout {
@@ -255,12 +279,12 @@ export default {
     border-radius: 5%;
     border: solid 1px $color-primary-0;
     font-size: 18px;
-    margin: 2em 0;
     padding: 0.5em;
     &:disabled {
       background-color: rgb(143, 143, 143);
       color: #000;
     }
+    border-bottom: solid 2px grey;
   }
 }
 </style>
