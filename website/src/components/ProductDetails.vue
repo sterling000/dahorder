@@ -1,11 +1,17 @@
 <template>
   <div class="product">
-    <div class="hero" ref="thumbnail"></div>
+    <!-- <div class="hero" ref="thumbnail"></div> -->
+    <img
+      class="hero"
+      :src="details.thumbnail"
+      alt="thumbnail"
+      ref="thumbnail"
+    />
     <div class="wrapper">
       <h2 class="name">{{ details.name }}</h2>
-      <font-awesome-icon
+      <img
+        src="../assets/share.svg"
         class="share-icon"
-        :icon="['fas', 'share']"
         @click.prevent="share"
         v-show="!edit"
       />
@@ -282,10 +288,6 @@ export default {
         this.details = res.data[0];
 
         this.changes = { ...this.details };
-        this.$refs["thumbnail"].style.setProperty(
-          "--thumbnail",
-          `url(${this.details.thumbnail})`
-        );
         this.$store.commit("loading/stop");
       } catch (error) {
         console.error(error);
@@ -305,12 +307,13 @@ export default {
 
 .product {
   padding: 4em 0 5em;
+  max-width: 1200px;
+  margin: auto;
   .hero {
-    // margin: 4em 0 0;
-    background: var(--thumbnail);
-    background-size: cover;
-    min-width: 325px;
-    min-height: 25vh;
+    width: 100%;
+    height: auto;
+    max-width: 1200px;
+    margin: auto;
   }
   .wrapper {
     .status {
@@ -325,10 +328,10 @@ export default {
       line-height: 0.8;
     }
     .share-icon {
-      color: #aaa;
-      font-size: 24px;
-      margin: 0 0.5em;
+      margin: 0 0 0 1em;
       cursor: pointer;
+      width: 24px;
+      height: auto;
     }
     .description {
       margin: 1em;

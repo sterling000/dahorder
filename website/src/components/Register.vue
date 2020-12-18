@@ -244,9 +244,7 @@ export default {
       if (!this.$v.apartment.$dirty) return errors;
       !this.$v.apartment.required && errors.push("Apartment is required.");
       !this.$v.apartment.validApartment &&
-        errors.push(
-          "Apartment is in the wrong format. The format should be A12-C05"
-        );
+        errors.push("Apartment is in the wrong format. ex: A12-C05");
       return errors;
     },
   },

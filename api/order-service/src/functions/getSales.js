@@ -68,18 +68,6 @@ module.exports.handler = async (event, context) => {
     }
   });
   console.log("orders:", orders);
-  // const fields = ["date", "customerId", "orderId", "total"];
-  // const opts = { fields };
-  // let csv;
-  // try {
-  //   const parser = new Parser(opts);
-  //   JSON.stringify(orders);
-  //   csv = parser.parse(JSON.stringify(orders));
-  //   console.log(csv);
-  // } catch (err) {
-  //   console.log("Couldn't parse orders json into csv.");
-  //   return err;
-  // }
   if (orders.length > 0) {
     return {
       headers: {

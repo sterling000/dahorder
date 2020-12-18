@@ -227,6 +227,8 @@ export default {
 .home {
   overflow-y: auto;
   padding: 10vh 0;
+  max-width: 1130px;
+  margin: auto;
 }
 .wrapper {
   display: flex;
@@ -240,14 +242,13 @@ export default {
 }
 .carousel {
   padding: 15px 0 0 0;
-  overflow: scroll;
   overflow-y: hidden;
   ul {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: 10px;
     grid-auto-flow: column;
-    grid-auto-columns: calc(50% - 20 * 2);
+    grid-auto-columns: repeat(auto-fit, minmax(18em, 18em));
     grid-template-rows: minmax(175px, 1fr);
     &::before,
     ::after {

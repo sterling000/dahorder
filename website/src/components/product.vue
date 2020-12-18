@@ -2,14 +2,21 @@
   <div class="product" @click="onClick" ref="component">
     <div id="product-thumbnail" ref="thumbnail"></div>
     <div class="wrapper">
-      <h2>{{ product.name }}</h2>
+      <h2>{{ displayName(product.name) }}</h2>
       <p
         class="remaining"
-        v-show="product.remaining <= 10 && product.remaining > 0"
+        v-show="
+          product.remaining <= 10 &&
+            product.remaining > 0 &&
+            product.status != 'sold out'
+        "
       >
-        Only {{ product.remaining }} left
+        {{ product.remaining }} left
       </p>
-      <p class="remaining" v-show="product.remaining == 0">
+      <p
+        class="remaining"
+        v-show="product.remaining == 0 || product.status == 'sold out'"
+      >
         Sold Out
       </p>
     </div>
@@ -31,6 +38,13 @@ export default {
   },
   props: ["product"],
   methods: {
+    displayName(fullName) {
+      if (fullName.length > 15) {
+        return fullName.substring(0, 15) + "...";
+      } else {
+        return fullName;
+      }
+    },
     onClick: function() {
       this.$emit("selected", this.product);
     },
@@ -52,15 +66,18 @@ export default {
   .wrapper {
     display: flex;
     justify-content: space-between;
+    padding: 0.35em 0.25em;
     h2 {
-      font-size: 18px;
+      font-size: 16px;
       float: left;
-      margin: 0.25em 0;
+      margin: 0.1em 0;
+      max-width: 170px;
     }
     .remaining {
       color: #fff;
       float: right;
-      margin: 0.25em 0;
+      margin: 0.1em 0;
+      font-size: 14px;
     }
   }
 

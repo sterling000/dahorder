@@ -3,9 +3,10 @@
     <div class="category">
       <div class="title">
         <h2>Products</h2>
-        <font-awesome-icon
+
+        <img
+          src="../assets/share.svg"
           class="share-icon"
-          :icon="['fas', 'share']"
           @click.prevent="share"
         />
       </div>
@@ -103,9 +104,10 @@ export default {
     display: flex;
   }
   .share-icon {
-    font-size: 24px;
-    margin: 0 1em;
+    margin: 0 0 0 1em;
     cursor: pointer;
+    width: 24px;
+    height: auto;
   }
   overflow-y: auto;
   padding: 10vh 5vh 15vh;

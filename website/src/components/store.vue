@@ -1,7 +1,7 @@
 <template>
   <div class="store" @click="onClick">
     <div id="store-thumbnail" ref="thumbnail"></div>
-    <h2>{{ store.name }}</h2>
+    <h2>{{ displayName(store.name) }}</h2>
   </div>
 </template>
 
@@ -13,6 +13,13 @@ export default {
   methods: {
     onClick: function() {
       this.$emit("selected", this.store);
+    },
+    displayName(fullName) {
+      if (fullName.length > 20) {
+        return fullName.substring(0, 20) + "...";
+      } else {
+        return fullName;
+      }
     },
   },
   mounted() {
@@ -34,12 +41,13 @@ export default {
   height: 167px;
   border-radius: 5%;
   background-color: $color-primary-0;
-  .shortcut-icon {
-    float: right;
-    margin: 0 0.4em 0 0;
-  }
+
   h2 {
-    font-size: 18px;
+    padding: 0.35em 0.25em;
+    font-size: 16px;
+    float: left;
+    margin: 0.1em 0;
+    max-width: 200px;
   }
   cursor: pointer;
   #store-thumbnail {

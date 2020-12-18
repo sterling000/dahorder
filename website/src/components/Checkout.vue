@@ -196,7 +196,7 @@ export default {
     background-color: $color-primary-0;
     color: $color-primary-3;
     width: 100%;
-    height: 4em;
+    height: 2em;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: 5%;
     border: solid 1px $color-primary-0;

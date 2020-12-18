@@ -36,7 +36,7 @@
             >
             <input
               v-if="edit"
-              type="text"
+              type="number"
               class="editQuantity"
               v-model="product.quantity"
               @blur="toggleEdit"
