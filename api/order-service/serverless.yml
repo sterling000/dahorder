@@ -20,6 +20,7 @@ provider:
     DYNAMODB_SHOP_TABLE: ${self:custom.dynamodb.shopTable}
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
     JWT_SECRET: ${param:JWT_SECRET}
+    WABLAS_TOKEN: ${param:WABLAS_TOKEN}
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
 
@@ -46,6 +47,22 @@ provider:
 
 
 functions:
+  getSales:
+    handler: src/functions/getSales.handler
+    events:
+      - http:
+          method: get
+          path: /sales
+          cors: true
+          authorizer: validate
+  cancelOrder:
+    handler: src/functions/cancelOrder.handler
+    events:
+      - http:
+          method: post
+          path: /cancel
+          cors: true
+          authorizer: validate
   submitPayment:
     handler: src/functions/submitPayment.handler
     events:

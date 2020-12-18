@@ -1,7 +1,7 @@
 <template>
   <div class="orders">
     <h2>Orders</h2>
-    <div class="noSignin" v-if="!isSignedin">
+    <div class="noSignin" v-if="!isSignedIn">
       <p>Sign in to view your order history.</p>
     </div>
     <div class="can-toggle">
@@ -22,7 +22,9 @@
       <ul>
         <li
           class="purchase"
-          v-for="order in sortable(receipts).sort(sortOrders)"
+          v-for="order in sortable(receipts)
+            .sort(sortOrders)
+            .slice(0, numOrdersToShow)"
           :key="order.orderId"
         >
           <receipt
@@ -31,9 +33,17 @@
             @checkout="checkout"
             :mode="mode"
             v-if="order !== undefined"
+            @cancel="cancel"
           />
         </li>
       </ul>
+      <p
+        v-if="sortable(receipts).length > numOrdersToShow"
+        class="clickable"
+        @click.prevent="numOrdersToShow += 10"
+      >
+        More
+      </p>
     </div>
     <div class="sales" v-show="mode">
       <h3>Sales</h3>
@@ -46,8 +56,15 @@
           v-for="(shop, propertyName) in this.sales"
           :key="propertyName"
         >
+          <h5>
+            {{ shops.find((stateShop) => stateShop.id == propertyName).name }}
+          </h5>
           <ul>
-            <li class="sale" v-for="sale in shop" :key="sale.orderId">
+            <li
+              class="sale"
+              v-for="sale in shop.slice(0, numOrdersToShow)"
+              :key="sale.orderId"
+            >
               <receipt
                 :date="localDateTime(sale.date)"
                 :order="sale"
@@ -57,6 +74,13 @@
               <!-- @complete="complete" -->
             </li>
           </ul>
+          <p
+            v-if="shop.length > numOrdersToShow"
+            class="clickable"
+            @click.prevent="numOrdersToShow += 10"
+          >
+            More
+          </p>
         </li>
       </ul>
     </div>
@@ -71,14 +95,15 @@ export default {
       sales: {},
       shops: [],
       mode: false,
+      numOrdersToShow: 10,
     };
   },
   async mounted() {
-    if (this.isSignedin) {
+    if (this.isSignedIn) {
       this.$store.commit("loading/start");
       this.getReceipts();
       await this.getShops();
-
+      this.getOrderMode();
       this.$store.commit("loading/stop");
     }
   },
@@ -89,7 +114,7 @@ export default {
     orderIds() {
       return Object.keys(this.receipts);
     },
-    isSignedin() {
+    isSignedIn() {
       return this.$store.state.account.token !== null;
     },
     saleIds() {
@@ -112,6 +137,20 @@ export default {
           await this.getOrders(shop.id);
         })
       );
+    },
+    getOrderMode() {
+      const orderId = this.$route.params.id;
+      if (orderId !== undefined) {
+        this.saleIds.forEach((shopId) => {
+          const sale = this.sales[shopId].find(
+            (sale) => sale.orderId == orderId
+          );
+          if (sale != undefined) {
+            this.mode = true;
+            return;
+          }
+        });
+      }
     },
     getReceipts: async function() {
       const receiptResponse = await this.$http.get(
@@ -151,6 +190,9 @@ export default {
     checkout(order) {
       this.$router.push(`/checkout/${order.orderId}`);
     },
+    cancel(order) {
+      this.$router.push(`/cancel/${order.orderId}`);
+    },
     // complete(order){
     //   console.log("")
     // }
@@ -189,12 +231,12 @@ export default {
 @import "../assets/styles/config.scss";
 @import "../assets/styles/toggle.scss";
 .orders {
-  padding: 4em 1em;
+  padding: 4em 1em 6em;
   h2 {
     margin: 0 0 0.5em;
   }
   ul {
-    margin: 2em 1em;
+    margin: 0.5em 0;
     li.sale {
       margin: 0.25em;
       .status {
@@ -203,6 +245,10 @@ export default {
         font-weight: 600;
       }
     }
+  }
+  .clickable {
+    cursor: pointer;
+    margin: 0 0 1em 1em;
   }
 }
 </style>

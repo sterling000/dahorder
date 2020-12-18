@@ -1,11 +1,17 @@
 <template>
   <div class="product">
-    <div class="hero" ref="thumbnail"></div>
+    <!-- <div class="hero" ref="thumbnail"></div> -->
+    <img
+      class="hero"
+      :src="details.thumbnail"
+      alt="thumbnail"
+      ref="thumbnail"
+    />
     <div class="wrapper">
       <h2 class="name">{{ details.name }}</h2>
-      <font-awesome-icon
+      <img
+        src="../assets/share.svg"
         class="share-icon"
-        :icon="['fas', 'share']"
         @click.prevent="share"
         v-show="!edit"
       />
@@ -14,10 +20,25 @@
         <textarea
           name="description"
           :placeholder="details.description"
+          v-model="changes.description"
           v-show="edit"
         ></textarea>
       </div>
       <ul>
+        <li>
+          <h2>Status</h2>
+          <p class="status" v-show="!edit">{{ details.status }}</p>
+          <select
+            v-show="edit"
+            :placeholder="details.status"
+            v-model="changes.status"
+            name="condo"
+          >
+            <option>active</option>
+            <option>cancelled</option>
+            <option>sold out</option>
+          </select>
+        </li>
         <li>
           <h2>Price</h2>
           <p v-show="!edit">{{ details.price }} RM</p>
@@ -25,9 +46,11 @@
             type="text"
             name="price"
             :placeholder="details.price"
+            v-model="changes.price"
             v-show="edit"
           />
         </li>
+
         <li>
           <h2>Quantity</h2>
           <p v-show="!edit">
@@ -37,6 +60,7 @@
             type="text"
             name="quantity"
             :placeholder="details.quantity"
+            v-model="changes.quantity"
             v-show="edit"
           />
         </li>
@@ -49,14 +73,21 @@
             type="datetime-local"
             name="date"
             id="date"
+            :placeholder="details.available"
             v-model="changes.available"
           />
         </li>
         <li>
           <h2>Delivery</h2>
-          <p v-show="!edit">{{ details.delivery }}</p>
+          <p v-show="!edit && details.delivery">Seller to notify delivery</p>
+          <p v-show="!edit && !details.delivery">Pick up at seller's unit</p>
           <div v-show="edit" class="can-toggle">
-            <input type="checkbox" id="delivery" v-model="changes.delivery" />
+            <input
+              type="checkbox"
+              id="delivery"
+              :placeholder="details.delivery"
+              v-model="changes.delivery"
+            />
             <label for="delivery">
               <div
                 class="can-toggle__switch"
@@ -116,12 +147,11 @@ export default {
   data() {
     return {
       details: {},
-      changes: {
-        delivery: true,
-      },
+      changes: {},
       edit: false,
       thumbnail: "",
       date: "",
+      removed: "",
     };
   },
   methods: {
@@ -168,11 +198,51 @@ export default {
       const filtered = originalKeys.filter(
         (key) => this.details[key] !== this.changes[key]
       );
+      if (filtered.length == 0) {
+        console.log("No changes.");
+        this.toggleEdit();
+        return;
+      }
       const params = {};
       filtered.forEach((key) => {
         params[key] = this.changes[key];
       });
       params["id"] = this.$route.params.id;
+      const { status, quantity } = params;
+      console.debug(status, quantity);
+      if (quantity != undefined) {
+        params["remaining"] = quantity;
+        this.changes["remaining"] = quantity;
+        if (quantity == 0) {
+          params["status"] = "sold out";
+          this.changes["status"] = "sold out";
+        }
+      }
+      if (status !== undefined && status == "active") {
+        console.debug("status is changed to active");
+        // validate date is in the future
+        const now = new Date();
+        const then = new Date(this.details.available);
+        if (params.available != undefined) {
+          const changedDate = new Date(params.available);
+          if (changedDate <= now) {
+            throw "To change a product status to Active, you must select a date that is not in the past.";
+          }
+        } else if (then <= now) {
+          throw "To change a product status to Active, you must select a date that is not in the past.";
+        }
+
+        // validate quantity will not be zero, and reset remaining
+        if (this.details.remaining < 1 && quantity == undefined) {
+          this.changes["quantity"] = this.details.quantity;
+          params["quantity"] = this.details.quantity;
+          params["remaining"] = quantity;
+          this.changes["remaining"] = quantity;
+        } else if (this.details.remaining < 1 && quantity < 1) {
+          throw "To change a product status to Active, you must have quantity greater than zero.";
+        }
+      }
+
       console.log("Saving changes.");
       this.$store.commit("loading/start");
       if (params.thumbnail !== undefined) {
@@ -200,7 +270,7 @@ export default {
       } catch (putError) {
         console.error(putError);
       }
-      this.details = this.changes;
+      this.details = { ...this.changes };
       this.$store.commit("loading/stop");
       this.toggleEdit();
     },
@@ -216,12 +286,8 @@ export default {
           options
         );
         this.details = res.data[0];
-        this.details.delivery = this.details.delivery == "true";
+
         this.changes = { ...this.details };
-        this.$refs["thumbnail"].style.setProperty(
-          "--thumbnail",
-          `url(${this.details.thumbnail})`
-        );
         this.$store.commit("loading/stop");
       } catch (error) {
         console.error(error);
@@ -235,20 +301,24 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/styles/config.scss";
 @import "../assets/styles/toggle.scss";
 
 .product {
   padding: 4em 0 5em;
+  max-width: 1200px;
+  margin: auto;
   .hero {
-    // margin: 4em 0 0;
-    background: var(--thumbnail);
-    background-size: cover;
-    min-width: 325px;
-    min-height: 25vh;
+    width: 100%;
+    height: auto;
+    max-width: 1200px;
+    margin: auto;
   }
   .wrapper {
+    .status {
+      text-transform: capitalize;
+    }
     .name {
       display: inline-flex;
       min-width: 0;
@@ -258,10 +328,10 @@ export default {
       line-height: 0.8;
     }
     .share-icon {
-      color: #aaa;
-      font-size: 24px;
-      margin: 0 0.5em;
+      margin: 0 0 0 1em;
       cursor: pointer;
+      width: 24px;
+      height: auto;
     }
     .description {
       margin: 1em;
@@ -295,6 +365,10 @@ export default {
       #date {
         font-size: 1em;
         width: 85%;
+      }
+      select {
+        font-size: 1.5em;
+        text-transform: capitalize;
       }
     }
 

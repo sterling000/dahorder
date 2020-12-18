@@ -29,6 +29,12 @@ const routes = [
     beforeEnter: boot,
   },
   {
+    path: "/sales",
+    name: "Sales",
+    component: () => import("../components/Sales.vue"),
+    beforeEnter: boot,
+  },
+  {
     path: "/products/:id/:owner",
     name: "Products",
     component: () => import("../components/Products.vue"),
@@ -63,7 +69,13 @@ const routes = [
     beforeEnter: boot,
   },
   {
-    path: "/orders",
+    path: "/cancel/:orderId",
+    name: "Cancel",
+    component: () => import("../components/Cancel.vue"),
+    beforeEnter: boot,
+  },
+  {
+    path: "/orders/:id?",
     name: "Orders",
     component: () => import("../components/Orders.vue"),
     beforeEnter: boot,
@@ -88,6 +100,16 @@ const routes = [
     path: "/register",
     name: "Register",
     component: () => import("../components/Register.vue"),
+  },
+  {
+    path: "/reset/:token",
+    name: "Reset",
+    component: () => import("../components/Reset.vue"),
+  },
+  {
+    path: "/request-reset",
+    name: "Request Reset",
+    component: () => import("../components/RequestReset.vue"),
   },
 ];
 

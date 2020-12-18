@@ -26,7 +26,7 @@
               <p>{{ localDate(order.date) }}</p>
             </div>
           </div>
-          <div class="itemInfo">
+          <div v-if="!mode" class="itemInfo">
             <strong>Recipient</strong>
             <p>{{ order.owner }}</p>
           </div>
@@ -52,13 +52,28 @@
               />
             </li>
           </ul>
+          <div class="itemInfo">
+            <strong>Notes:</strong>
+            <p>{{ order.notes }}</p>
+          </div>
 
           <button
             class="checkout"
             @click="checkout"
-            v-show="order.status === 'pending'"
+            v-if="order.status === 'pending' && !mode"
           >
             Check Out
+          </button>
+          <button
+            class="cancel"
+            @click="cancel"
+            v-if="
+              order.status !== 'cancelled' &&
+                order.status !== 'completed' &&
+                !mode
+            "
+          >
+            Cancel Order
           </button>
           <!-- <button
             class="complete"
@@ -83,14 +98,30 @@ export default {
   props: ["order", "date", "mode"],
   async mounted() {
     // todo: every receipt shouldn't be looking up this data it should be passed down in a prop.
-    const owner = await this.$http.get(
-      `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
-      {
-        params: { user: this.order.owner },
+    if (!this.mode) {
+      const owner = await this.$http.get(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        {
+          params: { user: this.order.owner },
+        }
+      );
+      if (owner.status === 200) {
+        this.address = `${owner.data.condo} - ${owner.data.apartment}`;
       }
-    );
-    if (owner.status === 200) {
-      this.address = `${owner.data.condo} - ${owner.data.apartment}`;
+    } else {
+      const customer = await this.$http.get(
+        `${process.env.VUE_APP_USER_SERVICE_URL}/user`,
+        {
+          params: { user: this.order.customerId },
+        }
+      );
+      if (customer.status === 200) {
+        this.address = `${customer.data.condo} - ${customer.data.apartment}`;
+      }
+    }
+    console.debug("receipt debug:", this.$route.params.id, this.order.orderId);
+    if (this.$route.params.id == this.order.orderId) {
+      setTimeout(() => this.collapsibleClicked(), 500);
     }
   },
   methods: {
@@ -106,6 +137,7 @@ export default {
       this.$refs["collapsible"].classList.toggle("active");
 
       var content = this.$refs["collapsible"].nextElementSibling;
+      console.debug("collapsible content", content);
       if (content.style.maxHeight) {
         content.style.maxHeight = null;
       } else {
@@ -119,6 +151,9 @@ export default {
     checkout() {
       this.$emit("checkout", this.order);
     },
+    cancel() {
+      this.$emit("cancel", this.order);
+    },
     complete() {
       this.$emit("complete", this.order);
     },
@@ -130,7 +165,6 @@ export default {
       }
     },
     async directions() {
-      // todo: if !this.mode give this.address else give customer.address
       await navigator.clipboard.writeText(this.address);
       console.log(`${this.address} - Copied to clipboard!`);
     },
@@ -205,6 +239,25 @@ export default {
     button.checkout {
       display: block;
       background-color: $color-primary-0;
+      color: #fff;
+      width: 100%;
+
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5%;
+      border: solid 1px $color-primary-0;
+      font-size: 1.5em;
+      font-weight: 600;
+      padding: 0.25em;
+      text-transform: uppercase;
+      &:disabled {
+        background-color: rgb(143, 143, 143);
+        color: #000;
+      }
+    }
+    button.cancel {
+      display: block;
+      background-color: #f00;
       color: #fff;
       width: 100%;
 

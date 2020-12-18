@@ -32,7 +32,7 @@
       "type": "string",
       "title": "Phone",
       "minLength": 7,
-      "maxLength": 12
+      "maxLength": 14
     },
     "role": {
       "type": "string",

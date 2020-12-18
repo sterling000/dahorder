@@ -42,7 +42,7 @@
         Sign In
       </button>
       <button @click.prevent="register">Register</button>
-      <a href="#" class="forgot-password">Forgot Password?</a>
+      <a href="/request-reset" class="forgot-password">Forgot Password?</a>
     </form>
     <p v-if="this.errors.length > 0" class="error">{{ errors }}</p>
   </div>
@@ -106,7 +106,7 @@ export default {
         );
         this.$store.commit("account/user", res2.data);
         this.$store.commit("loading/stop");
-        if (this.from.name !== null) {
+        if (this.from.name !== null && this.from.name !== "Reset") {
           this.$router.back();
         } else {
           this.$router.push("/");

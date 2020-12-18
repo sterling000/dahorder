@@ -23,7 +23,7 @@ module.exports.handler = async (event) => {
   const quantity = Number(body.quantity);
   const remaining = Number(body.remaining);
   const available = body.available;
-  const delivery = body.delivery == 'true';
+  const delivery = body.delivery;
   const shop = body.shop;
 
   const newProductParams = {
@@ -40,13 +40,14 @@ module.exports.handler = async (event) => {
       available: available,
       delivery: delivery,
       shop: shop,
+      status: "active",
     },
     ConditionExpression: "attribute_not_exists(id)",
   };
 
   try {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
-    const putResult = await dynamodb.put(newProductParams).promise();
+    await dynamodb.put(newProductParams).promise();
     return {
       statusCode: 201,
       headers: {

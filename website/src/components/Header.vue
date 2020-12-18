@@ -23,6 +23,12 @@
             class="nav-link"
             >My Shops</router-link
           >
+          <router-link
+            v-show="signedIn && isSeller"
+            to="/sales"
+            class="nav-link"
+            >My Sales</router-link
+          >
           <router-link v-show="signedIn" to="/logout" class="nav-link"
             >Log out</router-link
           >

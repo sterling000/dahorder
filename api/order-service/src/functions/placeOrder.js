@@ -2,6 +2,7 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const generator = require("generate-password");
+const http = require("https");
 module.exports.handler = async (event) => {
   console.log(event);
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -15,7 +16,7 @@ module.exports.handler = async (event) => {
 
   const shopId = body.shop;
   const owner = body.owner;
-
+  const notes = body.notes;
   const getOwnerParams = {
     TableName: process.env.DYNAMODB_USER_TABLE,
     Key: {
@@ -53,6 +54,37 @@ module.exports.handler = async (event) => {
   }
 
   const customerId = decodedJwt.phone;
+  const getCustomerParams = {
+    TableName: process.env.DYNAMODB_USER_TABLE,
+    Key: {
+      pk: customerId,
+    },
+  };
+
+  let customerResponse;
+  try {
+    customerResponse = await dynamodb.get(getCustomerParams).promise();
+  } catch (error) {
+    console.error("Couldn't get the customer's user info.");
+    return new Error("There was a problem getting the customer user info.");
+  }
+  let customerName;
+  if (customerResponse.Item !== undefined) {
+    customerName = customerResponse.Item.name;
+  } else {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers": "Authorization",
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "Could not find the customer of the order.",
+      }),
+    };
+  }
 
   const products = [];
   const productPromises = [];
@@ -106,6 +138,7 @@ module.exports.handler = async (event) => {
   console.log("Total: ", total);
   const delivery = body.delivery;
   const date = new Date().toISOString();
+  const { password, ...customer } = customerResponse.Item;
   const newOrderParams = {
     TableName: process.env.DYNAMODB_ORDER_TABLE,
     Item: {
@@ -113,12 +146,14 @@ module.exports.handler = async (event) => {
       shopId: shopId,
       owner: owner,
       customerId: customerId,
+      customer: customer,
       products: products,
       delivery: delivery,
       date: date,
       updated: date,
       total: total,
       status: "pending",
+      notes: notes,
     },
     ConditionExpression: "attribute_not_exists(orderId)",
   };
@@ -129,19 +164,27 @@ module.exports.handler = async (event) => {
       (dbProduct) => dbProduct.product.id == product.id
     );
     console.log("product found: ", product.id, dbProductFound);
-
+    const newRemaining = dbProductFound.product.remaining - product.quantity;
+    let updateExpression = "set #remaining = :remaining";
+    let expressionAttributeNames = {
+      "#remaining": "remaining",
+    };
+    let expressionAttributeValues = {
+      ":remaining": newRemaining,
+    };
+    if (newRemaining == 0) {
+      updateExpression += ", #status = :status";
+      expressionAttributeNames["#status"] = "status";
+      expressionAttributeValues[":status"] = "sold out";
+    }
     const productParams = {
       TableName: process.env.DYNAMODB_PRODUCT_TABLE,
       Key: {
         id: product.id,
       },
-      UpdateExpression: "set #remaining = :remaining",
-      ExpressionAttributeValues: {
-        ":remaining": dbProductFound.product.remaining - product.quantity,
-      },
-      ExpressionAttributeNames: {
-        "#remaining": "remaining",
-      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ExpressionAttributeNames: expressionAttributeNames,
       ReturnValues: "UPDATED_NEW",
     };
     console.log("productParams", productParams);
@@ -169,6 +212,46 @@ module.exports.handler = async (event) => {
     console.log(newOrderParams);
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const putResult = await dynamodb.put(newOrderParams).promise();
+
+    const orderPage = `${event.headers.origin}/orders/${orderId}`;
+    const message = `Yay! ${customerName} has placed an order from your shop. Please click here ${orderPage} to check`;
+    const requestBody = {
+      phone: owner,
+      message: message,
+    };
+    const options = {
+      host: "sawit.wablas.com",
+      port: 443,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: process.env.WABLAS_TOKEN,
+      },
+      path: "/api/send-message",
+      method: "POST",
+    };
+
+    console.log("options:", options);
+    let wablasPromise = new Promise((resolve, reject) => {
+      const req = http.request(options, (res) => {
+        res.setEncoding("utf8");
+        let responseBody = "";
+        res.on("data", (chunk) => {
+          responseBody += chunk;
+        });
+        res.on("end", () => {
+          resolve(JSON.parse(responseBody));
+        });
+        res.on("error", (err) => {
+          reject(err);
+        });
+      });
+
+      req.write(JSON.stringify(requestBody));
+      req.end();
+    });
+    console.log("Sending wablas request...");
+    const wabResponse = await wablasPromise;
+    console.log(wabResponse);
     return {
       statusCode: 201,
       headers: {

@@ -25,9 +25,16 @@
       />
     </div>
     <div class="image-actions">
-      <font-awesome-icon
+      <!-- <font-awesome-icon
         class="share-icon"
         :icon="['fas', 'share']"
+        @click.prevent="rotate"
+        v-show="image !== null"
+      /> -->
+      <img
+        src="../assets/rotate.svg"
+        alt="rotate"
+        class="share-icon"
         @click.prevent="rotate"
         v-show="image !== null"
       />
@@ -140,8 +147,14 @@ export default {
   margin: 1em 0;
 
   .image-actions {
-    text-align: center;
-    font-size: 3em;
+    display: flex;
+    justify-content: space-evenly;
+    .share-icon {
+      margin: 1em;
+      cursor: pointer;
+      width: 36px;
+      height: auto;
+    }
   }
   label {
     .thumbnail {

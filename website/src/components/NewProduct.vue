@@ -5,7 +5,8 @@
       <ul>
         <li>
           <div class="wrapper">
-            <label for="name">Name</label>
+            <label for="name">Name </label>
+
             <input
               class="name"
               v-model="name"
@@ -13,7 +14,10 @@
               @blur="$v.name.$touch()"
             />
           </div>
-
+          <p class="nameHint">
+            Names longer than 15 characters will be trimmed on the home page /
+            store.
+          </p>
           <p v-if="$v.name.$dirty && $v.name.$invalid">{{ nameErrors }}</p>
         </li>
         <li class="price">
@@ -71,12 +75,12 @@
         </li>
         <li>
           <label for="date">Date Available</label>
-          <!-- <date-picker :option="timeOption" :date="date" :limit="limit" /> -->
           <input
             type="datetime-local"
             name="date"
             id="date"
             v-model="date"
+            :min="date"
             @change="$v.date.$touch()"
           />
           <p v-if="$v.date.$dirty && $v.date.$invalid">
@@ -143,6 +147,16 @@ export default {
   methods: {
     thumbnailRendered: function(e) {
       this.thumbnail = e;
+    },
+    getNow() {
+      return new Date();
+    },
+    getDateNoon() {
+      let now = new Date();
+      now.setTime(now.getTime() + now.getTimezoneOffset() * 60 * 1000);
+      const noon = `${now.getFullYear()}-${now.getMonth() +
+        1}-${now.getDate()}T12:00`;
+      return noon;
     },
     submit: async function() {
       this.$v.$touch();
@@ -261,6 +275,7 @@ export default {
     },
   },
   mounted() {
+    this.date = this.getDateNoon();
     this.$store.commit("loading/stop");
     if (this.$store.state.account.token === null) {
       this.$router.push("/login");
@@ -294,6 +309,13 @@ export default {
         .price,
         .quantity {
           width: 175px;
+        }
+        .nameHint {
+          display: block;
+          font-style: italic;
+          font-weight: 100;
+          line-height: 1;
+          font-size: 12px;
         }
       }
       input {

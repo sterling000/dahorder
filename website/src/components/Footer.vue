@@ -50,7 +50,7 @@
       </li>
 
       <li v-show="!signedIn" id="login" class="cta" @click="signIn" ref="login">
-        <div>Sign In</div>
+        <div>Log In</div>
       </li>
       <li
         v-show="!signedIn"
@@ -103,13 +103,16 @@ export default {
       const shopKeys = Object.keys(this.products);
       if (shopKeys.length > 0) {
         shopKeys.forEach((key) => {
-          let quantities = this.products[key].map(
-            (product) => product.quantity
+          let quantities = this.products[key].map((product) =>
+            parseInt(product.quantity)
           );
-          total += quantities.reduce(
+          const addend = quantities.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0
           );
+          if (addend > 0) {
+            total += addend;
+          }
         });
       }
       return total;

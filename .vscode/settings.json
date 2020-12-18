@@ -1,8 +1,11 @@
 {
     "cSpell.words": [
+        "Armanee",
         "Vuelidate",
         "fontawesome",
-        "fortawesome"
+        "fortawesome",
+        "sawit",
+        "wablas"
     ],
     "cSpell.enableFiletypes": [
         "!asciidoc",
@@ -23,5 +26,8 @@
         "vue",
         "vue-html",
         "vue-postcss"
+    ],
+    "remote.containers.defaultExtensions": [
+        "mutantdino.resourcemonitor"
     ]
 }

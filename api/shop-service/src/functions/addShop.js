@@ -12,14 +12,12 @@ module.exports.handler = async (event) => {
 
   const body = JSON.parse(event.body);
   const owner = decodedJwt.phone;
-  const name = body.name;
+  const { name, condo, description, thumbnail, category } = body;
+
   const id = uuidv5(
     `${process.env.DYNAMODB_SHOP_TABLE}-${owner}-${name}`,
     uuidv5.URL
   );
-  const condo = body.condo;
-  const description = body.description;
-  const thumbnail = body.thumbnail;
 
   const newShopParams = {
     TableName: process.env.DYNAMODB_SHOP_TABLE,
@@ -30,6 +28,7 @@ module.exports.handler = async (event) => {
       condo: condo,
       description: description,
       thumbnail: thumbnail,
+      category: category,
     },
     ConditionExpression: "attribute_not_exists(pk)",
   };

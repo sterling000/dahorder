@@ -74,12 +74,17 @@ export default {
 .shops {
   overflow-y: auto;
   padding: 10vh 5vh 15vh;
-
-  .category {
-    margin: 1em;
+  max-width: 1200px;
+  margin: auto;
+  ul {
+    display: flex;
     display: grid;
     grid-gap: 10px;
-    grid-template-columns: repeat(1fr);
+    grid-template-columns: repeat(auto-fill, minmax(325px, 1fr));
+  }
+  .category {
+    margin: 1em;
+
     .store {
       padding: 0.5em 0;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),

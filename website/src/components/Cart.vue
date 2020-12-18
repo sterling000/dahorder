@@ -15,28 +15,49 @@
       v-for="shop in shops"
       :key="shop.id"
     >
-      <h3 class="shop">{{ shopNameById(shop.id) }}</h3>
+      <h2 class="shop">{{ shopNameById(shop.id) }}</h2>
       <table>
         <thead>
-          <tr>
+          <tr id="headers">
             <th>Item</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Price (RM)</th>
           </tr>
         </thead>
-        <tr v-for="product in productsByShop(shop.id)" :key="product.id">
+        <tr
+          class="item"
+          v-for="product in productsByShop(shop.id)"
+          :key="product.id"
+        >
           <td>{{ product.name }}</td>
           <td>
-            {{ product.quantity }}
+            <a v-if="!edit" href="#" class="edit" @click.prevent="toggleEdit"
+              >{{ product.quantity }} Edit</a
+            >
+            <input
+              v-if="edit"
+              type="number"
+              class="editQuantity"
+              v-model="product.quantity"
+              @blur="toggleEdit"
+            />
           </td>
-          <td>{{ product.price }} RM</td>
+          <td>{{ product.price }}</td>
         </tr>
       </table>
 
-      <h3 class="total">
+      <label id="notesLabel" for="notes">Notes</label>
+      <textarea
+        id="notes"
+        name="notes"
+        placeholder="No onions, less spicy, buzzer #, please leave inside gate..."
+        v-model="notes[shop.id]"
+      />
+
+      <h2 class="total">
         Total:
         <span class="totalNum">{{ total(productsByShop(shop.id)) }} RM</span>
-      </h3>
+      </h2>
 
       <button
         class="checkout"
@@ -57,11 +78,13 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { mapState } from "vuex";
 export default {
   methods: {
     clear(shop) {
       this.$store.commit("cart/clearProducts", shop.id);
+      Vue.delete(this.notes, shop.id);
     },
     placeOrder: async function(shop) {
       this.$store.commit("loading/start");
@@ -71,6 +94,7 @@ export default {
         owner: shop.owner,
         products: this.products[shop.id],
         delivery: true,
+        notes: this.notes[shop.id],
       };
       const options = {
         headers: { Authorization: `Bearer ${this.$store.state.account.token}` },
@@ -90,6 +114,7 @@ export default {
       }
       console.log("Order Submitted");
       this.$store.commit("cart/clearProducts", shop.id);
+      this.$store.commit("recent/rememberShop", this.shopById(shop.id));
       this.$router.push(`/orders`);
     },
     total(products) {
@@ -130,6 +155,9 @@ export default {
       }
       return shop;
     },
+    toggleEdit() {
+      this.edit = !this.edit;
+    },
     shopNameById(id) {
       const shop = this.shopById(id);
       if (shop !== null) {
@@ -141,6 +169,8 @@ export default {
   data() {
     return {
       shopDetails: [],
+      notes: {},
+      edit: false,
     };
   },
   computed: {
@@ -169,18 +199,57 @@ export default {
 @import "../assets/styles/config.scss";
 .cart {
   padding: 4em 1em;
-  .shop {
-    font-size: 24px;
-    text-align: center;
-    margin: 1em 0 0;
+  .byShop {
+    padding: 2em 0 2em;
+    border-bottom: solid 3px $color-primary-0;
   }
-  td {
-    padding: 1em;
-    text-align: right;
+  table {
+    width: 100%;
+    margin: 0.5em 0;
+    #headers {
+      text-align: left;
+      th {
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+    a {
+      color: green;
+      text-decoration: underline;
+    }
+    .editQuantity {
+      display: inline;
+      width: 98px;
+    }
+    .item {
+      text-align: left;
+      td {
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
   }
   .totalNum {
     margin: 0 2em;
     color: #55ff55;
+  }
+  #notesLabel {
+    font-weight: 600;
+  }
+  textarea {
+    resize: none;
+    height: 8em;
+    padding: 0.5em;
+    text-align: left;
+    margin: 0 0 0.5em;
+    width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5%;
+    border: solid 1px $color-primary-0;
+    overflow: auto;
+    font-size: 1.2em;
   }
 
   button.checkout {
@@ -210,12 +279,12 @@ export default {
     border-radius: 5%;
     border: solid 1px $color-primary-0;
     font-size: 18px;
-    margin: 2em 0;
     padding: 0.5em;
     &:disabled {
       background-color: rgb(143, 143, 143);
       color: #000;
     }
+    border-bottom: solid 2px grey;
   }
 }
 </style>

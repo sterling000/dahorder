@@ -3,7 +3,8 @@
     <h2>Admin</h2>
     <h3>Orders awaiting Payment</h3>
     <h4 v-if="orders && orders.length < 1">
-      There are no orders with status <span style="color: orange;">paid</span>
+      There are no orders
+      <!-- with status <span style="color: orange;">paid</span> -->
     </h4>
     <ul class="order-list">
       <li class="order" v-for="order in orders" :key="order.orderId">
@@ -23,7 +24,9 @@
           class="image"
           :style="{ backgroundImage: 'url(' + order.payment + ')' }"
           @click.prevent="viewImage(order.payment)"
+          v-if="order.payment != 'cash'"
         />
+        <p v-if="order.payment == 'cash'" class="cash">Cash</p>
         <div class="status">
           <h3>Status</h3>
           <p>{{ order.status }}</p>
@@ -54,7 +57,10 @@ export default {
     }),
   },
   async mounted() {
-    this.getOrders();
+    await this.getOrders();
+    this.orders.sort((a, b) => {
+      return a.updated > b.updated ? -1 : 1;
+    });
   },
   methods: {
     async confirm(order, isConfirmed) {
@@ -79,7 +85,7 @@ export default {
         console.error(error);
         this.$store.commit("loading/stop");
       }
-      this.getOrders();
+      setTimeout(() => this.getOrders(), 1000);
     },
     localDateTime: (utc) => {
       console.debug("date from response: ", utc);
@@ -129,6 +135,10 @@ export default {
     }
     .total {
       margin: 0.5em;
+    }
+    .cash {
+      text-align: center;
+      padding: 2em;
     }
     .image {
       margin: 0.5em;
