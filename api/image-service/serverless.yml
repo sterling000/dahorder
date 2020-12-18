@@ -36,9 +36,6 @@ functions:
           path: /image/url
           method: get
           cors: true
-      - s3:
-          bucket: ${self:custom.s3.bucket}
-          existing: true
 
 resources:
   Resources:
