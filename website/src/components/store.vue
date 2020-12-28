@@ -15,7 +15,7 @@ export default {
       this.$emit("selected", this.store);
     },
     displayName(fullName) {
-      if (fullName.length > 20) {
+      if (fullName.length > 23) {
         return fullName.substring(0, 20) + "...";
       } else {
         return fullName;
@@ -47,7 +47,7 @@ export default {
     font-size: 16px;
     float: left;
     margin: 0.1em 0;
-    max-width: 200px;
+    width: 100%;
   }
   cursor: pointer;
   #store-thumbnail {

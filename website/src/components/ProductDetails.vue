@@ -159,9 +159,32 @@ export default {
       const dateTime = new Date(utc);
       return dateTime.toLocaleString();
     },
+    copyToClipboard(str) {
+      const el = document.createElement("textarea");
+      el.value = str;
+      el.setAttribute("readonly", "");
+      el.style.position = "absolute";
+      el.style.left = "-9999px";
+      document.body.appendChild(el);
+      const selected =
+        document.getSelection().rangeCount > 0
+          ? document.getSelection().getRangeAt(0)
+          : false;
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+      }
+    },
     async share() {
-      await navigator.clipboard.writeText(window.location);
-      console.log("Link copied to clipboard.");
+      if (navigator === undefined) {
+        this.copyToClipboard(window.location);
+      } else {
+        await navigator.clipboard.writeText(window.location);
+        console.log("Link copied to clipboard.");
+      }
     },
     thumbnailRendered: function(e) {
       this.thumbnail = e;

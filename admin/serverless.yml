@@ -1,7 +1,8 @@
 org: dahorder
 app: dah-order
-name: admin
+name: adminpanel2
 component: website
+stage: prod
 
 inputs:
   src:
@@ -9,5 +10,5 @@ inputs:
     hook: npm run build
     dist: ./dist
   region: ap-southeast-1
-  bucketName: admin.dahorder.my
-  domain: admin.dahorder.my
+  bucketName: ${stage}-admin.dahorder.my
+  domain: ${stage}-admin.dahorder.my

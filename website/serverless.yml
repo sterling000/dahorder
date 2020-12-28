@@ -1,7 +1,8 @@
 org: dahorder
 app: dah-order
-name: website
+name: dahorder
 component: website
+stage: prod
 
 inputs:
   src:

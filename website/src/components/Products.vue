@@ -101,14 +101,15 @@ export default {
 @import "../assets/styles/config.scss";
 .products {
   .title {
-    display: flex;
+    display: inline-flex;
+    .share-icon {
+      margin: 0 0 0 1em;
+      cursor: pointer;
+      width: 24px;
+      height: 30px;
+    }
   }
-  .share-icon {
-    margin: 0 0 0 1em;
-    cursor: pointer;
-    width: 24px;
-    height: auto;
-  }
+
   overflow-y: auto;
   padding: 10vh 5vh 15vh;
   .noProducts {

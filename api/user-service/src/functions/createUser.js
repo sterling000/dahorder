@@ -3,7 +3,6 @@ const AWS = require("aws-sdk");
 const bcrypt = require("bcryptjs");
 const parsePhoneNumber = require("libphonenumber-js");
 const jwt = require("jsonwebtoken");
-
 module.exports.createUser = async (event) => {
   const body = JSON.parse(event.body);
   const email = body.email;
@@ -41,33 +40,7 @@ module.exports.createUser = async (event) => {
 
   try {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
-    const putResult = await dynamodb.put(newUserParams).promise();
-
-    let token = jwt.sign(
-      {
-        phone: phone,
-      },
-      process.env.JWT_SECRET
-    );
-
-    const sns = await new AWS.SNS()
-      .publish({
-        Message: `User Created - name: ${name} - phone: ${phone} - condo: ${condo} - apartment: ${apartment} email: ${email} role: ${role}`,
-        TopicArn: "arn:aws:sns:ap-southeast-1:716876784284:userRegistered",
-        Subject: "Dah Order - User Created",
-      })
-      .promise();
-    return {
-      statusCode: 201,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-        "Access-Control-Allow-Headers": "Authorization",
-      },
-      body: JSON.stringify({
-        token: token,
-      }),
-    };
+    await dynamodb.put(newUserParams).promise();
   } catch (putError) {
     console.log("typeof(putError)", typeof putError);
     if (putError.name === "ConditionalCheckFailedException") {
@@ -82,8 +55,39 @@ module.exports.createUser = async (event) => {
       };
     }
     console.log("There was an error putting a new user");
-    console.log("putError", putError);
+    console.error("putError", putError);
     console.log("newUserParams", newUserParams);
     return new Error("There was an error putting the new user");
   }
+
+  try {
+    const snsParams = {
+      Message: `User Created - name: ${name} - phone: ${phone} - condo: ${condo} - apartment: ${apartment} email: ${email} - role: ${role}`,
+      TopicArn: `arn:aws:sns:${process.env.REGION}:503089823451:userRegistered-${process.env.STAGE}`,
+      Subject: "Dah Order - User Created",
+    };
+    console.log("snsParams", snsParams);
+    await new AWS.SNS().publish(snsParams).promise();
+  } catch (err) {
+    console.log("Couldn't send userRegistered notification to azrin.");
+    console.error(err);
+    throw new Error("Couldn't send userRegistered notification.");
+  }
+  let token = jwt.sign(
+    {
+      phone: phone,
+    },
+    process.env.JWT_SECRET
+  );
+  return {
+    statusCode: 201,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "Authorization",
+    },
+    body: JSON.stringify({
+      token: token,
+    }),
+  };
 };

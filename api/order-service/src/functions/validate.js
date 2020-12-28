@@ -22,7 +22,7 @@ module.exports.validate = async (event, context) => {
     return generatePolicy(
       decodedJwt.phone,
       "Allow",
-      `arn:aws:execute-api:${process.env.REGION}:716876784284:*/${process.env.STAGE}/*/*`
+      `arn:aws:execute-api:${process.env.REGION}:503089823451:*/${process.env.STAGE}/*/*`
     );
   }
   generatePolicy("undefined", "Deny", event.methodArn);

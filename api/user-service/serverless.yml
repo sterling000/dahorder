@@ -10,8 +10,8 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: nodejs12.x
-  profile: dahorder
-  stage: ${opt:stage, 'dev'}
+  profile: dahorder2
+  stage: ${opt:stage, 'prod'}
   region: ${opt:region, 'ap-southeast-1'}
   httpApi:
     cors: true
@@ -31,7 +31,7 @@ provider:
       Resource:
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}
         - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTable}/index/pk
-        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:userRegistered
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:userRegistered-${self:provider.stage}
   
   environment:
     DYNAMODB_USER_TABLE: ${self:custom.dynamodb.userTable}
@@ -115,7 +115,7 @@ resources:
       Type: AWS::SNS::Subscription
       Properties:
         Protocol: EMAIL
-        Endpoint: sterling000@gmail.com
+        Endpoint: azrin.zuhdi@gmail.com
         TopicArn: {"Ref": "userRegisteredTopic"}
 
 plugins:
